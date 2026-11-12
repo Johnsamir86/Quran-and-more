@@ -41,6 +41,25 @@ npm run api:smoke      # verifies the Quran Foundation connection
 npm test
 ```
 
+## Content source
+
+`CONTENT_SOURCE=qdc` (default) reads the open Quran.com v4 API: the whole
+mushaf, every reciter, 126 translations and 20 tafsirs. `CONTENT_SOURCE=qf`
+reads the Quran Foundation gateway with `CLIENT_ID` / `CLIENT_SECRET`
+(prelive carries Surah 1 and 2 only; production needs production credentials).
+
+## Android APK (test build)
+
+```bash
+cd apps/mobile
+EXPO_PUBLIC_API_BASE_URL=https://quran-and-more.netlify.app npx expo prebuild -p android
+cd android && ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a
+# -> android/app/build/outputs/apk/release/app-release.apk (signed with the debug key)
+```
+
+Needs JDK 17+, the Android SDK (platform 36, build-tools 36) and about 10 GB of
+disk for the native build. Store builds go through EAS (`eas build -p android`).
+
 ## Rules that never change
 
 - Quranic text, translations and audio are served verbatim from the Quran
