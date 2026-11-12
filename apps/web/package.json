@@ -17,13 +17,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@netlify/blobs": "^11.1.9",
+    "@qam/core": "*",
     "@quranjs/api": "^3.17.2",
     "next": "^15.5.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "redis": "^4.7.0",
-    "swr": "^2.2.5",
-    "@qam/core": "*"
+    "swr": "^2.2.5"
   },
   "devDependencies": {
     "@testing-library/react": "^16.1.0",

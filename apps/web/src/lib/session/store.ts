@@ -1,5 +1,7 @@
 import crypto from "node:crypto";
 
+import { getStore as getNetlifyStore } from "@netlify/blobs";
+
 import { createClient, type RedisClientType } from "redis";
 
 import { SESSION_TTL_MS, SESSION_TTL_SECONDS } from "@/lib/constants";
@@ -129,11 +131,55 @@ class RedisSessionStore implements SessionStore {
   }
 }
 
+/**
+ * Netlify Blobs-backed store. Sessions are small JSON documents keyed by a
+ * random id, written once per auth step, so last-write-wins is acceptable.
+ * Blobs have no TTL; we store an expiration in metadata and delete on read.
+ * Swap for Redis (REDIS_URL) or Postgres when traffic grows.
+ */
+class NetlifyBlobSessionStore implements SessionStore {
+  summary = "Netlify Blobs session store";
+
+  private store() {
+    return getNetlifyStore({ name: "sessions", consistency: "strong" });
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.store().delete(id);
+  }
+
+  async get(id: string): Promise<StoredSession | null> {
+    const entry = await this.store().getWithMetadata(id, { type: "json" });
+    if (entry === null) {
+      return null;
+    }
+    const expiresAt = Number(entry.metadata.expiresAt ?? 0);
+    if (expiresAt && Date.now() > expiresAt) {
+      await this.store().delete(id);
+      return null;
+    }
+    return entry.data as StoredSession;
+  }
+
+  async set(id: string, value: StoredSession): Promise<void> {
+    await this.store().setJSON(id, value, {
+      metadata: { expiresAt: Date.now() + SESSION_TTL_MS },
+    });
+  }
+}
+
 const memoryStore = new MemorySessionStore();
 let redisStore: RedisSessionStore | null = null;
+let blobStore: NetlifyBlobSessionStore | null = null;
 
 export const getSessionStore = (redisUrl?: string): SessionStore => {
   if (!redisUrl) {
+    if (process.env.NETLIFY === "true" || process.env.NETLIFY_BLOBS_CONTEXT) {
+      if (!blobStore) {
+        blobStore = new NetlifyBlobSessionStore();
+      }
+      return blobStore;
+    }
     return memoryStore;
   }
 

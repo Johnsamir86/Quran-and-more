@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       message: "Session refreshed.",
       ok: true,
     });
-  } catch (_error) {
+  } catch {
     if (!sessionContext.session.userSession) {
       sessionContext.session.oidcLogoutIdTokenHint = null;
       return mutationError(sessionContext, {

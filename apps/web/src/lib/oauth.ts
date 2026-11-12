@@ -42,7 +42,7 @@ export const decodeJwt = (
     return JSON.parse(
       Buffer.from(`${payload}${padding}`, "base64").toString("utf8"),
     );
-  } catch (_error) {
+  } catch {
     return null;
   }
 };
