@@ -40,7 +40,8 @@ const getQfToken = async (): Promise<{ token: string; clientId: string }> => {
   if (!clientId || !clientSecret) throw new Error("CLIENT_ID and CLIENT_SECRET are required for the qf content source");
   if (tokenCache && tokenCache.expiresAt > Date.now() + 30_000) return { token: tokenCache.token, clientId };
   const { oauth2BaseUrl } = resolveQfEnvironment(process.env);
-  const scope = (process.env.CONTENT_SCOPES ?? CONTENT_SCOPES.join(" ")).trim();
+  // Content scopes plus `search` (Search API); the auth server ignores scopes the client lacks only if asked individually, so request them all.
+  const scope = (process.env.CONTENT_SCOPES ?? [...CONTENT_SCOPES, "search"].join(" ")).trim();
   const res = await fetch(`${oauth2BaseUrl}/oauth2/token`, {
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded", authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}` },
@@ -120,3 +121,22 @@ export const contentGetAll = async <T>(path: string, listKey: string, query: Que
   }
   return out;
 };
+
+/**
+ * GET against the Quran Foundation gateway itself (search, hadith, answers,
+ * reflections, chapter info), independent of CONTENT_SOURCE. `service` is the
+ * gateway prefix, e.g. "content/api/v4", "search/api/v1", "content/quran-reflect/v1".
+ */
+export const qfGet = async <T = unknown>(service: string, path: string, query?: Query, ttlMs = 10 * 60 * 1000): Promise<T> => {
+  const { gatewayUrl } = resolveQfEnvironment(process.env);
+  const { token, clientId } = await getQfToken();
+  const url = buildUrl(`${gatewayUrl}/${service.replace(/^\/|\/$/g, "")}`, path, query);
+  const key = `qf|${url}`;
+  const hit = memo.get(key);
+  if (hit && Date.now() - hit.at < ttlMs) return hit.value as Promise<T>;
+  const value = fetchJson(url, { "x-auth-token": token, "x-client-id": clientId }).catch((e) => { memo.delete(key); throw e; });
+  memo.set(key, { at: Date.now(), value });
+  return value as Promise<T>;
+};
+
+export const hasQfCredentials = (): boolean => Boolean(process.env.CLIENT_ID && process.env.CLIENT_SECRET);

@@ -40,6 +40,9 @@ export interface LocalProgress {
   lastActiveDay: string | null;
 }
 
+export interface LearnProgress { profileId: string; xp: number; lessonsDone: string[]; lastDay: string | null; streak: number }
+export interface GameScore { id: string; profileId: string; kind: string; score: number; correct: number; total: number; at: number }
+
 export interface FamilyState {
   version: 1;
   familyId: string;
@@ -48,6 +51,10 @@ export interface FamilyState {
   bookmarks: LocalBookmark[];
   notes: LocalNote[];
   progress: Record<string, LocalProgress>;
+  /** Quranlingo-style learning progress per profile (added later; may be absent in old records). */
+  learn?: Record<string, LearnProgress>;
+  /** Arena game scores (newest first, capped). */
+  scores?: GameScore[];
 }
 
 export const AVATARS = ["🌙", "⭐", "🌸", "🌿", "🕌", "📖", "🐪", "🦋", "🌞", "🪷", "🫶", "🧕", "🧔", "👧", "👦", "👵", "👴"] as const;
@@ -83,6 +90,8 @@ export type FamilyAction =
   | { type: "note/save"; verseKey: string; body: string; id?: string }
   | { type: "note/remove"; id: string }
   | { type: "progress/record"; verseKey?: string; page?: number; seconds: number; day: string }
+  | { type: "learn/complete"; lessonId: string; xp: number; day: string }
+  | { type: "game/score"; kind: string; score: number; correct: number; total: number }
   | { type: "hydrate"; state: FamilyState };
 
 const todayMinus = (day: string, n: number) => {
@@ -173,10 +182,30 @@ export const familyReducer = (state: FamilyState, action: FamilyAction): FamilyS
         },
       };
     }
+    case "learn/complete": {
+      const pid = state.activeProfileId;
+      if (!pid) return state;
+      const prev: LearnProgress = state.learn?.[pid] ?? { profileId: pid, xp: 0, lessonsDone: [], lastDay: null, streak: 0 };
+      let streak = prev.streak;
+      if (prev.lastDay !== action.day) streak = prev.lastDay === todayMinus(action.day, 1) ? prev.streak + 1 : 1;
+      const lessonsDone = prev.lessonsDone.includes(action.lessonId) ? prev.lessonsDone : [...prev.lessonsDone, action.lessonId];
+      return { ...state, learn: { ...(state.learn ?? {}), [pid]: { profileId: pid, xp: prev.xp + Math.max(0, action.xp), lessonsDone, lastDay: action.day, streak } } };
+    }
+    case "game/score": {
+      const pid = state.activeProfileId;
+      if (!pid) return state;
+      const entry: GameScore = { id: uid(), profileId: pid, kind: action.kind, score: action.score, correct: action.correct, total: action.total, at: Date.now() };
+      return { ...state, scores: [entry, ...(state.scores ?? [])].slice(0, 200) };
+    }
     default:
       return state;
   }
 };
+
+export const learnFor = (state: FamilyState, profileId: string): LearnProgress =>
+  state.learn?.[profileId] ?? { profileId, xp: 0, lessonsDone: [], lastDay: null, streak: 0 };
+export const bestScores = (state: FamilyState, kind?: string) =>
+  (state.scores ?? []).filter((s) => !kind || s.kind === kind).sort((a, b) => b.score - a.score);
 
 export const activeProfile = (state: FamilyState): (Profile & { avatar?: string }) | null =>
   state.profiles.find((p) => p.id === state.activeProfileId) ?? null;

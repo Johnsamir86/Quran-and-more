@@ -97,3 +97,14 @@ Grounded Q&A with citations (Maani), tajweed feedback (Mehrab), grammar
 (Nahw), notes summary (Qurannotate), subtitle alignment (Quran Caption),
 offline voice search (Quran Audio). All require an external model; the
 Quran MCP server can ground retrieval.
+
+## Status (2026-11-12)
+| Area | Shipped | Next |
+|---|---|---|
+| Reading | mushaf layouts with official fonts, word by word, surah info, study page with tafsir compare | pin and compare, verse-of-the-day widget on home, themes |
+| Listening | all API reciters + 3 archive reciters with our own word timings, repeat/speed/sleep, wallpapers | offline downloads, CarPlay/Android Auto, women reciters (licence) |
+| Memorisation | hide/recall with spaced review, 6446 counter, browser speech check | staged methods with plans and reminders, mastery grid, forced-alignment ASR on device |
+| Learning | Quranlingo-style lessons with XP/levels/streaks | spaced repetition of missed words, badges, parent dashboard |
+| Games | which surah, next ayah, missing word, which juz, family leaderboard | rooms with join codes, trivia |
+| Study tools | search, ask (restricted mode), hadith/answers/reflections panels, share links with images | QuranReflect posting, Answers browsing, qira'at (production) |
+| Family | profiles, bookmarks, notes, progress, learning and game scores | Quran ID sync, madrasah mode, teacher views |

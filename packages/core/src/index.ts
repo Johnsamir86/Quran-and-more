@@ -10,3 +10,6 @@ export * from "./stations";
 export * from "./mushaf";
 export * from "./family-store";
 export * from "./wallpapers";
+export * from "./text";
+export * from "./learn";
+export * from "./games";

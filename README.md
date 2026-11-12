@@ -30,6 +30,19 @@ docs/           Architecture and roadmap.
 - `/mushaf` printed page layouts (Madani, Tajweed, KFGQPC, IndoPak) with the
   official fonts, tap any word to listen from there
 - `/family` profiles for every family member with bookmarks, notes and progress
+- `/search` Quran Foundation Search API (surah, juz, page and ayah navigation
+  plus verbatim verse results in 70 languages)
+- `/study/2:255` one ayah in depth: word by word with occurrence search,
+  translations, up to three tafsirs side by side, surah info, related hadith,
+  answers and reflections when the production gateway serves them
+- `/learn` Quranlingo-style vocabulary lessons per surah with XP, levels and streaks
+- `/hifz` Tasmi-style memorisation: hide, recall, self-grade, spaced review,
+  6446 and 3x3 drills, optional microphone check
+- `/play` arena games: which surah, next ayah, missing word, which juz
+- `/ask` Quran AI in restricted mode: answers only from retrieved ayat and
+  tafsir, quoted verbatim, pending scholarly review (model answers need
+  `ANTHROPIC_API_KEY`)
+- `/v/2:255` shareable verse links with a preview image
 - Public API v1 under `/api/public/v1` for integrations
 
 ## Run

@@ -8,8 +8,9 @@ export const metadata: Metadata = {
   other: { google: "notranslate" },
 };
 
-export default async function PlayerPage({ searchParams }: { searchParams: Promise<{ surah?: string }> }) {
+export default async function PlayerPage({ searchParams }: { searchParams: Promise<{ surah?: string; ayah?: string }> }) {
   const sp = await searchParams;
   const initialSurah = sp.surah ? Number.parseInt(sp.surah, 10) : undefined;
-  return <PlayerClient initialSurah={Number.isInteger(initialSurah) ? initialSurah : undefined} />;
+  const initialAyah = sp.ayah ? Number.parseInt(sp.ayah, 10) : undefined;
+  return <PlayerClient initialSurah={Number.isInteger(initialSurah) ? initialSurah : undefined} initialAyah={Number.isInteger(initialAyah) ? initialAyah : undefined} />;
 }

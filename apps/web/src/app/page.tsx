@@ -7,6 +7,12 @@ const TILES = [
   { href: "/player", icon: "▶", ar: "المشغّل", en: "Player", arSub: "استمع واقرأ وترجم وتدبّر في شاشة واحدة، بأي قارئ", enSub: "Listen, read, translate and study tafsir in one screen, any reciter" },
   { href: "/mushaf", icon: "📖", ar: "المصحف", en: "Mushaf", arSub: "صفحة بصفحة بالخط العثماني ومصحف التجويد", enSub: "Page by page with the official fonts and the Tajweed mushaf" },
   { href: "/family", icon: "👨‍👩‍👧", ar: "العائلة", en: "Family", arSub: "ملف لكل فرد، من الطفل إلى الجد", enSub: "A profile for every member, from child to grandparent" },
+  { href: "/search", icon: "🔎", ar: "بحث", en: "Search", arSub: "ابحث عن كلمة أو آية أو سورة في القرآن كله", enSub: "Find any word, ayah or surah across the whole Quran" },
+  { href: "/study/2:255", icon: "🧭", ar: "دراسة الآية", en: "Study", arSub: "كلمة بكلمة، ترجمات، وقارن حتى ثلاثة تفاسير جنبًا إلى جنب", enSub: "Word by word, translations and up to three tafsirs side by side" },
+  { href: "/learn", icon: "🎓", ar: "تعلّم", en: "Learn", arSub: "دروس مفردات على طريقة Quranlingo بنقاط وسلاسل أيام", enSub: "Quranlingo-style vocabulary lessons with XP and streaks" },
+  { href: "/hifz", icon: "🧠", ar: "حفظ", en: "Memorise", arSub: "أخفِ الآية وتذكّرها ثم قيّم نفسك، مع مراجعة متباعدة واختبار بالميكروفون", enSub: "Hide, recall and grade yourself with spaced review and a microphone check" },
+  { href: "/play", icon: "🎮", ar: "العب", en: "Play", arSub: "من أي سورة؟ الآية التالية؟ الكلمة الناقصة؟ في أي جزء؟", enSub: "Which surah? Next ayah? Missing word? Which juz?" },
+  { href: "/ask", icon: "💬", ar: "اسأل", en: "Ask", arSub: "إجابات من الآيات والتفاسير فقط، بنقل حرفي وبانتظار مراجعة علمية", enSub: "Answers only from ayat and tafsir, quoted verbatim, pending scholarly review" },
   { href: "/player?surah=18", icon: "🕌", ar: "سورة الكهف", en: "Surah Al-Kahf", arSub: "تُقرأ يوم الجمعة", enSub: "Read on Friday" },
 ];
 

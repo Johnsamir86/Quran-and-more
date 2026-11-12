@@ -95,9 +95,10 @@ const readStorage = <T,>(key: string, fallback: T): T => {
 const writeStorage = (key: string, value: unknown) => { try { window.localStorage.setItem(key, JSON.stringify(value)); } catch { /* private mode */ } };
 const toArabicDigits = (n: number) => n.toLocaleString("ar-EG", { useGrouping: false });
 
-interface Props { initialSurah?: number; profileGender?: "male" | "female" | "unspecified" }
+interface Props { initialSurah?: number; initialAyah?: number; profileGender?: "male" | "female" | "unspecified" }
 
-export default function QuranPlayer({ initialSurah, profileGender = "unspecified" }: Props) {
+export default function QuranPlayer({ initialSurah, initialAyah, profileGender = "unspecified" }: Props) {
+  const pendingAyahRef = useRef<number | null>(initialAyah ?? null);
   const [localeOverride, setLocaleOverride] = useState<string | null>(null);
   const locale = useMemo(() => localeOverride ?? resolveLocale(typeof navigator !== "undefined" ? navigator.language : "ar"), [localeOverride]);
   const [view, setView] = useState<"focus" | "list">("focus");
@@ -397,6 +398,15 @@ export default function QuranPlayer({ initialSurah, profileGender = "unspecified
       .catch(() => !cancelled && dispatch({ type: "tafsir", key: segment.key, text: null }));
     return () => { cancelled = true; };
   }, [state.panel, segment, state.tafsir?.key, tafsirId, docked, view, menuTab]);
+
+  /* Deep link ?ayah=N: once the requested surah's segments are in, jump to that ayah. */
+  useEffect(() => {
+    const want = pendingAyahRef.current;
+    if (want === null || !state.segments.length || state.surah?.number !== initialSurah) return;
+    const idx = state.segments.findIndex((seg) => seg.ayah?.number === want);
+    if (idx >= 0) { seekFromTimeRef.current = false; dispatch({ type: "seek", index: idx }); }
+    pendingAyahRef.current = null;
+  }, [state.segments, state.surah, initialSurah]);
 
   /* ---------- keyboard / remote ---------- */
   useEffect(() => {

@@ -69,6 +69,21 @@
 - iOS and Android: RevenueCat, mapping store products to the same tier ids.
 - `subscriptions` holds the source of truth; feature gates read the tier.
 
+## Study layer (web)
+
+- `lib/search-api.ts`: Quran Foundation Search API (client credentials, scope
+  `search`) with verse hydration; open v4 search as fallback.
+- `lib/study-api.ts`: one-ayah bundle (words, translations, tafsir list, surah
+  info, hadith / answers / reflections via `qfGet`), lesson sources, random
+  ayat for games and the ayah of the day.
+- `lib/ask-api.ts`: retrieval over search + tafsir; optional Claude call with
+  a verbatim guard that strips any Arabic quotation not found in the sources.
+- `packages/core`: `text.ts` (normalisation, recitation comparison, seeded
+  RNG), `learn.ts` (lesson builder, levels), `games.ts` (rounds, scoring);
+  learning XP and game scores live in the family store per profile.
+- Routes: `/search`, `/study/[verseKey]`, `/learn`, `/hifz`, `/play`, `/ask`,
+  `/v/[verseKey]` (share landing with `/api/og/[verseKey]` preview image).
+
 ## Public API v1
 
 - `GET /api/public/v1/chapters` and `GET /api/public/v1/verses/:chapterId`
