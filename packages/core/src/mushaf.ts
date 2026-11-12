@@ -38,21 +38,21 @@ export const MUSHAF_LAYOUTS: MushafLayout[] = [
   {
     id: "madani_v2",
     label: { ar: "مصحف المدينة (١٥ سطرًا)", en: "Madani mushaf, 15 lines" },
-    mushafId: 2, lines: 15, pages: 604,
+    mushafId: 1, lines: 15, pages: 604, // QCF V2 (api-docs.quran.foundation font tutorial)
     glyph: "codeV2", fontKind: "page-font", fontFamily: "qcf-v2",
     fontUrl: `${MUSHAF_FONT_CDN}/hafs/v2/woff2/p{page}.woff2`,
   },
   {
     id: "madani_v1",
     label: { ar: "مصحف المدينة (الإصدار الأول)", en: "Madani mushaf, classic glyphs" },
-    mushafId: 1, lines: 15, pages: 604,
+    mushafId: 2, lines: 15, pages: 604, // QCF V1
     glyph: "codeV1", fontKind: "page-font", fontFamily: "qcf-v1",
     fontUrl: `${MUSHAF_FONT_CDN}/hafs/v1/woff2/p{page}.woff2`,
   },
   {
     id: "tajweed",
     label: { ar: "مصحف التجويد الملوّن", en: "Tajweed mushaf, colour coded" },
-    mushafId: 2, lines: 15, pages: 604,
+    mushafId: 19, lines: 15, pages: 604, // QCF V4 tajweed
     glyph: "codeV2", fontKind: "page-font", fontFamily: "qcf-v4-tajweed", tajweed: true,
     fontUrl: `${MUSHAF_FONT_CDN}/hafs/v4/colrv1/woff2/p{page}.woff2`,
   },
