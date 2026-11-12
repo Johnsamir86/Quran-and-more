@@ -106,12 +106,17 @@ def align_surah(reciter: str, surah: int, audio_path: str, text_dir="data/text")
 
     # Reference word list: [isti'adha?] [basmala?] verse words...
     words = []  # (romanized, verse_key or None, position)
+    def present(phrase_words, prefix_chars=400, k=4, threshold=0.5):
+        """Share of the phrase's k-grams found in the start of the greedy transcript."""
+        ph = "".join(romanize(w) for w in phrase_words); head = dec[:prefix_chars]
+        grams = [ph[i:i + k] for i in range(len(ph) - k + 1)]
+        return grams and sum(1 for g in grams if g in head) / len(grams) >= threshold
     ist = [romanize(w) for w in ISTIADHA]
-    probe = "".join(ist)
-    has_ist = any(p in dec[:400].replace(" ", "") for p in [probe[:8], "billah", "shaytan", "rajim"])
+    has_ist = bool(present(ISTIADHA))
     if has_ist:
         words += [(r, "istiadha", i + 1) for i, r in enumerate(ist)]
-    if meta["bismillah_pre"] and surah not in (1, 9):
+    has_basmala = bool(meta["bismillah_pre"] and surah not in (1, 9) and present(BASMALA, prefix_chars=600))
+    if has_basmala:
         words += [(romanize(w), "basmala", i + 1) for i, w in enumerate(BASMALA)]
     for v in meta["verses"]:
         for w in v["words"]:
@@ -192,7 +197,7 @@ def align_surah(reciter: str, surah: int, audio_path: str, text_dir="data/text")
     if out_verses: out_verses[-1]["toMs"] = max(out_verses[-1]["toMs"], duration_ms)
     result = {
         "reciter": reciter, "chapter": surah, "durationMs": duration_ms,
-        "method": {"model": "torchaudio MMS_FA (wav2vec2 CTC, uroman)", "version": 1, "istiadha": has_ist, "pieces": len(pieces), "fallbackPieces": sum(1 for p in pieces if p[4]), "lowConfidenceWords": low_conf, "words": len(words)},
+        "method": {"model": "torchaudio MMS_FA (wav2vec2 CTC, uroman)", "version": 1, "istiadha": has_ist, "basmala": has_basmala, "pieces": len(pieces), "fallbackPieces": sum(1 for p in pieces if p[4]), "lowConfidenceWords": low_conf, "words": len(words)},
         "timestamps": out_verses,
     }
     result["method"]["seconds"] = round(time.time() - t0, 1)
