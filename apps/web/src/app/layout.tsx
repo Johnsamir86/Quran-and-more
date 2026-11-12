@@ -6,7 +6,7 @@ import {
 } from "next/font/google";
 
 import { starterConfig } from "../../starter.config";
-import StarterShell from "@/components/starter-shell";
+import ShellGate from "@/components/shell-gate";
 import "./globals.css";
 
 const bodyFont = Plus_Jakarta_Sans({
@@ -42,7 +42,7 @@ export default function RootLayout({
       <body
         className={`${bodyFont.variable} ${arabicFont.variable} ${monoFont.variable}`}
       >
-        <StarterShell />
+        <ShellGate />
         {children}
       </body>
     </html>

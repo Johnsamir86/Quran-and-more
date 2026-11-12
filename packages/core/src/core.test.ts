@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  absoluteAudioUrl,
   assertVerbatimQuran,
   canProfileHearReciter,
   canViewProgress,
@@ -10,6 +11,15 @@ import {
   RestrictedModeViolation,
   tierFor,
 } from "./index";
+
+describe("audio urls", () => {
+  it("resolves relative, protocol-relative and absolute urls", () => {
+    expect(absoluteAudioUrl("Alafasy/mp3/001001.mp3")).toBe("https://verses.quran.foundation/Alafasy/mp3/001001.mp3");
+    expect(absoluteAudioUrl("//mirrors.quranicaudio.com/x.mp3")).toBe("https://mirrors.quranicaudio.com/x.mp3");
+    expect(absoluteAudioUrl("wbw/001_001_001.mp3", "word")).toBe("https://audio.qurancdn.com/wbw/001_001_001.mp3");
+    expect(absoluteAudioUrl("https://a/b.mp3")).toBe("https://a/b.mp3");
+  });
+});
 
 describe("locales", () => {
   it("resolves device language to a supported locale", () => {

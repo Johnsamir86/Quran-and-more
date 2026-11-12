@@ -23,6 +23,7 @@ export default function RootLayout() {
       >
         <Stack.Screen name="index" options={{ title: "Quran and More" }} />
         <Stack.Screen name="read/[chapterId]" options={{ title: "" }} />
+        <Stack.Screen name="player" options={{ title: "" }} />
       </Stack>
     </>
   );

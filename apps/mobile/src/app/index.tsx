@@ -26,6 +26,13 @@ export default function ChapterListScreen() {
       data={chapters}
       keyExtractor={(c) => String(c.id)}
       contentContainerStyle={styles.list}
+      ListHeaderComponent={
+        <Link href="/player" asChild>
+          <Pressable style={[styles.row, { backgroundColor: "#1d9e75" }]} accessibilityRole="button">
+            <Text style={[styles.name, { color: "#fff" }]}>{locale === "ar" ? "▶ المشغّل: استمع واقرأ وتدبّر" : "▶ Player: listen, read, translate, tafsir"}</Text>
+          </Pressable>
+        </Link>
+      }
       renderItem={({ item }) => (
         <Link href={{ pathname: "/read/[chapterId]", params: { chapterId: String(item.id) } }} asChild>
           <Pressable style={styles.row} accessibilityRole="button" accessibilityLabel={`Open surah ${item.nameSimple}`}>
