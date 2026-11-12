@@ -208,6 +208,26 @@ export const getChapterAudio = async (chapterReciterId: number, chapterId: numbe
   };
 };
 
+/* ---------- auto-aligned timings for archive reciters (apps/web/data/timings/<reciter>/<surah>.json) ---------- */
+const timingsCache = new Map<string, ChapterTimestamp[] | null>();
+const loadAlignedTimings = async (reciterId: string, chapterId: number): Promise<ChapterTimestamp[] | null> => {
+  const key = `${reciterId}/${chapterId}`;
+  if (timingsCache.has(key)) return timingsCache.get(key) ?? null;
+  let result: ChapterTimestamp[] | null = null;
+  try {
+    const { readFile } = await import("node:fs/promises");
+    const path = await import("node:path");
+    const file = path.join(process.cwd(), "apps", "web", "data", "timings", reciterId, `${chapterId}.json`);
+    const alt = path.join(process.cwd(), "data", "timings", reciterId, `${chapterId}.json`);
+    const raw = await readFile(file, "utf8").catch(() => readFile(alt, "utf8"));
+    const json = JSON.parse(raw) as { timestamps?: { verseKey: string; fromMs: number; toMs: number; segments?: number[][] }[] };
+    result = normaliseTimestamps((json.timestamps ?? []).map((t) => ({ verseKey: t.verseKey, timestampFrom: t.fromMs, timestampTo: t.toMs, segments: t.segments })));
+    if (!result.length) result = null;
+  } catch { result = null; }
+  timingsCache.set(key, result);
+  return result;
+};
+
 export interface PlayerSurahPayload {
   surah: PlayerSurah;
   reciterId: string;
@@ -290,8 +310,8 @@ export const loadPlayerSurah = async (
     reciter.chapterReciterId
       ? getChapterAudio(reciter.chapterReciterId, chapterId).catch(() => null)
       : reciter.audioBase
-        // Archive reciter: one file per surah, no timestamps (plays without word sync).
-        ? Promise.resolve<ChapterAudio>({ chapterId, reciterId: 0, audioUrl: extraChapterAudioUrl({ audioBase: reciter.audioBase }, chapterId), durationMs: 0, fileSize: null, timestamps: [] })
+        // Archive reciter: one file per surah; timestamps come from our own forced alignment when available.
+        ? loadAlignedTimings(reciter.id, chapterId).then<ChapterAudio>((ts) => ({ chapterId, reciterId: 0, audioUrl: extraChapterAudioUrl({ audioBase: reciter.audioBase! }, chapterId), durationMs: 0, fileSize: null, timestamps: ts ?? [] }))
         : Promise.resolve(null),
   ]);
   const withAudio = (a: PlayerAyah): PlayerAyah => {
