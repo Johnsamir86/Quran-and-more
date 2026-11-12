@@ -13,6 +13,9 @@ Done so far in Phase 1 (2026-11-12):
   kids and senior UI modes, per-profile bookmarks, notes, daily minutes and
   streaks; sync to the Quran Foundation account is wired for when user
   login scopes are enabled on the client
+- Archive reciters (Ahmed al-Ajmi, Maher al-Muaiqly, Raad al-Kurdi) with
+  word sync produced by forced alignment (torchaudio MMS_FA), benchmarked
+  within ~50-100 ms of the official timings; timings ship as JSON per surah
 - Focus player (web + mobile): one-screen landscape/TV layout with the
   current ayah, word highlight and translation beneath; docked side menu
   (surahs, reciter, translation, tafsir picker, wallpaper, settings);

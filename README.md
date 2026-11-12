@@ -24,7 +24,9 @@ docs/           Architecture and roadmap.
 ## What works today
 
 - `/player` listen, read, translate and study tafsir in one screen, any reciter,
-  gapless with word highlighting, repeat and memorisation controls
+  gapless with word highlighting, repeat and memorisation controls. Reciters
+  outside the API catalogue (Ajmi, Muaiqly, Kurdi) get word timings from our
+  own forced-alignment pipeline in `tools/align`
 - `/mushaf` printed page layouts (Madani, Tajweed, KFGQPC, IndoPak) with the
   official fonts, tap any word to listen from there
 - `/family` profiles for every family member with bookmarks, notes and progress
