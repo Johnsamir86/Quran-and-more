@@ -54,11 +54,11 @@ export async function GET(request: NextRequest, context: { params: Promise<{ ver
   const footer = `${latin}${meaning ? ` (${meaning})` : ""} ${key} - Quran and More`;
   const fonts = latinFont ? [{ name: "Latin", data: latinFont, style: "normal" as const }] : [];
   // Glyph height scales with word count so long ayat still fit the card.
-  const h = images.length > 45 ? 34 : images.length > 30 ? 42 : images.length > 18 ? 52 : images.length > 8 ? 64 : 84;
+  const h = images.length > 45 ? 44 : images.length > 30 ? 50 : images.length > 18 ? 58 : images.length > 8 ? 68 : 84;
   return new ImageResponse(
     (
       <div style={{ width: 1200, height: 630, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: 48, background: "linear-gradient(160deg,#0d1512 0%,#13302a 60%,#1d9e75 160%)", color: "#f7f5ee", fontFamily: "Latin" }}>
-        <div style={{ display: "flex", flexDirection: "row-reverse", flexWrap: "wrap", justifyContent: "center", alignItems: "center", gap: Math.round(h * 0.22), padding: "28px 36px", borderRadius: 28, background: "#fbf7ec", maxWidth: 1104, maxHeight: 430, overflow: "hidden" }}>
+        <div style={{ display: "flex", flexDirection: "row-reverse", flexWrap: "wrap", justifyContent: "center", alignItems: "center", gap: Math.round(h * 0.22), padding: "28px 36px", borderRadius: 28, background: "#fbf7ec", maxWidth: 1104, maxHeight: 470, overflow: "hidden" }}>
           {/* eslint-disable-next-line @next/next/no-img-element -- satori image node, not a DOM image */}
           {images.map((img, i) => <img key={i} src={img.dataUrl} width={Math.round((img.width * h) / img.height)} height={h} alt="" />)}
           <div style={{ display: "flex", color: "#1d9e75", fontSize: Math.round(h * 0.5), padding: "0 10px" }}>({n})</div>
