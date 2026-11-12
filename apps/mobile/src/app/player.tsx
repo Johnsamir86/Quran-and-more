@@ -2,22 +2,22 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
-import { ActivityIndicator, FlatList, Modal, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View, useColorScheme } from "react-native";
+import { ActivityIndicator, FlatList, ImageBackground, Modal, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View, useColorScheme, useWindowDimensions } from "react-native";
 
 import {
   NO_TRANSLATION, PLAYBACK_RATES, isBookmarked, notesFor, PLAYER_STORAGE_KEYS, STATIONS, TEXT_SIZE_SCALE, currentSegment, decideAtSegmentEnd, initialPlayerState,
-  locateInAyah, locateInChapter, nextSurahNumber, playerReducer, resolveLocale,
-  type PlayerPanel, type PlayerReciter, type PlayerState, type PlayerSurah, type PlayerTranslation, type PlayerWord, type RepeatMode, type Station, type TextSize,
+  locateInAyah, locateInChapter, nextSurahNumber, playerReducer, resolveLocale, WALLPAPERS, WALLPAPER_STORAGE_KEY, wallpaperById, wallpaperForSurah,
+  type PlayerPanel, type Wallpaper, type WallpaperMode, type PlayerReciter, type PlayerState, type PlayerSurah, type PlayerTranslation, type PlayerWord, type RepeatMode, type Station, type TextSize,
 } from "@qam/core";
 
 import { useFamily, useProgressTicker } from "@/lib/family";
-import { fetchPlayerSurah, fetchReciters, fetchSurahs, fetchTafsir, fetchTranslations } from "@/lib/player-api";
+import { fetchPlayerSurah, fetchReciters, fetchSurahs, fetchTafsir, fetchTafsirs, fetchTranslations, type TafsirResource } from "@/lib/player-api";
 
 const locale = resolveLocale(Intl.DateTimeFormat().resolvedOptions().locale);
 const ar = locale === "ar";
 const T = ar
-  ? { surahs: "السور", reciter: "القارئ", translation: "الترجمة", tafsir: "التفسير", settings: "الإعدادات", stations: "الإذاعة", none: "النص العربي وحده", textSize: "حجم النص", autoAdvance: "الانتقال التلقائي إلى السورة التالية", motion: "تمرير تلقائي", small: "صغير", medium: "متوسط", large: "كبير", ayah: "الآية", basmala: "البسملة", basmalaNote: "البسملة ليست آية من هذه السورة، ولا تفسير لها هنا.", loading: "جارٍ التحميل…", offline: "تعذّر الاتصال بخدمة المحتوى. تحقق من اتصالك ثم أعد المحاولة.", retry: "إعادة المحاولة", close: "إغلاق", search: "بحث عن سورة…", listenWith: "بصوت", unavailable: "غير متاح", title: "القرآن الكريم", repeat: "التكرار", repeatOff: "بدون", repeatAyah: "كل آية", repeatRange: "نطاق", repeatSurah: "السورة", times: "مرات", speed: "السرعة", sleep: "مؤقت النوم", off: "إيقاف", gapless: "تلاوة متصلة", perAyah: "آية بآية", bookmark: "علامة", bookmarked: "محفوظة", notes: "ملاحظاتي", noteHint: "اكتب تدبّرك على هذه الآية…", saveNote: "حفظ", noProfile: "اختر ملفًا من صفحة العائلة أولًا" }
-  : { surahs: "Surahs", reciter: "Reciter", translation: "Translation", tafsir: "Tafsir", settings: "Settings", stations: "Radio", none: "Arabic text only", textSize: "Text size", autoAdvance: "Auto-advance to next surah", motion: "Auto-scroll", small: "Small", medium: "Medium", large: "Large", ayah: "Ayah", basmala: "Basmala", basmalaNote: "The Basmala is not an ayah of this surah, so there is no tafsir here.", loading: "Loading…", offline: "Could not reach the content service. Check your connection and try again.", retry: "Try again", close: "Close", search: "Search a surah…", listenWith: "Recited by", unavailable: "not available", title: "The Noble Quran", repeat: "Repeat", repeatOff: "Off", repeatAyah: "Each ayah", repeatRange: "Range", repeatSurah: "Surah", times: "times", speed: "Speed", sleep: "Sleep timer", off: "Off", gapless: "Gapless", perAyah: "Ayah by ayah", bookmark: "Bookmark", bookmarked: "Saved", notes: "My notes", noteHint: "Write your reflection on this ayah…", saveNote: "Save", noProfile: "Choose a profile on the Family page first" };
+  ? { surahs: "السور", reciter: "القارئ", translation: "الترجمة", tafsir: "التفسير", settings: "الإعدادات", stations: "الإذاعة", none: "النص العربي وحده", textSize: "حجم النص", autoAdvance: "الانتقال التلقائي إلى السورة التالية", motion: "تمرير تلقائي", small: "صغير", medium: "متوسط", large: "كبير", ayah: "الآية", basmala: "البسملة", basmalaNote: "البسملة ليست آية من هذه السورة، ولا تفسير لها هنا.", loading: "جارٍ التحميل…", offline: "تعذّر الاتصال بخدمة المحتوى. تحقق من اتصالك ثم أعد المحاولة.", retry: "إعادة المحاولة", close: "إغلاق", search: "بحث عن سورة…", listenWith: "بصوت", unavailable: "غير متاح", title: "القرآن الكريم", repeat: "التكرار", repeatOff: "بدون", repeatAyah: "كل آية", repeatRange: "نطاق", repeatSurah: "السورة", times: "مرات", speed: "السرعة", sleep: "مؤقت النوم", off: "إيقاف", gapless: "تلاوة متصلة", perAyah: "آية بآية", bookmark: "علامة", bookmarked: "محفوظة", notes: "ملاحظاتي", noteHint: "اكتب تدبّرك على هذه الآية…", saveNote: "حفظ", noProfile: "اختر ملفًا من صفحة العائلة أولًا", wallpaper: "الخلفية", autoNature: "طبيعة حسب السورة", autoArt: "زخرفة إسلامية", autoLive: "خلفية حيّة", plainBg: "بدون خلفية", fixedBg: "خلفية ثابتة", focusView: "شاشة واحدة", listView: "قائمة", tafsirPick: "اختيار التفسير", nextUp: "التالية", of: "من", repeatAyahShort: "تكرار" }
+  : { surahs: "Surahs", reciter: "Reciter", translation: "Translation", tafsir: "Tafsir", settings: "Settings", stations: "Radio", none: "Arabic text only", textSize: "Text size", autoAdvance: "Auto-advance to next surah", motion: "Auto-scroll", small: "Small", medium: "Medium", large: "Large", ayah: "Ayah", basmala: "Basmala", basmalaNote: "The Basmala is not an ayah of this surah, so there is no tafsir here.", loading: "Loading…", offline: "Could not reach the content service. Check your connection and try again.", retry: "Try again", close: "Close", search: "Search a surah…", listenWith: "Recited by", unavailable: "not available", title: "The Noble Quran", repeat: "Repeat", repeatOff: "Off", repeatAyah: "Each ayah", repeatRange: "Range", repeatSurah: "Surah", times: "times", speed: "Speed", sleep: "Sleep timer", off: "Off", gapless: "Gapless", perAyah: "Ayah by ayah", bookmark: "Bookmark", bookmarked: "Saved", notes: "My notes", noteHint: "Write your reflection on this ayah…", saveNote: "Save", noProfile: "Choose a profile on the Family page first", wallpaper: "Background", autoNature: "Nature per surah", autoArt: "Islamic art", autoLive: "Live", plainBg: "None", fixedBg: "Fixed background", focusView: "One screen", listView: "List", tafsirPick: "Choose tafsir", nextUp: "Next", of: "of", repeatAyahShort: "Repeat" };
 const DEFAULT_TAFSIR = ar ? "926" : "169";
 const digits = (n: number) => (ar ? n.toLocaleString("ar-EG", { useGrouping: false }) : String(n));
 
@@ -41,6 +41,14 @@ export default function PlayerScreen() {
   const family = useFamily();
   const [noteDraft, setNoteDraft] = useState("");
   const [notesOpen, setNotesOpen] = useState(false);
+  const [view, setView] = useState<"focus" | "list">("focus");
+  const [wallpaperMode, setWallpaperMode] = useState<WallpaperMode>("auto-nature");
+  const [fixedWallpaper, setFixedWallpaper] = useState<string>("n-mountain-lake");
+  const [tafsirs, setTafsirs] = useState<TafsirResource[]>([]);
+  const [tafsirChoice, setTafsirChoice] = useState<string | null>(null);
+  const [wallpaperOpen, setWallpaperOpen] = useState(false);
+  const { width, height } = useWindowDimensions();
+  const landscape = width > height;
 
   const player = useAudioPlayer(null);
   const status = useAudioPlayerStatus(player);
@@ -54,14 +62,20 @@ export default function PlayerScreen() {
     let cancelled = false;
     (async () => {
       try {
-        const [s, r, tr] = await Promise.all([fetchSurahs(locale), fetchReciters("unspecified"), fetchTranslations()]);
+        const [s, r, tr, tf] = await Promise.all([fetchSurahs(locale), fetchReciters("unspecified"), fetchTranslations(), fetchTafsirs().catch(() => [] as TafsirResource[])]);
         if (cancelled) return;
-        setSurahs(s); setReciters(r); setTranslations(tr);
+        setSurahs(s); setReciters(r); setTranslations(tr); setTafsirs(tf);
+        setView(await load<"focus" | "list">("qam.player.view", "focus"));
+        const wp = await load<{ mode: WallpaperMode; fixed: string } | null>(WALLPAPER_STORAGE_KEY, null);
+        if (wp) { setWallpaperMode(wp.mode); setFixedWallpaper(wp.fixed); }
+        setTafsirChoice(await load<string | null>("qam.player.tafsir", null));
         const savedReciter = await load<string | null>(PLAYER_STORAGE_KEYS.reciter, null);
         const reciter = r.find((x) => x.id === savedReciter) ?? r.find((x) => x.chapterReciterId === 7) ?? r[0];
         if (reciter) dispatch({ type: "reciter", reciter });
         const savedTr = await load<string | null>(PLAYER_STORAGE_KEYS.translation, null);
-        dispatch({ type: "translation", translation: savedTr === "none" ? NO_TRANSLATION : tr.find((x) => x.id === savedTr) ?? NO_TRANSLATION });
+        const langName = new Intl.DisplayNames(["en"], { type: "language" }).of(locale.split("-")[0])?.toLowerCase();
+        const defaultTr = tr.find((x) => x.languageName?.toLowerCase() === langName) ?? tr.find((x) => x.id === "85") ?? tr[0] ?? NO_TRANSLATION;
+        dispatch({ type: "translation", translation: savedTr === "none" ? NO_TRANSLATION : savedTr ? (tr.find((x) => x.id === savedTr) ?? defaultTr) : defaultTr });
         dispatch({ type: "textSize", size: await load<TextSize>(PLAYER_STORAGE_KEYS.textSize, "medium") });
         dispatch({ type: "autoAdvance", value: await load<boolean>(PLAYER_STORAGE_KEYS.autoAdvance, true) });
         dispatch({ type: "motion", value: await load<boolean>(PLAYER_STORAGE_KEYS.motion, true) });
@@ -85,7 +99,19 @@ export default function PlayerScreen() {
     save(PLAYER_STORAGE_KEYS.autoAdvance, state.autoAdvance);
     save(PLAYER_STORAGE_KEYS.motion, state.motion);
     if (state.resume) save(PLAYER_STORAGE_KEYS.resume, state.resume);
-  }, [hydrated, state.reciter, state.translation, state.textSize, state.autoAdvance, state.motion, state.resume]);
+    save("qam.player.view", view);
+    save(WALLPAPER_STORAGE_KEY, { mode: wallpaperMode, fixed: fixedWallpaper });
+    save("qam.player.tafsir", tafsirChoice);
+  }, [hydrated, state.reciter, state.translation, state.textSize, state.autoAdvance, state.motion, state.resume, view, wallpaperMode, fixedWallpaper, tafsirChoice]);
+
+  const wallpaper: Wallpaper = useMemo(() => {
+    const n = state.surah?.number ?? 1;
+    if (wallpaperMode === "fixed") return wallpaperById(fixedWallpaper) ?? wallpaperForSurah(n, "nature");
+    if (wallpaperMode === "plain") return wallpaperById(dark ? "p-night" : "p-paper") ?? WALLPAPERS[0];
+    return wallpaperForSurah(n, wallpaperMode === "auto-art" ? "art" : wallpaperMode === "auto-live" ? "live" : "nature");
+  }, [wallpaperMode, fixedWallpaper, state.surah?.number, dark]);
+  const focus = view === "focus";
+  const fc = focus ? (wallpaper.tone === "light" ? { ...c, ink: "#f7f5ee", muted: "rgba(247,245,238,0.8)", card: "rgba(10,16,14,0.5)", line: "rgba(255,255,255,0.2)" } : { ...c, ink: "#15201b", muted: "rgba(21,32,27,0.7)", card: "rgba(255,253,247,0.65)", line: "rgba(21,32,27,0.14)" }) : c;
 
   /* load segments */
   const loadKey = `${state.surah?.number ?? 0}|${state.reciter?.id ?? 0}|${state.translation.id}`;
@@ -194,9 +220,10 @@ export default function PlayerScreen() {
     if (state.panel !== "tafsir" || !segment?.ayah || state.tafsir?.key === segment.key) return;
     let cancelled = false;
     dispatch({ type: "tafsirLoading" });
-    fetchTafsir(DEFAULT_TAFSIR, segment.ayah.key).then((r) => !cancelled && dispatch({ type: "tafsir", key: segment.key, text: r?.text ?? null })).catch(() => !cancelled && dispatch({ type: "tafsir", key: segment.key, text: null }));
+    fetchTafsir(tafsirChoice ?? DEFAULT_TAFSIR, segment.ayah.key).then((r) => !cancelled && dispatch({ type: "tafsir", key: segment.key, text: r?.text ?? null })).catch(() => !cancelled && dispatch({ type: "tafsir", key: segment.key, text: null }));
     return () => { cancelled = true; };
-  }, [state.panel, segment, state.tafsir?.key]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.panel, segment, state.tafsir?.key, tafsirChoice]);
 
   const scale = TEXT_SIZE_SCALE[state.textSize];
   const filteredSurahs = useMemo(() => { const q = query.trim().toLowerCase(); return q ? surahs.filter((s) => s.arabicName.includes(q) || s.latinName.toLowerCase().includes(q) || String(s.number) === q) : surahs; }, [surahs, query]);
@@ -207,14 +234,20 @@ export default function PlayerScreen() {
 
   return (
     <View style={[st.root, { backgroundColor: c.bg }]}>
-      <Stack.Screen options={{ title: state.surah ? `${ar ? "سورة" : "Surah"} ${state.surah.arabicName}` : T.title }} />
+      <Stack.Screen options={{ title: state.surah ? `${ar ? "سورة" : "Surah"} ${state.surah.arabicName}` : T.title, headerShown: !landscape }} />
+      {focus ? (wallpaper.kind === "nature" && wallpaper.url
+        ? <ImageBackground source={{ uri: wallpaper.url.replace("w=1920", "w=1280") }} style={StyleSheet.absoluteFill} resizeMode="cover"><View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(0,0,0,0.3)" }]} /></ImageBackground>
+        : <View style={[StyleSheet.absoluteFill, { backgroundColor: wallpaper.colors?.[0] ?? c.bg }]}><View style={[StyleSheet.absoluteFill, { backgroundColor: wallpaper.colors?.[1] ?? "transparent", opacity: 0.35, transform: [{ rotate: "12deg" }, { scale: 1.6 }], top: "40%" }]} /></View>)
+        : null}
 
-      <View style={st.chips}>
-        {(["surahs", "reciter", "translation", "tafsir", "settings"] as const).map((p) => (
-          <Pressable key={p} onPress={() => dispatch({ type: "panel", panel: p })} style={[st.chip, { borderColor: c.line, backgroundColor: state.panel === p ? c.accent : c.card }]} accessibilityRole="button">
-            <Text style={{ color: state.panel === p ? "#fff" : c.ink, fontSize: 13 }}>{panelTitle[p]}</Text>
+      <View style={[st.chips, landscape && { paddingVertical: 4 }]}>
+        {([["surahs", "☰"], ["reciter", "🎙"], ["translation", "🌐"], ["tafsir", "📖"], ["settings", "⚙"]] as const).map(([p, icon]) => (
+          <Pressable key={p} onPress={() => dispatch({ type: "panel", panel: p })} style={[st.chip, { borderColor: fc.line, backgroundColor: state.panel === p ? c.accent : fc.card }]} accessibilityRole="button">
+            <Text style={{ color: state.panel === p ? "#fff" : fc.ink, fontSize: 13 }}>{icon}{landscape || width < 400 ? "" : ` ${panelTitle[p]}`}</Text>
           </Pressable>
         ))}
+        <Pressable onPress={() => setWallpaperOpen(true)} style={[st.chip, { borderColor: fc.line, backgroundColor: fc.card }]} accessibilityRole="button"><Text style={{ color: fc.ink, fontSize: 13 }}>🖼{landscape || width < 400 ? "" : ` ${T.wallpaper}`}</Text></Pressable>
+        <Pressable onPress={() => setView(focus ? "list" : "focus")} style={[st.chip, { borderColor: fc.line, backgroundColor: fc.card }]} accessibilityRole="button" accessibilityLabel={focus ? T.listView : T.focusView}><Text style={{ color: fc.ink, fontSize: 13 }}>{focus ? "☷" : "▣"}</Text></Pressable>
       </View>
 
       {state.status === "network_error" ? (
@@ -224,6 +257,30 @@ export default function PlayerScreen() {
         </View>
       ) : state.status === "loading" && !state.segments.length ? (
         <View style={st.center}><ActivityIndicator size="large" color={c.accent} /></View>
+      ) : focus && segment ? (
+        <ScrollView contentContainerStyle={[st.focusCenter, { paddingBottom: landscape ? 96 : 190, paddingHorizontal: landscape ? 24 : 16 }]}>
+          <View style={[st.plate, { backgroundColor: wallpaper.tone === "light" ? "rgba(8,14,12,0.4)" : "rgba(255,253,247,0.6)", borderColor: fc.line, padding: landscape ? 12 : 20, gap: landscape ? 6 : 12 }]}>
+            <Text accessibilityLanguage="ar" style={[st.arabic, { color: fc.ink, textAlign: "center", fontSize: (landscape ? 24 : width > 700 ? 44 : 32) * scale, lineHeight: (landscape ? 42 : width > 700 ? 80 : 60) * scale }]}>
+              {segment.words.length
+                ? segment.words.map((w: PlayerWord) => (
+                    <Text key={w.position} onPress={() => { const timing = segment.wordTimings.find(([pos]) => pos === w.position); dispatch({ type: "play" }); if (gapless && timing) { player.seekTo(timing[1] / 1000); lastSeekIndexRef.current = state.index; } }} style={state.wordPosition === w.position ? { backgroundColor: c.accent, color: "#fff", borderRadius: 8 } : undefined}>{w.text} </Text>
+                  ))
+                : segment.arabic}
+              {segment.ayah ? <Text style={{ color: c.accent, fontSize: 18 * scale }}> ﴿{digits(segment.ayah.number)}﴾</Text> : null}
+            </Text>
+            {segment.translation ? <Text style={{ color: fc.muted, textAlign: "center", fontSize: (landscape ? 13 : 16) * scale, lineHeight: (landscape ? 19 : 25) * scale }}>{segment.translation}</Text> : null}
+            <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 14 }}>
+              <Text style={{ color: fc.muted, fontSize: 12 }}>{segment.ayah ? `${T.ayah} ${digits(segment.ayah.number)} ${T.of} ${digits(state.surah?.verseCount ?? 0)}` : T.basmala}</Text>
+              {segment.ayah ? (<>
+                <Pressable onPress={() => family.profile ? family.dispatch({ type: "bookmark/toggle", verseKey: segment.ayah!.key }) : undefined}><Text style={{ color: c.accent, fontSize: 12 }}>🔖 {isBookmarked(family.state, segment.ayah.key) ? T.bookmarked : T.bookmark}</Text></Pressable>
+                <Pressable onPress={() => dispatch({ type: "panel", panel: "tafsir" })}><Text style={{ color: c.accent, fontSize: 12 }}>📖 {T.tafsir}</Text></Pressable>
+                <Pressable onPress={() => setNotesOpen(true)}><Text style={{ color: c.accent, fontSize: 12 }}>📝 {T.notes}</Text></Pressable>
+                <Pressable onPress={() => dispatch({ type: "repeat", settings: { mode: state.repeat.mode === "ayah" ? "off" : "ayah", count: 3 } })}><Text style={{ color: c.accent, fontSize: 12 }}>↻ {T.repeatAyahShort}{state.repeat.mode === "ayah" ? " ✓" : ""}</Text></Pressable>
+              </>) : null}
+            </View>
+          </View>
+          {!landscape && state.segments[state.index + 1] ? <Text numberOfLines={1} accessibilityLanguage="ar" style={[st.arabic, { color: fc.muted, opacity: 0.7, fontSize: 16, marginTop: 14, textAlign: "center" }]}>{T.nextUp}: {state.segments[state.index + 1].arabic}</Text> : null}
+        </ScrollView>
       ) : (
         <FlatList
           ref={listRef}
@@ -261,20 +318,47 @@ export default function PlayerScreen() {
       )}
 
       {/* controls */}
-      <View style={[st.controls, { backgroundColor: c.card, borderColor: c.line }]}>
-        <View style={st.row}>
-          <Text style={{ color: c.muted, fontSize: 12 }} numberOfLines={1}>{segment?.ayah ? `${state.surah?.arabicName} · ${T.ayah} ${digits(segment.ayah.number)}` : segment ? T.basmala : ""}</Text>
-          <Text style={{ color: c.muted, fontSize: 12 }} numberOfLines={1}>{state.reciter ? `${T.listenWith} ${ar ? state.reciter.arabicName : state.reciter.latinName} · ${gapless ? T.gapless : T.perAyah}` : ""}</Text>
-        </View>
-        <View style={[st.progress, { backgroundColor: c.line }]}><View style={{ width: `${Math.round(progress * 100)}%`, height: 4, backgroundColor: c.accent }} /></View>
+      <View style={[st.controls, { backgroundColor: focus ? (wallpaper.tone === "light" ? "rgba(10,16,14,0.72)" : "rgba(255,253,247,0.85)") : c.card, borderColor: fc.line }, landscape && { padding: 6, gap: 4, bottom: 8 }]}>
+        {landscape ? null : <View style={st.row}>
+          <Text style={{ color: fc.muted, fontSize: 12 }} numberOfLines={1}>{segment?.ayah ? `${state.surah?.arabicName} · ${T.ayah} ${digits(segment.ayah.number)}` : segment ? T.basmala : ""}</Text>
+          <Text style={{ color: fc.muted, fontSize: 12 }} numberOfLines={1}>{state.reciter ? `${T.listenWith} ${ar ? state.reciter.arabicName : state.reciter.latinName} · ${gapless ? T.gapless : T.perAyah}` : ""}</Text>
+        </View>}
+        <View style={[st.progress, { backgroundColor: fc.line }]}><View style={{ width: `${Math.round(progress * 100)}%`, height: 4, backgroundColor: c.accent }} /></View>
         <View style={st.buttons}>
-          <Btn label="↺" onPress={() => { dispatch({ type: "seek", index: 0 }); dispatch({ type: "play" }); }} c={c} />
-          <Btn label={ar ? "⏭" : "⏮"} onPress={() => dispatch({ type: "prev" })} c={c} />
-          <Btn label={state.isPlaying ? "❚❚" : "▶"} big onPress={() => dispatch({ type: "toggle" })} c={c} />
-          <Btn label={ar ? "⏮" : "⏭"} onPress={() => dispatch({ type: "next" })} c={c} />
-          <Btn label="»" onPress={() => state.surah && openSurahNumber(nextSurahNumber(state.surah.number), state.isPlaying)} c={c} />
+          <Btn label="↺" onPress={() => { dispatch({ type: "seek", index: 0 }); dispatch({ type: "play" }); }} c={fc} small={landscape} />
+          <Btn label={ar ? "⏭" : "⏮"} onPress={() => dispatch({ type: "prev" })} c={fc} small={landscape} />
+          <Btn label={state.isPlaying ? "❚❚" : "▶"} big onPress={() => dispatch({ type: "toggle" })} c={fc} small={landscape} />
+          <Btn label={ar ? "⏮" : "⏭"} onPress={() => dispatch({ type: "next" })} c={fc} small={landscape} />
+          <Btn label="»" onPress={() => state.surah && openSurahNumber(nextSurahNumber(state.surah.number), state.isPlaying)} c={fc} small={landscape} />
         </View>
       </View>
+
+      {/* wallpaper */}
+      <Modal visible={wallpaperOpen} animationType="slide" transparent onRequestClose={() => setWallpaperOpen(false)}>
+        <Pressable style={st.backdrop} onPress={() => setWallpaperOpen(false)} />
+        <View style={[st.sheet, { backgroundColor: c.card }]}>
+          <View style={[st.row, { padding: 16, borderBottomWidth: 1, borderColor: c.line }]}>
+            <Text style={{ color: c.ink, fontWeight: "700", fontSize: 16 }}>{T.wallpaper}</Text>
+            <Pressable onPress={() => setWallpaperOpen(false)}><Text style={{ color: c.accent }}>{T.close}</Text></Pressable>
+          </View>
+          <ScrollView contentContainerStyle={{ padding: 12, gap: 10 }}>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+              {([["auto-nature", `🌿 ${T.autoNature}`], ["auto-art", `✦ ${T.autoArt}`], ["auto-live", `✨ ${T.autoLive}`], ["plain", `▭ ${T.plainBg}`]] as [WallpaperMode, string][]).map(([m, label]) => (
+                <Pressable key={m} onPress={() => setWallpaperMode(m)} style={[st.chip, { borderColor: c.line, backgroundColor: wallpaperMode === m ? c.accent : "transparent" }]}><Text style={{ color: wallpaperMode === m ? "#fff" : c.ink, fontSize: 13 }}>{label}</Text></Pressable>
+              ))}
+            </View>
+            <Text style={{ color: c.muted, fontSize: 12 }}>{T.fixedBg}</Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+              {WALLPAPERS.filter((w) => w.kind !== "plain").map((w) => (
+                <Pressable key={w.id} onPress={() => { setFixedWallpaper(w.id); setWallpaperMode("fixed"); }} style={{ width: (Math.min(width, 600) - 24 - 8) / 2, aspectRatio: 1.6, borderRadius: 12, overflow: "hidden", borderWidth: 2, borderColor: wallpaperMode === "fixed" && fixedWallpaper === w.id ? c.accent : "transparent", backgroundColor: w.colors?.[0] ?? "#222" }}>
+                  {w.kind === "nature" && w.url ? <ImageBackground source={{ uri: w.url.replace("w=1920", "w=400") }} style={{ flex: 1 }} resizeMode="cover" /> : <View style={{ flex: 1 }} />}
+                  <Text numberOfLines={1} style={{ position: "absolute", bottom: 0, left: 0, right: 0, color: "#fff", fontSize: 11, padding: 4, backgroundColor: "rgba(0,0,0,0.5)" }}>{w.title[ar ? "ar" : "en"]}</Text>
+                </Pressable>
+              ))}
+            </View>
+          </ScrollView>
+        </View>
+      </Modal>
 
       {/* notes */}
       <Modal visible={notesOpen} animationType="slide" transparent onRequestClose={() => setNotesOpen(false)}>
@@ -316,6 +400,13 @@ export default function PlayerScreen() {
               <Row c={c} active={state.translation.id === "none"} title={T.none} onPress={() => dispatch({ type: "translation", translation: NO_TRANSLATION })} />
               {translations.map((tr) => <Row key={tr.id} c={c} active={state.translation.id === tr.id} title={tr.label} sub={tr.languageName} onPress={() => dispatch({ type: "translation", translation: tr })} />)}
             </>)}
+            {state.panel === "tafsir" && tafsirs.length ? (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+                {tafsirs.map((tf) => { const id = String(tf.id); const on = (tafsirChoice ?? DEFAULT_TAFSIR) === id; return (
+                  <Pressable key={id} onPress={() => { setTafsirChoice(id); dispatch({ type: "tafsir", key: "", text: null }); }} style={[st.chip, { borderColor: c.line, backgroundColor: on ? c.accent : "transparent" }]}><Text style={{ color: on ? "#fff" : c.ink, fontSize: 12 }}>{tf.name} · {tf.language}</Text></Pressable>
+                ); })}
+              </ScrollView>
+            ) : null}
             {state.panel === "tafsir" && (!segment?.ayah ? <Text style={{ color: c.muted }}>{T.basmalaNote}</Text>
               : state.tafsirLoading ? <ActivityIndicator color={c.accent} />
               : state.tafsir?.key === segment.key && state.tafsir.text ? (<>
@@ -368,9 +459,9 @@ export default function PlayerScreen() {
   );
 }
 
-const Btn = ({ label, onPress, big, c }: { label: string; onPress: () => void; big?: boolean; c: { accent: string; ink: string; line: string } }) => (
-  <Pressable onPress={onPress} accessibilityRole="button" style={[st.btn, big && st.btnBig, { borderColor: big ? c.accent : c.line, backgroundColor: big ? c.accent : "transparent" }]}>
-    <Text style={{ color: big ? "#fff" : c.ink, fontSize: big ? 24 : 18 }}>{label}</Text>
+const Btn = ({ label, onPress, big, small, c }: { label: string; onPress: () => void; big?: boolean; small?: boolean; c: { accent: string; ink: string; line: string } }) => (
+  <Pressable onPress={onPress} accessibilityRole="button" style={[st.btn, big && st.btnBig, small && (big ? st.btnBigSmall : st.btnSmall), { borderColor: big ? c.accent : c.line, backgroundColor: big ? c.accent : "transparent" }]}>
+    <Text style={{ color: big ? "#fff" : c.ink, fontSize: small ? (big ? 18 : 14) : big ? 24 : 18 }}>{label}</Text>
   </Pressable>
 );
 
@@ -395,6 +486,10 @@ const st = StyleSheet.create({
   buttons: { flexDirection: "row", justifyContent: "center", alignItems: "center", gap: 12 },
   btn: { width: 46, height: 46, borderRadius: 23, borderWidth: 1, alignItems: "center", justifyContent: "center" },
   btnBig: { width: 62, height: 62, borderRadius: 31 },
+  btnSmall: { width: 36, height: 36, borderRadius: 18 },
+  btnBigSmall: { width: 44, height: 44, borderRadius: 22 },
+  focusCenter: { flexGrow: 1, justifyContent: "center", alignItems: "center", paddingTop: 8 },
+  plate: { borderRadius: 26, borderWidth: 1, width: "100%", maxWidth: 900 },
   backdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.35)" },
   sheet: { maxHeight: "75%", borderTopLeftRadius: 22, borderTopRightRadius: 22 },
   input: { borderWidth: 1, borderRadius: 12, padding: 10, fontSize: 15 },

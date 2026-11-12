@@ -48,3 +48,8 @@ export const fetchTafsir = (tafsirId: string, verseKey: string) =>
 
 export const fetchWords = (verseKey: string, language: string) =>
   get<{ words: PlayerWord[] }>(`/api/public/v1/words/${encodeURIComponent(verseKey)}?language=${encodeURIComponent(language)}`).then((r) => r.words);
+
+export interface TafsirResource { id: number; name: string; author: string | null; language: string; slug: string }
+export const fetchTafsirs = () => get<{ tafsirs: TafsirResource[] }>(`/api/public/v1/tafsirs`).then((r) => r.tafsirs);
+export const fetchWallpapers = (surah: number) =>
+  get<{ wallpapers: import("@qam/core").Wallpaper[]; internetEnabled: boolean }>(`/api/public/v1/wallpapers?surah=${surah}&source=all`);

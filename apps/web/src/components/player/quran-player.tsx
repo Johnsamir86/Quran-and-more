@@ -7,7 +7,10 @@ import {
   PLAYBACK_RATES,
   PLAYER_STORAGE_KEYS,
   STATIONS,
+  LOCALES,
   TEXT_SIZE_SCALE,
+  WALLPAPERS,
+  WALLPAPER_STORAGE_KEY,
   bookmarksFor,
   currentSegment,
   isBookmarked,
@@ -26,12 +29,18 @@ import {
   type RepeatMode,
   type Station,
   type TextSize,
+  type Wallpaper,
+  type WallpaperMode,
+  wallpaperById,
+  wallpaperForSurah,
 } from "@qam/core";
 
 import Link from "next/link";
 
 import { useFamily, useProgressTicker } from "@/components/family/family-provider";
-import { fetchPlayerSurah, fetchReciters, fetchSurahs, fetchTafsir, fetchTranslations, fetchWords } from "@/lib/player-client";
+import { fetchPlayerSurah, fetchReciters, fetchSurahs, fetchTafsir, fetchTafsirs, fetchTranslations, fetchWallpapers, fetchWords, type TafsirResource } from "@/lib/player-client";
+
+import WallpaperLayer from "./wallpaper";
 
 import styles from "./player.module.css";
 
@@ -55,6 +64,7 @@ const COPY = {
     speed: "السرعة", sleep: "مؤقت النوم", off: "إيقاف", minutes: "دقيقة", wordByWord: "ترجمة الكلمات عند الضغط",
     styleMurattal: "مرتّل", styleMujawwad: "مجوّد", styleMuallim: "معلّم", gaplessOnly: "متصلة", ayahOnly: "آية بآية", both: "متصلة + آية بآية",
     share: "مشاركة", copied: "تم نسخ الرابط", remaining: "المتبقي",
+    wallpaper: "الخلفية", autoNature: "طبيعة حسب السورة", autoArt: "زخرفة إسلامية حسب السورة", autoLive: "خلفية حيّة حسب السورة", plainBg: "بدون خلفية", fixedBg: "خلفية ثابتة", internetBg: "صور من الإنترنت (Pexels)", internetOff: "أضف مفتاح Pexels في الإعدادات لعرض صور من الإنترنت", focusView: "شاشة واحدة", listView: "قائمة", language: "لغة الواجهة", wbwLanguage: "لغة معاني الكلمات", tafsirPick: "اختيار التفسير", nextUp: "التالية", credit: "الصورة",
     bookmark: "علامة", bookmarked: "محفوظة", notes: "ملاحظاتي", noteHint: "اكتب تدبّرك أو ملاحظتك على هذه الآية…", saveNote: "حفظ الملاحظة", deleteNote: "حذف", family: "العائلة", noProfile: "اختر ملفًا من صفحة العائلة لحفظ العلامات والملاحظات", library: "المحفوظات",
   },
   en: {
@@ -72,6 +82,7 @@ const COPY = {
     speed: "Speed", sleep: "Sleep timer", off: "Off", minutes: "min", wordByWord: "Tap a word for its meaning",
     styleMurattal: "Murattal", styleMujawwad: "Mujawwad", styleMuallim: "Muallim", gaplessOnly: "gapless", ayahOnly: "ayah by ayah", both: "gapless + ayah by ayah",
     share: "Share", copied: "Link copied", remaining: "remaining",
+    wallpaper: "Wallpaper", autoNature: "Nature, changes with the surah", autoArt: "Islamic art, changes with the surah", autoLive: "Live, changes with the surah", plainBg: "No wallpaper", fixedBg: "Fixed wallpaper", internetBg: "Internet photos (Pexels)", internetOff: "Add a Pexels key in settings to show internet photos", focusView: "One screen", listView: "List", language: "Interface language", wbwLanguage: "Word meanings language", tafsirPick: "Choose tafsir", nextUp: "Next", credit: "Photo",
     bookmark: "Bookmark", bookmarked: "Saved", notes: "My notes", noteHint: "Write your reflection or note on this ayah…", saveNote: "Save note", deleteNote: "Delete", family: "Family", noProfile: "Choose a profile on the Family page to save bookmarks and notes", library: "Saved",
   },
 } as const;
@@ -88,7 +99,18 @@ const toArabicDigits = (n: number) => n.toLocaleString("ar-EG", { useGrouping: f
 interface Props { initialSurah?: number; profileGender?: "male" | "female" | "unspecified" }
 
 export default function QuranPlayer({ initialSurah, profileGender = "unspecified" }: Props) {
-  const locale = useMemo(() => resolveLocale(typeof navigator !== "undefined" ? navigator.language : "ar"), []);
+  const [localeOverride, setLocaleOverride] = useState<string | null>(null);
+  const locale = useMemo(() => localeOverride ?? resolveLocale(typeof navigator !== "undefined" ? navigator.language : "ar"), [localeOverride]);
+  const [view, setView] = useState<"focus" | "list">("focus");
+  const [wallpaperMode, setWallpaperMode] = useState<WallpaperMode>("auto-nature");
+  const [fixedWallpaper, setFixedWallpaper] = useState<string>("n-mountain-lake");
+  const [internetWallpapers, setInternetWallpapers] = useState<Wallpaper[]>([]);
+  const [internetEnabled, setInternetEnabled] = useState(false);
+  const [tafsirs, setTafsirs] = useState<TafsirResource[]>([]);
+  const [tafsirChoice, setTafsirChoice] = useState<string | null>(null);
+  const [wbwLocale, setWbwLocale] = useState<string | null>(null);
+  const [docked, setDocked] = useState(false);
+  const [menuTab, setMenuTab] = useState<"surahs" | "reciter" | "translation" | "tafsir" | "wallpaper" | "settings">("reciter");
   const ar = locale === "ar";
   const t = COPY[ar ? "ar" : "en"];
   const isRtl = ar || locale === "ur" || locale === "fa";
@@ -121,14 +143,23 @@ export default function QuranPlayer({ initialSurah, profileGender = "unspecified
     let cancelled = false;
     (async () => {
       try {
-        const [s, r, tr] = await Promise.all([fetchSurahs(locale), fetchReciters(profileGender), fetchTranslations()]);
+        const [s, r, tr, tf] = await Promise.all([fetchSurahs(locale), fetchReciters(profileGender), fetchTranslations(), fetchTafsirs().catch(() => [])]);
         if (cancelled) return;
-        setSurahs(s); setReciters(r); setTranslations(tr);
+        setSurahs(s); setReciters(r); setTranslations(tr); setTafsirs(tf);
+        setView(readStorage<"focus" | "list">("qam.player.view", "focus"));
+        const wp = readStorage<{ mode: WallpaperMode; fixed: string } | null>(WALLPAPER_STORAGE_KEY, null);
+        if (wp) { setWallpaperMode(wp.mode); setFixedWallpaper(wp.fixed); }
+        setTafsirChoice(readStorage<string | null>("qam.player.tafsir", null));
+        setWbwLocale(readStorage<string | null>("qam.player.wbw", null));
+        setLocaleOverride(readStorage<string | null>("qam.player.locale", null));
         const savedReciter = readStorage<string | null>(PLAYER_STORAGE_KEYS.reciter, null);
         const reciter = r.find((x) => x.id === savedReciter) ?? r.find((x) => x.chapterReciterId === 7) ?? r[0];
         if (reciter) dispatch({ type: "reciter", reciter });
         const savedTranslation = readStorage<string | null>(PLAYER_STORAGE_KEYS.translation, null);
-        dispatch({ type: "translation", translation: savedTranslation === "none" ? NO_TRANSLATION : tr.find((x) => x.id === savedTranslation) ?? NO_TRANSLATION });
+        // Default translation: the saved one, else the first in the UI language, else English (85), else none.
+        const langName = new Intl.DisplayNames(["en"], { type: "language" }).of(locale.split("-")[0])?.toLowerCase();
+        const defaultTranslation = tr.find((x) => x.languageName?.toLowerCase() === langName) ?? tr.find((x) => x.id === "85") ?? tr[0] ?? NO_TRANSLATION;
+        dispatch({ type: "translation", translation: savedTranslation === "none" ? NO_TRANSLATION : savedTranslation ? (tr.find((x) => x.id === savedTranslation) ?? defaultTranslation) : defaultTranslation });
         dispatch({ type: "textSize", size: readStorage<TextSize>(PLAYER_STORAGE_KEYS.textSize, "medium") });
         dispatch({ type: "autoAdvance", value: readStorage<boolean>(PLAYER_STORAGE_KEYS.autoAdvance, true) });
         dispatch({ type: "motion", value: readStorage<boolean>(PLAYER_STORAGE_KEYS.motion, true) });
@@ -152,8 +183,13 @@ export default function QuranPlayer({ initialSurah, profileGender = "unspecified
     writeStorage(PLAYER_STORAGE_KEYS.autoAdvance, state.autoAdvance);
     writeStorage(PLAYER_STORAGE_KEYS.motion, state.motion);
     writeStorage("qam.player.rate", state.playbackRate);
+    writeStorage("qam.player.view", view);
+    writeStorage(WALLPAPER_STORAGE_KEY, { mode: wallpaperMode, fixed: fixedWallpaper });
+    if (tafsirChoice) writeStorage("qam.player.tafsir", tafsirChoice);
+    if (wbwLocale) writeStorage("qam.player.wbw", wbwLocale);
+    if (localeOverride) writeStorage("qam.player.locale", localeOverride);
     if (state.resume) writeStorage(PLAYER_STORAGE_KEYS.resume, state.resume);
-  }, [hydrated, state.reciter, state.translation, state.textSize, state.autoAdvance, state.motion, state.resume, state.playbackRate]);
+  }, [hydrated, state.reciter, state.translation, state.textSize, state.autoAdvance, state.motion, state.resume, state.playbackRate, view, wallpaperMode, fixedWallpaper, tafsirChoice, wbwLocale, localeOverride]);
 
   /* ---------- load surah ---------- */
   const loadKey = `${state.surah?.number ?? 0}|${state.reciter?.id ?? ""}|${state.translation.id}`;
@@ -325,7 +361,28 @@ export default function QuranPlayer({ initialSurah, profileGender = "unspecified
   }, [segment?.key, state.motion]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /* ---------- tafsir ---------- */
-  const tafsirId = DEFAULT_TAFSIR[locale] ?? DEFAULT_TAFSIR.en;
+  const tafsirId = tafsirChoice ?? (tafsirs.find((x) => x.language.toLowerCase().startsWith(LOCALES.find((l) => l.code === locale)?.name.toLowerCase() ?? "english"))?.id.toString() ?? DEFAULT_TAFSIR[locale] ?? DEFAULT_TAFSIR.en);
+  /* docked side menu on wide landscape screens */
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1100px)");
+    const apply = () => setDocked(mq.matches);
+    apply(); mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+  /* wallpaper per surah (+ internet results when enabled) */
+  useEffect(() => {
+    if (!state.surah) return;
+    let cancelled = false;
+    fetchWallpapers(state.surah.number).then((r) => { if (cancelled) return; setInternetEnabled(r.internetEnabled); setInternetWallpapers(r.wallpapers.filter((w) => w.id.startsWith("px-"))); }).catch(() => undefined);
+    return () => { cancelled = true; };
+  }, [state.surah]);
+  const wallpaper: Wallpaper = useMemo(() => {
+    const n = state.surah?.number ?? 1;
+    if (wallpaperMode === "plain") return wallpaperById(typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches ? "p-night" : "p-paper")!;
+    if (wallpaperMode === "fixed") return wallpaperById(fixedWallpaper) ?? internetWallpapers.find((w) => w.id === fixedWallpaper) ?? wallpaperForSurah(n, "nature");
+    if (wallpaperMode === "auto-nature" && internetWallpapers.length) return internetWallpapers[n % internetWallpapers.length];
+    return wallpaperForSurah(n, wallpaperMode === "auto-art" ? "art" : wallpaperMode === "auto-live" ? "live" : "nature");
+  }, [wallpaperMode, fixedWallpaper, state.surah, internetWallpapers]);
   useEffect(() => {
     if (state.panel !== "tafsir" || !segment?.ayah || state.tafsir?.key === segment.key) return;
     let cancelled = false;
@@ -380,9 +437,9 @@ export default function QuranPlayer({ initialSurah, profileGender = "unspecified
     const key = wordTip?.key;
     if (!key || key === "basmala" || wordMeanings[key]) return;
     let cancelled = false;
-    fetchWords(key, locale).then((ws) => !cancelled && setWordMeanings((m) => ({ ...m, [key]: ws }))).catch(() => undefined);
+    fetchWords(key, wbwLocale ?? locale).then((ws) => !cancelled && setWordMeanings((m) => ({ ...m, [key]: ws }))).catch(() => undefined);
     return () => { cancelled = true; };
-  }, [wordTip?.key, wordMeanings, locale]);
+  }, [wordTip?.key, wordMeanings, locale, wbwLocale]);
 
   /** Tap a word: jump the audio to that word (gapless) or that ayah, start playing, and show its meaning. */
   const onWordClick = (segIndex: number, position: number) => {
@@ -409,8 +466,157 @@ export default function QuranPlayer({ initialSurah, profileGender = "unspecified
 
   const setRepeat = (settings: Partial<typeof state.repeat>) => dispatch({ type: "repeat", settings: { ...settings, ...(settings.mode === "range" && state.repeat.mode !== "range" ? { from: state.index, to: Math.min(state.index + 4, state.segments.length - 1) } : {}) } });
 
+  type MenuTab = "surahs" | "reciter" | "translation" | "tafsir" | "wallpaper" | "settings";
+  const panelTitle = (tab: MenuTab) => (tab === "wallpaper" ? t.wallpaper : t[tab]);
+  const panelBody = (tab: MenuTab) => (
+    <>
+                {tab === "surahs" && (<>
+                  <input className={styles.search} placeholder={t.search} value={query} onChange={(e) => setQuery(e.target.value)} />
+                  <div className={styles.kicker}>{t.stations}</div>
+                  {STATIONS.map((st) => (
+                    <button key={st.id} className={`${styles.row} ${station?.id === st.id ? styles.rowActive : ""}`} onClick={() => { setStation(st); openSurahNumber(st.surahs[0], true); dispatch({ type: "panel", panel: "surahs" }); }}>
+                      <span className={styles.rowMain}><span>{st.title[ar ? "ar" : "en"]}</span><span className={styles.rowSub}>{st.subtitle[ar ? "ar" : "en"]}</span></span><span>▶</span>
+                    </button>
+                  ))}
+                  <div className={styles.kicker}>{t.surahs}</div>
+                  {filteredSurahs.map((s) => (
+                    <button key={s.number} className={`${styles.row} ${state.surah?.number === s.number ? styles.rowActive : ""}`} onClick={() => { setStation(null); openSurahNumber(s.number, true); }}>
+                      <span className={styles.rowMain}><span translate="no">{num(s.number)}. {s.arabicName}</span><span className={styles.rowSub}>{s.latinName} · {num(s.verseCount)}</span></span>
+                    </button>
+                  ))}
+                </>)}
+
+                {tab === "reciter" && (<>
+                  <input className={styles.search} placeholder={t.search} value={query} onChange={(e) => setQuery(e.target.value)} />
+                  {reciterStyles.length > 1 && (
+                    <span className={styles.segmented}>
+                      <button className={styleFilter === "all" ? "on" : ""} onClick={() => setStyleFilter("all")}>{t.allLanguages}</button>
+                      {reciterStyles.map((s) => <button key={s} className={styleFilter === s ? "on" : ""} onClick={() => setStyleFilter(s)}>{styleLabel(s)}</button>)}
+                    </span>
+                  )}
+                  <div className={styles.rowSub}>{num(filteredReciters.length)} {t.reciter}</div>
+                  {filteredReciters.map((r) => (
+                    <button key={r.id} className={`${styles.row} ${state.reciter?.id === r.id ? styles.rowActive : ""}`} onClick={() => dispatch({ type: "reciter", reciter: r })}>
+                      <span className={styles.rowMain}>
+                        <span>{ar ? r.arabicName : r.latinName}</span>
+                        <span className={styles.rowSub}>{t.riwayah} {r.riwayah} · {styleLabel(r.style)} · {capability(r)}</span>
+                      </span>
+                    </button>
+                  ))}
+                </>)}
+
+                {tab === "translation" && (<>
+                  <select className={styles.search} value={languageFilter} onChange={(e) => setLanguageFilter(e.target.value)}>
+                    <option value="all">{t.allLanguages}</option>
+                    {languages.map((l) => <option key={l} value={l}>{l}</option>)}
+                  </select>
+                  <button className={`${styles.row} ${state.translation.id === "none" ? styles.rowActive : ""}`} onClick={() => dispatch({ type: "translation", translation: NO_TRANSLATION })}><span>{t.none}</span></button>
+                  {filteredTranslations.map((tr) => (
+                    <button key={tr.id} className={`${styles.row} ${state.translation.id === tr.id ? styles.rowActive : ""}`} onClick={() => dispatch({ type: "translation", translation: tr })}>
+                      <span className={styles.rowMain}><span>{tr.label}</span><span className={styles.rowSub}>{tr.languageName}</span></span>
+                    </button>
+                  ))}
+                </>)}
+
+                {tab === "tafsir" && tafsirs.length > 0 && (
+                  <select className={styles.search} value={tafsirId} onChange={(e) => { setTafsirChoice(e.target.value); dispatch({ type: "tafsir", key: "", text: null }); }} aria-label={t.tafsirPick}>
+                    {tafsirs.map((x) => <option key={x.id} value={String(x.id)}>{x.name}{x.author ? ` · ${x.author}` : ""} ({x.language})</option>)}
+                  </select>
+                )}
+                {tab === "tafsir" && (!segment?.ayah ? <p className={styles.rowSub}>{t.basmalaNote}</p>
+                  : state.tafsirLoading ? <p className={styles.rowSub}>{t.loading}</p>
+                  : state.tafsir?.key === segment.key && state.tafsir.text ? (<>
+                    <p className={styles.arabic} lang="ar" translate="no" style={{ fontSize: "1.3em" }}>{segment.arabic}</p>
+                    <div className={styles.tafsirText} dir={ar ? "rtl" : "ltr"}>{state.tafsir.text}</div>
+                  </>) : <p className={styles.rowSub}>{t.tafsir} {t.unavailable}</p>)}
+
+                {tab === "settings" && (<>
+                  <div className={styles.settingRow}>
+                    <span>{t.repeat}</span>
+                    <span className={styles.segmented}>
+                      {([["off", t.repeatOff], ["ayah", t.repeatAyah], ["range", t.repeatRange], ["surah", t.repeatSurah]] as [RepeatMode, string][]).map(([m, label]) => (
+                        <button key={m} className={state.repeat.mode === m ? "on" : ""} onClick={() => setRepeat({ mode: m, count: m === "off" ? 1 : state.repeat.count === 1 ? 3 : state.repeat.count })}>{label}</button>
+                      ))}
+                    </span>
+                  </div>
+                  {state.repeat.mode !== "off" && (<>
+                    <div className={styles.settingRow}>
+                      <span>{t.times}</span>
+                      <span className={styles.segmented}>
+                        {[1, 2, 3, 5, 10, Infinity].map((n) => <button key={n} className={state.repeat.count === n ? "on" : ""} onClick={() => setRepeat({ count: n })}>{n === Infinity ? t.infinite : num(n)}</button>)}
+                      </span>
+                    </div>
+                    {state.repeat.mode === "range" && (
+                      <div className={styles.settingRow}>
+                        <span>{t.from}</span>
+                        <input type="number" className={styles.numInput} min={1} max={state.segments.length} value={state.repeat.from + 1} onChange={(e) => setRepeat({ from: Number(e.target.value) - 1 })} />
+                        <span>{t.to}</span>
+                        <input type="number" className={styles.numInput} min={1} max={state.segments.length} value={state.repeat.to + 1} onChange={(e) => setRepeat({ to: Number(e.target.value) - 1 })} />
+                      </div>
+                    )}
+                    <div className={styles.settingRow}>
+                      <span>{t.pauseBetween}</span>
+                      <span className={styles.segmented}>{[0, 2, 5, 10].map((n) => <button key={n} className={state.repeat.pauseSeconds === n ? "on" : ""} onClick={() => setRepeat({ pauseSeconds: n })}>{num(n)}</button>)}</span>
+                    </div>
+                  </>)}
+                  <div className={styles.settingRow}>
+                    <span>{t.speed}</span>
+                    <span className={styles.segmented}>{PLAYBACK_RATES.map((r) => <button key={r} className={state.playbackRate === r ? "on" : ""} onClick={() => dispatch({ type: "rate", rate: r })}>{r}×</button>)}</span>
+                  </div>
+                  <div className={styles.settingRow}>
+                    <span>{t.sleep}</span>
+                    <span className={styles.segmented}>
+                      <button className={!state.sleepUntil ? "on" : ""} onClick={() => dispatch({ type: "sleep", minutes: null })}>{t.off}</button>
+                      {[10, 20, 30, 60].map((m) => <button key={m} className={sleepLeft && Math.abs(sleepLeft - m) <= 1 ? "on" : ""} onClick={() => dispatch({ type: "sleep", minutes: m })}>{num(m)} {t.minutes}</button>)}
+                    </span>
+                  </div>
+                  <div className={styles.settingRow}>
+                    <span>{t.textSize}</span>
+                    <span className={styles.segmented}>{(["small", "medium", "large"] as TextSize[]).map((sz) => <button key={sz} className={state.textSize === sz ? "on" : ""} onClick={() => dispatch({ type: "textSize", size: sz })}>{t[sz]}</button>)}</span>
+                  </div>
+                  <label className={styles.settingRow}><span>{t.autoAdvance}</span><input type="checkbox" checked={state.autoAdvance} onChange={(e) => dispatch({ type: "autoAdvance", value: e.target.checked })} /></label>
+                  <label className={styles.settingRow}><span>{t.motion}</span><input type="checkbox" checked={state.motion} onChange={(e) => dispatch({ type: "motion", value: e.target.checked })} /></label>
+                  <div className={styles.settingRow}>
+                    <span>{t.language}</span>
+                    <select className={styles.search} value={locale} onChange={(e) => setLocaleOverride(e.target.value)}>
+                      {LOCALES.map((l) => <option key={l.code} value={l.code}>{l.nativeName}</option>)}
+                    </select>
+                  </div>
+                  <div className={styles.settingRow}>
+                    <span>{t.wbwLanguage}</span>
+                    <select className={styles.search} value={wbwLocale ?? locale} onChange={(e) => setWbwLocale(e.target.value)}>
+                      {LOCALES.map((l) => <option key={l.code} value={l.code}>{l.nativeName}</option>)}
+                    </select>
+                  </div>
+                  <p className={styles.rowSub}>{t.wordByWord}</p>
+                </>)}
+                {tab === "wallpaper" && (<>
+                  <div className={styles.kicker}>{t.wallpaper}</div>
+                  <div className={styles.modeGrid}>
+                    {([["auto-nature", `🌿 ${t.autoNature}`], ["auto-art", `✦ ${t.autoArt}`], ["auto-live", `✨ ${t.autoLive}`], ["plain", `▭ ${t.plainBg}`]] as [WallpaperMode, string][]).map(([m, label]) => (
+                      <button key={m} className={`${styles.chip} ${wallpaperMode === m ? styles.chipActive : ""}`} onClick={() => setWallpaperMode(m)}>{label}</button>
+                    ))}
+                  </div>
+                  <div className={styles.rowSub}>{t.fixedBg}</div>
+                  <div className={styles.wpGrid}>
+                    {[...WALLPAPERS.filter((w) => w.kind !== "plain"), ...internetWallpapers].map((w) => (
+                      <button key={w.id} className={`${styles.wpThumb} ${wallpaperMode === "fixed" && fixedWallpaper === w.id ? styles.wpThumbOn : ""}`} onClick={() => { setFixedWallpaper(w.id); setWallpaperMode("fixed"); }} title={w.title[ar ? "ar" : "en"]}
+                        style={w.kind !== "nature" ? { background: `linear-gradient(135deg, ${w.colors?.[0]}, ${w.colors?.[1]} 60%, ${w.colors?.[2]})` } : undefined}>
+                        {/* eslint-disable-next-line @next/next/no-img-element -- remote CDN thumbnails from many hosts */}
+                        {w.kind === "nature" && w.url ? <img src={w.url.replace("w=1920", "w=400")} alt="" loading="lazy" /> : null}
+                        <span className={styles.wpLabel}>{w.kind === "live" ? "✦ " : w.kind === "art" ? "✺ " : ""}{w.title[ar ? "ar" : "en"]}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <p className={styles.rowSub}>{internetEnabled ? t.internetBg : t.internetOff}</p>
+                  {wallpaper.credit ? <p className={styles.rowSub}>{t.credit}: {wallpaper.credit}</p> : null}
+                </>)}
+    </>
+  );
+
   return (
-    <div className={`${styles.root} ${state.motion ? "" : styles.motionOff}`} dir={isRtl ? "rtl" : "ltr"} style={{ ["--scale" as string]: scale }}>
+    <div className={`${styles.root} ${state.motion ? "" : styles.motionOff} ${view === "focus" ? `${styles.focusRoot} ${wallpaper.tone === "light" ? styles.toneLight : styles.toneDark}` : ""}`} dir={isRtl ? "rtl" : "ltr"} style={{ ["--scale" as string]: scale }}>
+      {view === "focus" && <WallpaperLayer wallpaper={wallpaper} playing={state.isPlaying} motion={state.motion} progress={progress} />}
       <audio ref={audioRef} preload="auto" onEnded={onEnded} onTimeUpdate={onTimeUpdate} onLoadedMetadata={onLoadedMetadata} onError={() => dispatch({ type: "failed", status: "network_error" })} />
 
       <header className={styles.top}>
@@ -421,17 +627,56 @@ export default function QuranPlayer({ initialSurah, profileGender = "unspecified
         </div>
         <nav className={styles.topActions} aria-label="player panels">
           {(["surahs", "reciter", "translation", "tafsir", "settings"] as const).map((p) => (
-            <button key={p} className={`${styles.chip} ${state.panel === p ? styles.chipActive : ""}`} onClick={() => dispatch({ type: "panel", panel: p })} aria-pressed={state.panel === p}>
+            <button key={p} className={`${styles.chip} ${(docked && view === "focus" ? menuTab === p : state.panel === p) ? styles.chipActive : ""}`} onClick={() => { setMenuTab(p); if (!(docked && view === "focus")) dispatch({ type: "panel", panel: p }); }} aria-pressed={state.panel === p}>
               {p === "surahs" ? "☰" : p === "reciter" ? "🎙" : p === "translation" ? "🌐" : p === "tafsir" ? "📖" : "⚙"} <span>{t[p]}</span>
             </button>
           ))}
+          <button className={`${styles.chip} ${menuTab === "wallpaper" && (docked || state.panel === "settings") ? styles.chipActive : ""}`} onClick={() => { setMenuTab("wallpaper"); if (!docked) dispatch({ type: "panel", panel: "settings" }); }}>🖼 <span>{t.wallpaper}</span></button>
+          <span className={`${styles.segmented} ${styles.viewToggle}`}>
+            <button className={view === "focus" ? "on" : ""} onClick={() => setView("focus")} title={t.focusView}>▣</button>
+            <button className={view === "list" ? "on" : ""} onClick={() => setView("list")} title={t.listView}>☰</button>
+          </span>
           <button className={`${styles.chip} ${notesPanel ? styles.chipActive : ""}`} onClick={() => { setNotesPanel((v) => !v); if (state.panel) dispatch({ type: "panel", panel: state.panel }); }} aria-pressed={notesPanel}>📝 <span>{t.notes}</span></button>
           <button className={styles.chip} onClick={share} aria-label={t.share}>↗ <span>{t.share}</span></button>
           <Link className={styles.chip} href="/family" title={t.family}>{family.profile ? `${(family.profile as { avatar?: string }).avatar ?? "🌙"} ` : "👨‍👩‍👧 "}<span>{family.profile?.displayName ?? t.family}</span></Link>
         </nav>
       </header>
 
-      <main className={styles.body}>
+      <main className={`${view === "focus" ? `${styles.focusMain} ${docked ? styles.docked : ""}` : styles.body}`}>
+        {view === "focus" ? (
+          <section className={styles.focusStage}>
+            <div className={styles.focusCenter}>
+              {state.status === "network_error" && (
+                <div className={styles.error} role="alert"><p>{t.offline}</p><button className={styles.chip} onClick={() => state.surah && dispatch({ type: "open", surah: state.surah, index: state.index })}>{t.retry}</button></div>
+              )}
+              {segment && (
+                <div className={styles.focusPlate}>
+                  <p className={`${styles.focusAyah}`} lang="ar" translate="no" key={segment.key}>
+                    {segment.words.length ? segment.words.map((w) => (
+                      <span key={w.position} className={`${styles.word} ${state.wordPosition === w.position ? styles.wordActive : ""} ${wordTip?.key === segment.key && wordTip.position === w.position ? styles.wordTipped : ""}`} onClick={() => onWordClick(state.index, w.position)}>{w.text} </span>
+                    )) : segment.arabic}
+                    {segment.ayah && <span className={styles.marker} aria-hidden>﴿{toArabicDigits(segment.ayah.number)}﴾</span>}
+                  </p>
+                  {wordTip?.key === segment.key && (() => { const w = segment.words.find((x) => x.position === wordTip.position); const m = wordMeanings[segment.key]?.[wordTip.position - 1]; return w ? (
+                    <div className={styles.wordTipBox} dir="auto"><strong lang="ar">{w.text}</strong>{m ? (<>{m.transliteration ? <em>{m.transliteration}</em> : null}{m.translation ? <span>· {m.translation}</span> : null}</>) : <span>{t.loading}</span>}</div>
+                  ) : null; })()}
+                  {segment.translation ? <p className={styles.focusTranslation} dir="auto">{segment.translation}</p> : null}
+                  <div className={styles.focusMeta}>
+                    <span>{segment.ayah ? `${t.ayah} ${num(segment.ayah.number)} ${t.of} ${num(state.surah?.verseCount ?? 0)}` : t.basmala}</span>
+                    {segment.ayah && (<>
+                      <button className={styles.tafsirBtn} onClick={() => { if (!family.profile) { setToast(t.noProfile); window.setTimeout(() => setToast(null), 2500); return; } family.dispatch({ type: "bookmark/toggle", verseKey: segment.ayah!.key }); }}>{isBookmarked(family.state, segment.ayah.key) ? `🔖 ${t.bookmarked}` : `🔖 ${t.bookmark}`}</button>
+                      <button className={styles.tafsirBtn} onClick={() => { setMenuTab("tafsir"); if (!docked) dispatch({ type: "panel", panel: "tafsir" }); }}>📖 {t.tafsir}</button>
+                      <button className={styles.tafsirBtn} onClick={() => setNotesPanel(true)}>📝 {t.notes}</button>
+                      <button className={styles.tafsirBtn} onClick={() => setRepeat({ mode: state.repeat.mode === "ayah" ? "off" : "ayah", count: 3 })}>↻ {t.repeatAyah}{state.repeat.mode === "ayah" ? " ✓" : ""}</button>
+                    </>)}
+                  </div>
+                  {state.segments[state.index + 1] && <div className={styles.focusNext} lang="ar" translate="no">{t.nextUp}: {state.segments[state.index + 1].arabic}</div>}
+                </div>
+              )}
+              {!segment && state.status === "loading" && <p className={styles.rowSub}>{t.loading}</p>}
+            </div>
+          </section>
+        ) : (
         <div className={styles.scroll}>
           {state.status === "network_error" && (
             <div className={styles.error} role="alert">
@@ -487,117 +732,26 @@ export default function QuranPlayer({ initialSurah, profileGender = "unspecified
           </div>
         </div>
 
-        {state.panel && (
+        )}
+        {view === "focus" && docked && (
+          <aside className={styles.dockedMenu} aria-label="menu">
+            <div className={styles.dockedTabs}>
+              {(["surahs", "reciter", "translation", "tafsir", "wallpaper", "settings"] as MenuTab[]).map((tab) => (
+                <button key={tab} className={`${styles.chip} ${menuTab === tab ? styles.chipActive : ""}`} onClick={() => setMenuTab(tab)}>{panelTitle(tab)}</button>
+              ))}
+            </div>
+            <div className={styles.dockedBody}>{panelBody(menuTab)}</div>
+          </aside>
+        )}
+        {state.panel && !(docked && view === "focus") && (
           <div className={styles.panel} onClick={() => dispatch({ type: "panel", panel: state.panel })}>
-            <aside className={styles.panelSheet} onClick={(e) => e.stopPropagation()} role="dialog" aria-label={t[state.panel]}>
+            <aside className={styles.panelSheet} onClick={(e) => e.stopPropagation()} role="dialog" aria-label={panelTitle(state.panel)}>
               <div className={styles.panelHead}>
-                <span>{t[state.panel]}</span>
+                <span>{panelTitle(state.panel === "settings" && menuTab === "wallpaper" ? "wallpaper" : state.panel)}</span>
                 <button className={styles.chip} onClick={() => dispatch({ type: "panel", panel: state.panel })}>{t.close}</button>
               </div>
               <div className={styles.panelBody}>
-                {state.panel === "surahs" && (<>
-                  <input className={styles.search} placeholder={t.search} value={query} onChange={(e) => setQuery(e.target.value)} />
-                  <div className={styles.kicker}>{t.stations}</div>
-                  {STATIONS.map((st) => (
-                    <button key={st.id} className={`${styles.row} ${station?.id === st.id ? styles.rowActive : ""}`} onClick={() => { setStation(st); openSurahNumber(st.surahs[0], true); dispatch({ type: "panel", panel: "surahs" }); }}>
-                      <span className={styles.rowMain}><span>{st.title[ar ? "ar" : "en"]}</span><span className={styles.rowSub}>{st.subtitle[ar ? "ar" : "en"]}</span></span><span>▶</span>
-                    </button>
-                  ))}
-                  <div className={styles.kicker}>{t.surahs}</div>
-                  {filteredSurahs.map((s) => (
-                    <button key={s.number} className={`${styles.row} ${state.surah?.number === s.number ? styles.rowActive : ""}`} onClick={() => { setStation(null); openSurahNumber(s.number, true); }}>
-                      <span className={styles.rowMain}><span translate="no">{num(s.number)}. {s.arabicName}</span><span className={styles.rowSub}>{s.latinName} · {num(s.verseCount)}</span></span>
-                    </button>
-                  ))}
-                </>)}
-
-                {state.panel === "reciter" && (<>
-                  <input className={styles.search} placeholder={t.search} value={query} onChange={(e) => setQuery(e.target.value)} />
-                  {reciterStyles.length > 1 && (
-                    <span className={styles.segmented}>
-                      <button className={styleFilter === "all" ? "on" : ""} onClick={() => setStyleFilter("all")}>{t.allLanguages}</button>
-                      {reciterStyles.map((s) => <button key={s} className={styleFilter === s ? "on" : ""} onClick={() => setStyleFilter(s)}>{styleLabel(s)}</button>)}
-                    </span>
-                  )}
-                  <div className={styles.rowSub}>{num(filteredReciters.length)} {t.reciter}</div>
-                  {filteredReciters.map((r) => (
-                    <button key={r.id} className={`${styles.row} ${state.reciter?.id === r.id ? styles.rowActive : ""}`} onClick={() => dispatch({ type: "reciter", reciter: r })}>
-                      <span className={styles.rowMain}>
-                        <span>{ar ? r.arabicName : r.latinName}</span>
-                        <span className={styles.rowSub}>{t.riwayah} {r.riwayah} · {styleLabel(r.style)} · {capability(r)}</span>
-                      </span>
-                    </button>
-                  ))}
-                </>)}
-
-                {state.panel === "translation" && (<>
-                  <select className={styles.search} value={languageFilter} onChange={(e) => setLanguageFilter(e.target.value)}>
-                    <option value="all">{t.allLanguages}</option>
-                    {languages.map((l) => <option key={l} value={l}>{l}</option>)}
-                  </select>
-                  <button className={`${styles.row} ${state.translation.id === "none" ? styles.rowActive : ""}`} onClick={() => dispatch({ type: "translation", translation: NO_TRANSLATION })}><span>{t.none}</span></button>
-                  {filteredTranslations.map((tr) => (
-                    <button key={tr.id} className={`${styles.row} ${state.translation.id === tr.id ? styles.rowActive : ""}`} onClick={() => dispatch({ type: "translation", translation: tr })}>
-                      <span className={styles.rowMain}><span>{tr.label}</span><span className={styles.rowSub}>{tr.languageName}</span></span>
-                    </button>
-                  ))}
-                </>)}
-
-                {state.panel === "tafsir" && (!segment?.ayah ? <p className={styles.rowSub}>{t.basmalaNote}</p>
-                  : state.tafsirLoading ? <p className={styles.rowSub}>{t.loading}</p>
-                  : state.tafsir?.key === segment.key && state.tafsir.text ? (<>
-                    <p className={styles.arabic} lang="ar" translate="no" style={{ fontSize: "1.3em" }}>{segment.arabic}</p>
-                    <div className={styles.tafsirText} dir={ar ? "rtl" : "ltr"}>{state.tafsir.text}</div>
-                  </>) : <p className={styles.rowSub}>{t.tafsir} {t.unavailable}</p>)}
-
-                {state.panel === "settings" && (<>
-                  <div className={styles.settingRow}>
-                    <span>{t.repeat}</span>
-                    <span className={styles.segmented}>
-                      {([["off", t.repeatOff], ["ayah", t.repeatAyah], ["range", t.repeatRange], ["surah", t.repeatSurah]] as [RepeatMode, string][]).map(([m, label]) => (
-                        <button key={m} className={state.repeat.mode === m ? "on" : ""} onClick={() => setRepeat({ mode: m, count: m === "off" ? 1 : state.repeat.count === 1 ? 3 : state.repeat.count })}>{label}</button>
-                      ))}
-                    </span>
-                  </div>
-                  {state.repeat.mode !== "off" && (<>
-                    <div className={styles.settingRow}>
-                      <span>{t.times}</span>
-                      <span className={styles.segmented}>
-                        {[1, 2, 3, 5, 10, Infinity].map((n) => <button key={n} className={state.repeat.count === n ? "on" : ""} onClick={() => setRepeat({ count: n })}>{n === Infinity ? t.infinite : num(n)}</button>)}
-                      </span>
-                    </div>
-                    {state.repeat.mode === "range" && (
-                      <div className={styles.settingRow}>
-                        <span>{t.from}</span>
-                        <input type="number" className={styles.numInput} min={1} max={state.segments.length} value={state.repeat.from + 1} onChange={(e) => setRepeat({ from: Number(e.target.value) - 1 })} />
-                        <span>{t.to}</span>
-                        <input type="number" className={styles.numInput} min={1} max={state.segments.length} value={state.repeat.to + 1} onChange={(e) => setRepeat({ to: Number(e.target.value) - 1 })} />
-                      </div>
-                    )}
-                    <div className={styles.settingRow}>
-                      <span>{t.pauseBetween}</span>
-                      <span className={styles.segmented}>{[0, 2, 5, 10].map((n) => <button key={n} className={state.repeat.pauseSeconds === n ? "on" : ""} onClick={() => setRepeat({ pauseSeconds: n })}>{num(n)}</button>)}</span>
-                    </div>
-                  </>)}
-                  <div className={styles.settingRow}>
-                    <span>{t.speed}</span>
-                    <span className={styles.segmented}>{PLAYBACK_RATES.map((r) => <button key={r} className={state.playbackRate === r ? "on" : ""} onClick={() => dispatch({ type: "rate", rate: r })}>{r}×</button>)}</span>
-                  </div>
-                  <div className={styles.settingRow}>
-                    <span>{t.sleep}</span>
-                    <span className={styles.segmented}>
-                      <button className={!state.sleepUntil ? "on" : ""} onClick={() => dispatch({ type: "sleep", minutes: null })}>{t.off}</button>
-                      {[10, 20, 30, 60].map((m) => <button key={m} className={sleepLeft && Math.abs(sleepLeft - m) <= 1 ? "on" : ""} onClick={() => dispatch({ type: "sleep", minutes: m })}>{num(m)} {t.minutes}</button>)}
-                    </span>
-                  </div>
-                  <div className={styles.settingRow}>
-                    <span>{t.textSize}</span>
-                    <span className={styles.segmented}>{(["small", "medium", "large"] as TextSize[]).map((sz) => <button key={sz} className={state.textSize === sz ? "on" : ""} onClick={() => dispatch({ type: "textSize", size: sz })}>{t[sz]}</button>)}</span>
-                  </div>
-                  <label className={styles.settingRow}><span>{t.autoAdvance}</span><input type="checkbox" checked={state.autoAdvance} onChange={(e) => dispatch({ type: "autoAdvance", value: e.target.checked })} /></label>
-                  <label className={styles.settingRow}><span>{t.motion}</span><input type="checkbox" checked={state.motion} onChange={(e) => dispatch({ type: "motion", value: e.target.checked })} /></label>
-                  <p className={styles.rowSub}>{t.wordByWord}</p>
-                </>)}
+                {panelBody(state.panel === "settings" && menuTab === "wallpaper" ? "wallpaper" : state.panel)}
               </div>
             </aside>
           </div>

@@ -13,6 +13,11 @@ Done so far in Phase 1 (2026-11-12):
   kids and senior UI modes, per-profile bookmarks, notes, daily minutes and
   streaks; sync to the Quran Foundation account is wired for when user
   login scopes are enabled on the client
+- Focus player (web + mobile): one-screen landscape/TV layout with the
+  current ayah, word highlight and translation beneath; docked side menu
+  (surahs, reciter, translation, tafsir picker, wallpaper, settings);
+  wallpapers per surah (nature photos, Islamic art patterns, live canvas,
+  optional Pexels); full tafsir / reciter / translation catalogues
 
 Phase 1, Core reader on every screen
 - Mushaf page view with every layout (Madani 15/16, IndoPak, Tajweed, KFGQPC)

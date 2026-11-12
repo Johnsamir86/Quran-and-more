@@ -159,3 +159,14 @@ describe("mushaf lines", () => {
     expect(lines[2].words[1].isEndMarker).toBe(true);
   });
 });
+
+describe("wallpapers", () => {
+  it("maps every surah to a wallpaper deterministically per family", async () => {
+    const { wallpaperForSurah, themeForSurah } = await import("./wallpapers");
+    expect(themeForSurah(55)).toBe("sea");
+    expect(wallpaperForSurah(55, "nature").theme).toBe("sea");
+    expect(wallpaperForSurah(67, "live").theme).toBe("stars");
+    for (let s = 1; s <= 114; s += 1) expect(wallpaperForSurah(s, "art").id).toBeTruthy();
+    expect(wallpaperForSurah(18, "nature")).toEqual(wallpaperForSurah(18, "nature"));
+  });
+});

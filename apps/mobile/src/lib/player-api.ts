@@ -22,3 +22,5 @@ export const fetchReciters = (profileGender: string) => get<{ reciters: PlayerRe
 export const fetchTranslations = () => get<{ translations: PlayerTranslation[] }>(`/api/public/v1/translations`).then((r) => r.translations);
 export const fetchTafsir = (tafsirId: string, verseKey: string) =>
   get<{ tafsir: { name: string; text: string } | null }>(`/api/public/v1/tafsir/${tafsirId}/${encodeURIComponent(verseKey)}`).then((r) => r.tafsir);
+export interface TafsirResource { id: number; name: string; author: string | null; language: string; slug: string }
+export const fetchTafsirs = () => get<{ tafsirs: TafsirResource[] }>(`/api/public/v1/tafsirs`).then((r) => r.tafsirs);

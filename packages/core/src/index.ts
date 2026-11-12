@@ -8,3 +8,4 @@ export * from "./player";
 export * from "./stations";
 export * from "./mushaf";
 export * from "./family-store";
+export * from "./wallpapers";

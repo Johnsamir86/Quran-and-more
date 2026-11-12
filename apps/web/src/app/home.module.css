@@ -1,0 +1,27 @@
+.root { --accent: #1d9e75; --bg: #f6f3ea; --card: #fffdf7; --ink: #15201b; --muted: #5d6a63; --line: rgba(21,32,27,0.1); min-height: 100dvh; background: radial-gradient(1000px 500px at 70% -10%, rgba(29,158,117,0.18), transparent 60%), var(--bg); color: var(--ink); padding: 40px 20px 60px; direction: rtl; }
+@media (prefers-color-scheme: dark) { .root { --bg: #0d1512; --card: #13201b; --ink: #e9efea; --muted: #9fb0a7; --line: rgba(233,239,234,0.12); } }
+.hero, .grid, .h2, .stations, .footer { max-width: 1000px; margin: 0 auto; }
+.hero { display: grid; gap: 10px; padding: 20px 0 30px; }
+.kicker { color: var(--accent); letter-spacing: 0.08em; font-size: 0.85em; margin: 0; }
+.title { font-family: var(--font-noto-arabic), serif; font-size: clamp(2.4em, 6vw, 4em); margin: 0; line-height: 1.2; }
+.sub { font-size: 1.1em; line-height: 1.8; margin: 0; max-width: 720px; }
+.subEn { color: var(--muted); direction: ltr; text-align: right; margin: 0; }
+.cta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+.primary, .secondary { border-radius: 999px; padding: 12px 20px; text-decoration: none; font-weight: 600; border: 1px solid var(--line); }
+.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.secondary { background: var(--card); color: var(--ink); }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 36px; }
+.tile { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 18px; display: grid; gap: 6px; text-decoration: none; color: inherit; transition: transform 160ms ease, border-color 160ms ease; }
+.tile:hover { transform: translateY(-2px); border-color: var(--accent); }
+.icon { font-size: 1.8em; }
+.tileTitle { font-weight: 700; font-size: 1.15em; }
+.en { color: var(--muted); font-weight: 400; font-size: 0.85em; }
+.tileSub { color: var(--ink); font-size: 0.95em; }
+.tileSubEn { color: var(--muted); font-size: 0.85em; direction: ltr; text-align: right; }
+.h2 { font-size: 1.2em; margin: 0 auto 10px; }
+.stations { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.station { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px; display: grid; gap: 4px; text-decoration: none; color: inherit; }
+.station:hover { border-color: var(--accent); }
+.stationTitle { font-weight: 700; }
+.footer { margin-top: 40px; color: var(--muted); font-size: 0.85em; text-align: center; }
+.footer a { color: var(--muted); }
