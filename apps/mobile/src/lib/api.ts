@@ -40,4 +40,34 @@ const get = async <T>(path: string): Promise<T> => {
 };
 
 export const fetchChapters = (locale = "en") => get<{ chapters: ChapterSummary[] }>(`/api/public/v1/chapters?language=${locale}`);
-export const fetchReader = (chapterId: number | string) => get<ReaderPayload>(`/api/reader/${chapterId}`);
+/** Translation resource ids. Prelive sandbox has 85 (Abdel Haleem); production default is 131 (The Clear Quran). */
+const TRANSLATION_IDS = (process.env.EXPO_PUBLIC_TRANSLATION_IDS ?? "85").split(",").map((s) => s.trim()).filter(Boolean);
+
+interface PublicVerse {
+  verseKey: string;
+  verseNumber: number;
+  text: { uthmani: string; indopak: string; tajweed: string };
+  translations: { resourceId: number; text: string }[];
+}
+
+export const fetchReader = async (chapterId: number | string): Promise<ReaderPayload> => {
+  const [chaptersRes, versesRes] = await Promise.all([
+    fetchChapters(),
+    get<{ chapterId: number; verses: PublicVerse[] }>(
+      `/api/public/v1/verses/${chapterId}?translations=${TRANSLATION_IDS.join(",")}&perPage=300`,
+    ),
+  ]);
+  const chapter = chaptersRes.chapters.find((c) => String(c.id) === String(chapterId));
+  if (!chapter) throw new Error(`Unknown chapter ${chapterId}`);
+  return {
+    chapter: { id: chapter.id, nameArabic: chapter.nameArabic, nameSimple: chapter.nameSimple, translatedName: chapter.translatedName, versesCount: chapter.versesCount },
+    translationIds: TRANSLATION_IDS.map(Number),
+    verses: versesRes.verses.map((v) => ({
+      id: v.verseKey,
+      verseKey: v.verseKey,
+      verseNumber: v.verseNumber,
+      arabicText: v.text.uthmani,
+      translationText: v.translations[0]?.text ?? null,
+    })),
+  };
+};
