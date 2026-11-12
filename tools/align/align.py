@@ -24,7 +24,7 @@ SR = 16000
 FRAME_MS = 20.0           # MMS_FA emits one frame per 320 samples at 16 kHz
 LEAD_MS = 100             # CTC spikes trail onsets; benchmark vs official Afasy timings showed a steady ~100 ms lag
 WINDOW_S, CTX_S = 30.0, 2.0
-MAX_PIECE_FRAMES = 7500   # 150 s
+MAX_PIECE_FRAMES = 10000  # 200 s
 ANCHOR_K = 10
 ISTIADHA = ["أعوذ", "بالله", "من", "الشيطان", "الرجيم"]
 BASMALA = ["بسم", "الله", "الرحمن", "الرحيم"]
@@ -129,15 +129,33 @@ def align_surah(reciter: str, surah: int, audio_path: str, text_dir="data/text")
 
     # Cut points at word-start anchors, every <= MAX_PIECE_FRAMES frames.
     anc = anchors(dec, dec_frames, ref)
-    cuts = [(0, 0)]
+    # Word-start anchors: (frame, word index)
+    starts = []
     for f, r in anc:
-        # walk the matched k-gram for a word start
         for d in range(ANCHOR_K):
             if (r + d) in start_to_word:
                 wi = start_to_word[r + d]
-                if f - cuts[-1][0] >= MAX_PIECE_FRAMES * 0.6 and wi > cuts[-1][1]:
-                    cuts.append((f, wi))
+                if not starts or (f > starts[-1][0] and wi > starts[-1][1]): starts.append((f, wi))
                 break
+    # Greedy cuts: from the last cut, take the furthest anchor within MAX_PIECE_FRAMES
+    # (but at least 0.3 of it away) so pieces stay long yet never need a blind split.
+    cuts = [(0, 0)]
+    i = 0
+    while i < len(starts):
+        last_f, last_w = cuts[-1]
+        best = None
+        j = i
+        while j < len(starts) and starts[j][0] - last_f <= MAX_PIECE_FRAMES:
+            if starts[j][0] - last_f >= MAX_PIECE_FRAMES * 0.3 and starts[j][1] > last_w: best = j
+            j += 1
+        if best is None:
+            # nothing usable in range: fall forward to the next anchor beyond the range (fallback split happens below)
+            if j < len(starts) and starts[j][1] > last_w: cuts.append(starts[j]); i = j + 1
+            else: break
+        else:
+            cuts.append(starts[best]); i = best + 1
+    if T - cuts[-1][0] < MAX_PIECE_FRAMES * 0.2 and len(cuts) > 1:
+        cuts.pop()  # merge a tiny tail into the previous piece
     cuts.append((T, len(words)))
     pieces = [(cuts[i][0], cuts[i + 1][0], cuts[i][1], cuts[i + 1][1]) for i in range(len(cuts) - 1)]
     # Fallback split for anchor-less long stretches (proportional by word count)
