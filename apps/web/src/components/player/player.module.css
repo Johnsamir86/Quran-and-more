@@ -77,3 +77,13 @@
   .arabic { font-size: 1.6em; }
   .topActions .chip span { display: none; }
 }
+
+/* word-level sync */
+.word { border-radius: 6px; padding: 0 2px; transition: background 120ms ease, color 120ms ease; cursor: pointer; }
+.wordActive { background: var(--accent); color: #fff; }
+.wordTipped { outline: 2px solid var(--accent); }
+.wordTipBox { font-size: 0.9em; color: var(--muted); padding: 6px 10px; border-radius: 10px; background: var(--accent-soft); display: flex; gap: 8px; flex-wrap: wrap; align-items: baseline; }
+.segmentRange { border-style: dashed; }
+.segmentActions { display: flex; gap: 14px; }
+.numInput { width: 70px; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: inherit; font: inherit; }
+.toast { position: fixed; bottom: 150px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 999px; font-size: 0.85em; z-index: 10; }

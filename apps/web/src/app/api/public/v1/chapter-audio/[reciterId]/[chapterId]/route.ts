@@ -10,7 +10,7 @@ export async function GET(_request: Request, context: { params: Promise<{ recite
   const c = Number.parseInt(chapterId, 10);
   if (!Number.isInteger(r) || !Number.isInteger(c) || c < 1 || c > 114) return publicError("invalid ids");
   try {
-    const audio = await getChapterAudio(r, c);
+    const audio = await getChapterAudio(r, c, _request.url.includes("timestamps=1"));
     if (!audio) return publicError("Audio not available", 404);
     return publicJson({ audio }, { maxAgeSeconds: 86400 });
   } catch (error) {

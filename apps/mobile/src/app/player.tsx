@@ -5,9 +5,9 @@ import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "r
 import { ActivityIndicator, FlatList, Modal, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View, useColorScheme } from "react-native";
 
 import {
-  NO_TRANSLATION, PLAYER_STORAGE_KEYS, STATIONS, TEXT_SIZE_SCALE, currentSegment, initialPlayerState, isLastSegment,
-  nextSurahNumber, playerReducer, resolveLocale,
-  type PlayerPanel, type PlayerReciter, type PlayerState, type PlayerSurah, type PlayerTranslation, type Station, type TextSize,
+  NO_TRANSLATION, PLAYBACK_RATES, PLAYER_STORAGE_KEYS, STATIONS, TEXT_SIZE_SCALE, currentSegment, decideAtSegmentEnd, initialPlayerState,
+  locateInAyah, locateInChapter, nextSurahNumber, playerReducer, resolveLocale,
+  type PlayerPanel, type PlayerReciter, type PlayerState, type PlayerSurah, type PlayerTranslation, type PlayerWord, type RepeatMode, type Station, type TextSize,
 } from "@qam/core";
 
 import { fetchPlayerSurah, fetchReciters, fetchSurahs, fetchTafsir, fetchTranslations } from "@/lib/player-api";
@@ -15,8 +15,8 @@ import { fetchPlayerSurah, fetchReciters, fetchSurahs, fetchTafsir, fetchTransla
 const locale = resolveLocale(Intl.DateTimeFormat().resolvedOptions().locale);
 const ar = locale === "ar";
 const T = ar
-  ? { surahs: "السور", reciter: "القارئ", translation: "الترجمة", tafsir: "التفسير", settings: "الإعدادات", stations: "الإذاعة", none: "النص العربي وحده", textSize: "حجم النص", autoAdvance: "الانتقال التلقائي إلى السورة التالية", motion: "تمرير تلقائي", small: "صغير", medium: "متوسط", large: "كبير", ayah: "الآية", basmala: "البسملة", basmalaNote: "البسملة ليست آية من هذه السورة، ولا تفسير لها هنا.", loading: "جارٍ التحميل…", offline: "تعذّر الاتصال بخدمة المحتوى. تحقق من اتصالك ثم أعد المحاولة.", retry: "إعادة المحاولة", close: "إغلاق", search: "بحث عن سورة…", listenWith: "بصوت", unavailable: "غير متاح", title: "القرآن الكريم" }
-  : { surahs: "Surahs", reciter: "Reciter", translation: "Translation", tafsir: "Tafsir", settings: "Settings", stations: "Radio", none: "Arabic text only", textSize: "Text size", autoAdvance: "Auto-advance to next surah", motion: "Auto-scroll", small: "Small", medium: "Medium", large: "Large", ayah: "Ayah", basmala: "Basmala", basmalaNote: "The Basmala is not an ayah of this surah, so there is no tafsir here.", loading: "Loading…", offline: "Could not reach the content service. Check your connection and try again.", retry: "Try again", close: "Close", search: "Search a surah…", listenWith: "Recited by", unavailable: "not available", title: "The Noble Quran" };
+  ? { surahs: "السور", reciter: "القارئ", translation: "الترجمة", tafsir: "التفسير", settings: "الإعدادات", stations: "الإذاعة", none: "النص العربي وحده", textSize: "حجم النص", autoAdvance: "الانتقال التلقائي إلى السورة التالية", motion: "تمرير تلقائي", small: "صغير", medium: "متوسط", large: "كبير", ayah: "الآية", basmala: "البسملة", basmalaNote: "البسملة ليست آية من هذه السورة، ولا تفسير لها هنا.", loading: "جارٍ التحميل…", offline: "تعذّر الاتصال بخدمة المحتوى. تحقق من اتصالك ثم أعد المحاولة.", retry: "إعادة المحاولة", close: "إغلاق", search: "بحث عن سورة…", listenWith: "بصوت", unavailable: "غير متاح", title: "القرآن الكريم", repeat: "التكرار", repeatOff: "بدون", repeatAyah: "كل آية", repeatRange: "نطاق", repeatSurah: "السورة", times: "مرات", speed: "السرعة", sleep: "مؤقت النوم", off: "إيقاف", gapless: "تلاوة متصلة", perAyah: "آية بآية" }
+  : { surahs: "Surahs", reciter: "Reciter", translation: "Translation", tafsir: "Tafsir", settings: "Settings", stations: "Radio", none: "Arabic text only", textSize: "Text size", autoAdvance: "Auto-advance to next surah", motion: "Auto-scroll", small: "Small", medium: "Medium", large: "Large", ayah: "Ayah", basmala: "Basmala", basmalaNote: "The Basmala is not an ayah of this surah, so there is no tafsir here.", loading: "Loading…", offline: "Could not reach the content service. Check your connection and try again.", retry: "Try again", close: "Close", search: "Search a surah…", listenWith: "Recited by", unavailable: "not available", title: "The Noble Quran", repeat: "Repeat", repeatOff: "Off", repeatAyah: "Each ayah", repeatRange: "Range", repeatSurah: "Surah", times: "times", speed: "Speed", sleep: "Sleep timer", off: "Off", gapless: "Gapless", perAyah: "Ayah by ayah" };
 const DEFAULT_TAFSIR = ar ? "926" : "169";
 const digits = (n: number) => (ar ? n.toLocaleString("ar-EG", { useGrouping: false }) : String(n));
 
@@ -52,8 +52,8 @@ export default function PlayerScreen() {
         const [s, r, tr] = await Promise.all([fetchSurahs(locale), fetchReciters("unspecified"), fetchTranslations()]);
         if (cancelled) return;
         setSurahs(s); setReciters(r); setTranslations(tr);
-        const savedReciter = await load<number | null>(PLAYER_STORAGE_KEYS.reciter, null);
-        const reciter = r.find((x) => x.id === savedReciter) ?? r.find((x) => x.id === 7) ?? r[0];
+        const savedReciter = await load<string | null>(PLAYER_STORAGE_KEYS.reciter, null);
+        const reciter = r.find((x) => x.id === savedReciter) ?? r.find((x) => x.chapterReciterId === 7) ?? r[0];
         if (reciter) dispatch({ type: "reciter", reciter });
         const savedTr = await load<string | null>(PLAYER_STORAGE_KEYS.translation, null);
         dispatch({ type: "translation", translation: savedTr === "none" ? NO_TRANSLATION : tr.find((x) => x.id === savedTr) ?? NO_TRANSLATION });
@@ -89,31 +89,36 @@ export default function PlayerScreen() {
     let cancelled = false;
     const surah = state.surah;
     if (stateRef.current.status !== "loading") dispatch({ type: "open", surah, index: stateRef.current.index, play: stateRef.current.isPlaying });
-    fetchPlayerSurah(surah.number, state.reciter.id, state.translation.apiId)
-      .then((p) => !cancelled && dispatch({ type: "loaded", segments: p.segments }))
+    fetchPlayerSurah(surah.number, state.reciter, state.translation.apiId)
+      .then((p) => !cancelled && dispatch({ type: "loaded", segments: p.segments, chapterAudio: p.chapterAudio }))
       .catch((e: Error & { status?: number }) => !cancelled && dispatch({ type: "failed", status: e.status && e.status < 500 ? "unavailable" : "network_error" }));
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadKey]);
 
-  /* audio follows segment + isPlaying */
+  const gapless = state.engine === "gapless" && !!state.chapterAudio;
+  const desiredSrc = gapless ? state.chapterAudio?.url ?? null : segment?.audioUrl ?? null;
   const srcRef = useRef<string | null>(null);
+  const seekFromTimeRef = useRef(false);
+  const lastSeekIndexRef = useRef(-1);
+
+  /* audio follows (source, index, isPlaying, rate) */
   useEffect(() => {
-    if (!segment?.audioUrl) return;
-    if (srcRef.current !== segment.audioUrl) { srcRef.current = segment.audioUrl; player.replace({ uri: segment.audioUrl }); }
+    if (!desiredSrc) return;
+    if (srcRef.current !== desiredSrc) { srcRef.current = desiredSrc; lastSeekIndexRef.current = -1; player.replace({ uri: desiredSrc }); }
+    player.setPlaybackRate(state.playbackRate);
+    if (gapless && segment?.fromMs !== null && segment?.fromMs !== undefined && lastSeekIndexRef.current !== state.index) {
+      if (!seekFromTimeRef.current) player.seekTo(segment.fromMs / 1000);
+      seekFromTimeRef.current = false;
+      lastSeekIndexRef.current = state.index;
+    }
     if (state.isPlaying) player.play(); else player.pause();
-  }, [segment?.audioUrl, state.isPlaying, player, segment]);
+  }, [desiredSrc, state.isPlaying, state.index, state.playbackRate, gapless, player, segment]);
 
   const openSurahNumber = useCallback((n: number, play: boolean) => { const s = surahs.find((x) => x.number === n); if (s) dispatch({ type: "open", surah: s, index: 0, play }); }, [surahs]);
 
-  /* advance on finish */
-  const finishedRef = useRef(false);
-  useEffect(() => {
-    if (!status.didJustFinish) { finishedRef.current = false; return; }
-    if (finishedRef.current) return;
-    finishedRef.current = true;
+  const finishSurah = useCallback(() => {
     const s = stateRef.current;
-    if (!isLastSegment(s)) return dispatch({ type: "next" });
     if (station && s.surah) {
       const i = station.surahs.indexOf(s.surah.number);
       const next = station.surahs[i + 1] ?? (station.loop ? station.surahs[0] : undefined);
@@ -121,7 +126,57 @@ export default function PlayerScreen() {
     }
     if (s.autoAdvance && s.surah) return openSurahNumber(nextSurahNumber(s.surah.number), true);
     dispatch({ type: "ended" });
-  }, [status.didJustFinish, station, openSurahNumber]);
+  }, [openSurahNumber, station]);
+
+  const onSegmentEnd = useCallback(() => {
+    const s = stateRef.current;
+    const d = decideAtSegmentEnd(s);
+    if (d.action === "replay") {
+      dispatch({ type: "repeatConsumed" });
+      const seg = s.segments[s.index];
+      player.seekTo(s.engine === "gapless" && seg?.fromMs !== null ? (seg?.fromMs ?? 0) / 1000 : 0);
+      player.play();
+    } else if (d.action === "seek") dispatch({ type: "seek", index: d.index });
+    else finishSurah();
+  }, [finishSurah, player]);
+
+  /* time tracking: word highlight and ayah boundaries (gapless) */
+  const boundaryRef = useRef("");
+  useEffect(() => {
+    const s = stateRef.current;
+    const ms = (status.currentTime ?? 0) * 1000;
+    if (!s.segments.length || !status.playing) return;
+    if (s.engine === "gapless") {
+      const seg = s.segments[s.index];
+      if (seg && seg.toMs !== null && ms >= seg.toMs - 60) {
+        const key = `${s.surah?.number}-${s.index}-${s.repeatRemaining}`;
+        if (boundaryRef.current !== key) { boundaryRef.current = key; seekFromTimeRef.current = true; onSegmentEnd(); }
+        return;
+      }
+      const loc = locateInChapter(s.segments, ms);
+      if (loc.index !== s.index) { seekFromTimeRef.current = true; dispatch({ type: "seek", index: loc.index }); }
+      if (loc.wordPosition !== s.wordPosition) dispatch({ type: "word", position: loc.wordPosition });
+    } else {
+      const seg = s.segments[s.index];
+      if (seg) { const w = locateInAyah(seg, ms); if (w !== s.wordPosition) dispatch({ type: "word", position: w }); }
+    }
+  }, [status.currentTime, status.playing, onSegmentEnd]);
+
+  /* per-ayah engine: advance when the file finishes; gapless: surah finished */
+  const finishedRef = useRef(false);
+  useEffect(() => {
+    if (!status.didJustFinish) { finishedRef.current = false; return; }
+    if (finishedRef.current) return;
+    finishedRef.current = true;
+    if (stateRef.current.engine === "gapless") finishSurah(); else onSegmentEnd();
+  }, [status.didJustFinish, finishSurah, onSegmentEnd]);
+
+  /* sleep timer */
+  useEffect(() => {
+    if (!state.sleepUntil) return;
+    const id = setInterval(() => { if (Date.now() >= (stateRef.current.sleepUntil ?? 0)) { dispatch({ type: "pause" }); dispatch({ type: "sleep", minutes: null }); } }, 1000);
+    return () => clearInterval(id);
+  }, [state.sleepUntil]);
 
   /* auto-scroll */
   useEffect(() => {
@@ -140,7 +195,9 @@ export default function PlayerScreen() {
 
   const scale = TEXT_SIZE_SCALE[state.textSize];
   const filteredSurahs = useMemo(() => { const q = query.trim().toLowerCase(); return q ? surahs.filter((s) => s.arabicName.includes(q) || s.latinName.toLowerCase().includes(q) || String(s.number) === q) : surahs; }, [surahs, query]);
-  const progress = status.duration ? status.currentTime / status.duration : 0;
+  const segFrom = gapless ? (segment?.fromMs ?? 0) / 1000 : 0;
+  const segTo = gapless ? (segment?.toMs ?? status.duration * 1000) / 1000 : status.duration;
+  const progress = segTo > segFrom ? Math.min(1, Math.max(0, ((status.currentTime ?? 0) - segFrom) / (segTo - segFrom))) : 0;
   const panelTitle: Record<Exclude<PlayerPanel, null>, string> = { surahs: T.surahs, reciter: T.reciter, translation: T.translation, tafsir: T.tafsir, settings: T.settings };
 
   return (
@@ -174,7 +231,12 @@ export default function PlayerScreen() {
             return (
               <Pressable onPress={() => { dispatch({ type: "seek", index }); dispatch({ type: "play" }); }} style={[st.seg, { backgroundColor: c.card, borderColor: active ? c.accent : c.line, borderWidth: active ? 2 : 1 }]}>
                 <Text accessibilityLanguage="ar" style={[st.arabic, { color: c.ink, fontSize: 26 * scale, lineHeight: 50 * scale, textAlign: item.ayah ? "right" : "center" }]}>
-                  {item.arabic}{item.ayah ? <Text style={{ color: c.accent, fontSize: 16 * scale }}> ﴿{digits(item.ayah.number)}﴾</Text> : null}
+                  {item.words.length
+                    ? item.words.map((w: PlayerWord) => (
+                        <Text key={w.position} style={active && state.wordPosition === w.position ? { backgroundColor: c.accent, color: "#fff", borderRadius: 6 } : undefined}>{w.text} </Text>
+                      ))
+                    : item.arabic}
+                  {item.ayah ? <Text style={{ color: c.accent, fontSize: 16 * scale }}> ﴿{digits(item.ayah.number)}﴾</Text> : null}
                 </Text>
                 {item.translation ? <Text style={{ color: c.muted, fontSize: 15 * scale, lineHeight: 23 * scale }}>{item.translation}</Text> : null}
                 <View style={st.segMeta}>
@@ -191,7 +253,7 @@ export default function PlayerScreen() {
       <View style={[st.controls, { backgroundColor: c.card, borderColor: c.line }]}>
         <View style={st.row}>
           <Text style={{ color: c.muted, fontSize: 12 }} numberOfLines={1}>{segment?.ayah ? `${state.surah?.arabicName} · ${T.ayah} ${digits(segment.ayah.number)}` : segment ? T.basmala : ""}</Text>
-          <Text style={{ color: c.muted, fontSize: 12 }} numberOfLines={1}>{state.reciter ? `${T.listenWith} ${ar ? state.reciter.arabicName : state.reciter.latinName}` : ""}</Text>
+          <Text style={{ color: c.muted, fontSize: 12 }} numberOfLines={1}>{state.reciter ? `${T.listenWith} ${ar ? state.reciter.arabicName : state.reciter.latinName} · ${gapless ? T.gapless : T.perAyah}` : ""}</Text>
         </View>
         <View style={[st.progress, { backgroundColor: c.line }]}><View style={{ width: `${Math.round(progress * 100)}%`, height: 4, backgroundColor: c.accent }} /></View>
         <View style={st.buttons}>
@@ -219,7 +281,7 @@ export default function PlayerScreen() {
               <Text style={{ color: c.muted, fontSize: 12 }}>{T.surahs}</Text>
               {filteredSurahs.map((s) => <Row key={s.number} c={c} active={state.surah?.number === s.number} title={`${digits(s.number)}. ${s.arabicName}`} sub={`${s.latinName} · ${s.verseCount}`} onPress={() => { setStation(null); openSurahNumber(s.number, true); }} />)}
             </>)}
-            {state.panel === "reciter" && reciters.map((r) => <Row key={r.id} c={c} active={state.reciter?.id === r.id} title={ar ? r.arabicName : r.latinName} sub={r.riwayah} onPress={() => dispatch({ type: "reciter", reciter: r })} />)}
+            {state.panel === "reciter" && reciters.map((r) => <Row key={r.id} c={c} active={state.reciter?.id === r.id} title={ar ? r.arabicName : r.latinName} sub={`${r.riwayah}${r.style ? ` · ${r.style}` : ""} · ${r.chapterReciterId ? T.gapless : T.perAyah}`} onPress={() => dispatch({ type: "reciter", reciter: r })} />)}
             {state.panel === "translation" && (<>
               <Row c={c} active={state.translation.id === "none"} title={T.none} onPress={() => dispatch({ type: "translation", translation: NO_TRANSLATION })} />
               {translations.map((tr) => <Row key={tr.id} c={c} active={state.translation.id === tr.id} title={tr.label} sub={tr.languageName} onPress={() => dispatch({ type: "translation", translation: tr })} />)}
@@ -231,6 +293,35 @@ export default function PlayerScreen() {
                 <Text style={{ color: c.ink, lineHeight: 28, fontSize: 16, textAlign: ar ? "right" : "left", writingDirection: ar ? "rtl" : "ltr" }}>{state.tafsir.text}</Text>
               </>) : <Text style={{ color: c.muted }}>{T.tafsir} {T.unavailable}</Text>)}
             {state.panel === "settings" && (<>
+              <View style={[st.setting, { borderColor: c.line, flexWrap: "wrap" }]}>
+                <Text style={{ color: c.ink }}>{T.repeat}</Text>
+                <View style={{ flexDirection: "row", gap: 6, flexWrap: "wrap" }}>
+                  {([["off", T.repeatOff], ["ayah", T.repeatAyah], ["range", T.repeatRange], ["surah", T.repeatSurah]] as [RepeatMode, string][]).map(([m, label]) => (
+                    <Pressable key={m} onPress={() => dispatch({ type: "repeat", settings: { mode: m, count: m === "off" ? 1 : state.repeat.count === 1 ? 3 : state.repeat.count, ...(m === "range" ? { from: state.index, to: Math.min(state.index + 4, state.segments.length - 1) } : {}) } })} style={[st.chip, { borderColor: c.line, backgroundColor: state.repeat.mode === m ? c.accent : "transparent" }]}><Text style={{ color: state.repeat.mode === m ? "#fff" : c.ink, fontSize: 13 }}>{label}</Text></Pressable>
+                  ))}
+                </View>
+              </View>
+              {state.repeat.mode !== "off" ? (
+                <View style={[st.setting, { borderColor: c.line }]}>
+                  <Text style={{ color: c.ink }}>{T.times}</Text>
+                  <View style={{ flexDirection: "row", gap: 6 }}>
+                    {[1, 2, 3, 5, 10, Infinity].map((n) => <Pressable key={n} onPress={() => dispatch({ type: "repeat", settings: { count: n } })} style={[st.chip, { borderColor: c.line, backgroundColor: state.repeat.count === n ? c.accent : "transparent" }]}><Text style={{ color: state.repeat.count === n ? "#fff" : c.ink, fontSize: 13 }}>{n === Infinity ? "∞" : digits(n)}</Text></Pressable>)}
+                  </View>
+                </View>
+              ) : null}
+              <View style={[st.setting, { borderColor: c.line }]}>
+                <Text style={{ color: c.ink }}>{T.speed}</Text>
+                <View style={{ flexDirection: "row", gap: 6 }}>
+                  {PLAYBACK_RATES.map((r) => <Pressable key={r} onPress={() => dispatch({ type: "rate", rate: r })} style={[st.chip, { borderColor: c.line, backgroundColor: state.playbackRate === r ? c.accent : "transparent" }]}><Text style={{ color: state.playbackRate === r ? "#fff" : c.ink, fontSize: 13 }}>{r}×</Text></Pressable>)}
+                </View>
+              </View>
+              <View style={[st.setting, { borderColor: c.line }]}>
+                <Text style={{ color: c.ink }}>{T.sleep}</Text>
+                <View style={{ flexDirection: "row", gap: 6 }}>
+                  <Pressable onPress={() => dispatch({ type: "sleep", minutes: null })} style={[st.chip, { borderColor: c.line, backgroundColor: !state.sleepUntil ? c.accent : "transparent" }]}><Text style={{ color: !state.sleepUntil ? "#fff" : c.ink, fontSize: 13 }}>{T.off}</Text></Pressable>
+                  {[10, 20, 30, 60].map((m) => <Pressable key={m} onPress={() => dispatch({ type: "sleep", minutes: m })} style={[st.chip, { borderColor: c.line }]}><Text style={{ color: c.ink, fontSize: 13 }}>{digits(m)}</Text></Pressable>)}
+                </View>
+              </View>
               <View style={[st.setting, { borderColor: c.line }]}>
                 <Text style={{ color: c.ink }}>{T.textSize}</Text>
                 <View style={{ flexDirection: "row", gap: 6 }}>

@@ -83,7 +83,7 @@ export const defaultSettingsFor = (
  * female profiles only. Male reciters are shown to everyone.
  */
 export interface ReciterLike {
-  id: number;
+  id: number | string;
   gender: Gender;
 }
 

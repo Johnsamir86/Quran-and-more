@@ -1,11 +1,12 @@
 /** Browser-side fetchers for the unified player. Safe for client components. */
-import type { PlayerReciter, PlayerSegment, PlayerSurah, PlayerTranslation } from "@qam/core";
+import type { ChapterAudioInfo, PlayerReciter, PlayerSegment, PlayerSurah, PlayerTranslation, PlayerWord } from "@qam/core";
 
 export interface PlayerSurahPayload {
   surah: PlayerSurah;
-  reciterId: number;
+  reciterId: string;
   translationId: number | null;
   segments: PlayerSegment[];
+  chapterAudio: ChapterAudioInfo | null;
 }
 
 const get = async <T>(path: string): Promise<T> => {
@@ -17,6 +18,9 @@ const get = async <T>(path: string): Promise<T> => {
   }
   return (await res.json()) as T;
 };
+
+export const reciterParam = (r: Pick<PlayerReciter, "chapterReciterId" | "recitationId">): string =>
+  [r.chapterReciterId !== null ? `c${r.chapterReciterId}` : null, r.recitationId !== null ? `a${r.recitationId}` : null].filter(Boolean).join(":");
 
 export const fetchSurahs = (language: string) =>
   get<{ chapters: { id: number; nameArabic: string; nameSimple: string; translatedName: string; versesCount: number; bismillahPre: boolean; revelationPlace: string }[] }>(
@@ -31,8 +35,8 @@ export const fetchSurahs = (language: string) =>
     })),
   );
 
-export const fetchPlayerSurah = (chapterId: number, reciterId: number, translationId: number | null) =>
-  get<PlayerSurahPayload>(`/api/public/v1/player/surah/${chapterId}?reciter=${reciterId}&translation=${translationId ?? "none"}`);
+export const fetchPlayerSurah = (chapterId: number, reciter: Pick<PlayerReciter, "chapterReciterId" | "recitationId">, translationId: number | null) =>
+  get<PlayerSurahPayload>(`/api/public/v1/player/surah/${chapterId}?reciter=${encodeURIComponent(reciterParam(reciter))}&translation=${translationId ?? "none"}`);
 
 export const fetchReciters = (profileGender: "male" | "female" | "unspecified") =>
   get<{ reciters: PlayerReciter[] }>(`/api/public/v1/reciters?profileGender=${profileGender}`).then((r) => r.reciters);
@@ -42,5 +46,5 @@ export const fetchTranslations = () => get<{ translations: PlayerTranslation[] }
 export const fetchTafsir = (tafsirId: string, verseKey: string) =>
   get<{ tafsir: { name: string; text: string } | null }>(`/api/public/v1/tafsir/${encodeURIComponent(tafsirId)}/${encodeURIComponent(verseKey)}`).then((r) => r.tafsir);
 
-export const fetchChapterAudio = (reciterId: number, chapterId: number) =>
-  get<{ audio: { audioUrl: string; durationMs: number } }>(`/api/public/v1/chapter-audio/${reciterId}/${chapterId}`).then((r) => r.audio);
+export const fetchWords = (verseKey: string, language: string) =>
+  get<{ words: PlayerWord[] }>(`/api/public/v1/words/${encodeURIComponent(verseKey)}?language=${encodeURIComponent(language)}`).then((r) => r.words);
