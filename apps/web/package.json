@@ -1,0 +1,39 @@
+{
+  "name": "@qam/web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node ./scripts/next-run.cjs dev",
+    "build": "node ./scripts/next-run.cjs build",
+    "start": "node ./scripts/next-run.cjs start",
+    "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "smoke:config": "node ./test/smoke-config.cjs",
+    "smoke:routes": "node ./test/smoke-routes.cjs",
+    "sdk:status": "node ./scripts/sdk-status.cjs",
+    "sdk:local": "node ./scripts/sdk-local.cjs",
+    "sdk:remote": "node ./scripts/sdk-remote.cjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@quranjs/api": "^3.17.2",
+    "next": "^15.5.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "redis": "^4.7.0",
+    "swr": "^2.2.5",
+    "@qam/core": "*"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.1.0",
+    "@types/node": "^20",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^15.5.2",
+    "jsdom": "^25.0.1",
+    "typescript": "^5",
+    "vitest": "^2.1.9"
+  }
+}

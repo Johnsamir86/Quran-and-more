@@ -1,0 +1,28 @@
+{
+  "name": "quran-and-more",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Quran and More — one Quran experience for the whole family: web, iOS, Android and TV, built on the Quran Foundation APIs.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "dev:web": "npm run dev -w @qam/web",
+    "dev:mobile": "npm run start -w @qam/mobile",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "api:smoke": "node apps/web/scripts/api-smoke.mjs apps/web/.env.local"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3",
+    "typescript": "^5.6.3"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "npm@10.9.0"
+}
