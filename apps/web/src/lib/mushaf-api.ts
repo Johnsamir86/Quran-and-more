@@ -10,7 +10,7 @@ import {
   type MushafVerseInput,
 } from "@qam/core";
 
-import { getContentClient } from "@/lib/public-api";
+import { contentGet } from "@/lib/content";
 
 interface WordLike { position: number; charTypeName?: string; lineNumber?: number; pageNumber?: number; codeV1?: string; codeV2?: string; textUthmani?: string; textQpcHafs?: string; textIndopak?: string; text?: string }
 interface VerseLike { verseKey: string; juzNumber?: number; hizbNumber?: number; words?: WordLike[] }
@@ -33,7 +33,7 @@ const getChapters = (): Promise<ChapterLike[]> => {
   const key = "ar";
   let p = chapterCache.get(key);
   if (!p) {
-    p = getContentClient().then((c) => c.content.v4.chapters.list({ language: "ar" } as never) as Promise<unknown>).then((raw) => unwrap<ChapterLike>(raw, "chapters"));
+    p = contentGet("chapters", { language: "ar" }, 24 * 3600 * 1000).then((raw) => unwrap<ChapterLike>(raw, "chapters"));
     chapterCache.set(key, p);
     p.catch(() => chapterCache.delete(key));
   }
@@ -42,14 +42,8 @@ const getChapters = (): Promise<ChapterLike[]> => {
 
 export const loadMushafPage = async (page: number, layoutId: string): Promise<MushafPage> => {
   const layout = mushafLayoutById(layoutId);
-  const client = await getContentClient();
   const [raw, chapters] = await Promise.all([
-    client.content.v4.verses.byPage(String(page) as never, {
-      words: true,
-      mushaf: layout.mushafId,
-      perPage: 50,
-      wordFields: { codeV1: true, codeV2: true, textUthmani: true, textQpcHafs: true, textIndopak: true, lineNumber: true, pageNumber: true },
-    } as never) as Promise<unknown>,
+    contentGet(`verses/by_page/${page}`, { words: true, mushaf: layout.mushafId, per_page: 50, word_fields: "code_v1,code_v2,text_uthmani,text_qpc_hafs,text_indopak,line_number,page_number", fields: "text_uthmani" }, 24 * 3600 * 1000),
     getChapters(),
   ]);
   const verses = unwrap<VerseLike>(raw, "verses");

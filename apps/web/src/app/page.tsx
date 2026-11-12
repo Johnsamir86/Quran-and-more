@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { STATIONS } from "@qam/core";
 
 import styles from "./home.module.css";
 
@@ -33,17 +32,6 @@ export default function HomePage() {
             <span className={styles.tileSubEn}>{t.enSub}</span>
           </Link>
         ))}
-      </section>
-      <section>
-        <h2 className={styles.h2}>الإذاعة · Radio</h2>
-        <div className={styles.stations}>
-          {STATIONS.map((s) => (
-            <Link key={s.id} href={`/player?surah=${s.surahs[0]}&station=${s.id}`} className={styles.station}>
-              <span className={styles.stationTitle}>{s.title.ar}</span>
-              <span className={styles.tileSub}>{s.subtitle.ar}</span>
-            </Link>
-          ))}
-        </div>
       </section>
       <footer className={styles.footer}>
         <Link href="/privacy">الخصوصية</Link> · <Link href="/terms">الشروط</Link> · <a href="https://quran.foundation" target="_blank" rel="noreferrer">Powered by Quran Foundation APIs</a>

@@ -18,7 +18,8 @@ import {
   type PlayerWord,
 } from "@qam/core";
 
-import { getContentClient } from "@/lib/public-api";
+import { contentGet, contentGetAll } from "@/lib/content";
+import { RECITER_ARABIC_NAMES } from "@/lib/reciter-names";
 
 /* Loose shapes of the SDK responses we read. */
 interface ChapterLike { id: number; nameArabic?: string; nameSimple?: string; versesCount?: number; bismillahPre?: boolean; revelationPlace?: string; translatedName?: { name?: string } | string }
@@ -52,7 +53,7 @@ const toWords = (words: WordLike[] | undefined): PlayerWord[] =>
     }));
 
 const toAyah = (v: VerseLike, translationId: number | null): PlayerAyah => {
-  const translation = translationId ? v.translations?.find((t) => t.resourceId === translationId)?.text ?? v.translations?.[0]?.text : null;
+  const translation = translationId ? (v.translations?.find((t) => Number(t.resourceId) === translationId)?.text ?? (v.translations?.length === 1 ? v.translations[0].text : null)) : null;
   return {
     number: v.verseNumber,
     key: v.verseKey,
@@ -66,8 +67,7 @@ const toAyah = (v: VerseLike, translationId: number | null): PlayerAyah => {
 };
 
 export const listPlayerSurahs = async (language: string): Promise<PlayerSurah[]> => {
-  const client = await getContentClient();
-  const raw = (await client.content.v4.chapters.list({ language } as never)) as unknown;
+  const raw = await contentGet("chapters", { language }, 24 * 3600 * 1000);
   return unwrap<ChapterLike>(raw, "chapters").map(toPlayerSurah);
 };
 
@@ -79,6 +79,11 @@ const normaliseName = (s: string) =>
     .replace(/ee/g, "i").replace(/aa/g, "a").replace(/oo|ou/g, "u").replace(/ah\b/g, "a").replace(/h\b/g, "")
     .replace(/\s+/g, " ").trim();
 const styleOf = (s: string | null | undefined) => (s ?? "murattal").toLowerCase();
+/** Last name only, vowels folded: "al-Minshawi" / "Al Minshawi" / "Minshawy" agree. */
+const surnameKey = (s: string) => {
+  const parts = normaliseName(s).replace(/\b(al|ar|as|ash|ad|el)\b/g, " ").trim().split(" ").filter(Boolean);
+  return (parts[parts.length - 1] ?? "").replace(/[aeiouy]/g, "");
+};
 
 /**
  * Merged reciter catalogue: full-surah (gapless) reciters from
@@ -87,15 +92,22 @@ const styleOf = (s: string | null | undefined) => (s ?? "murattal").toLowerCase(
  * drive both engines. Every reciter the Quran Foundation offers appears.
  */
 export const listReciters = async (): Promise<PlayerReciter[]> => {
-  const client = await getContentClient();
-  const [chapterRaw, ayahRaw, arabicRaw] = await Promise.all([
-    client.content.v4.resources.chapterReciters.list({ language: "en" } as never) as Promise<unknown>,
-    client.content.v4.resources.recitations.list({ language: "en" } as never) as Promise<unknown>,
-    client.content.v4.resources.chapterReciters.list({ language: "ar" } as never).catch(() => null) as Promise<unknown>,
+  const day = 24 * 3600 * 1000;
+  const [chapterRaw, ayahRaw, arabicRaw, ayahArabicRaw] = await Promise.all([
+    contentGet("resources/chapter_reciters", { language: "en" }, day),
+    contentGet("resources/recitations", { language: "en" }, day),
+    contentGet("resources/chapter_reciters", { language: "ar" }, day).catch(() => null),
+    contentGet("resources/recitations", { language: "ar" }, day).catch(() => null),
   ]);
   const chapter = unwrap<ChapterReciterLike>(chapterRaw, "reciters");
   const ayah = unwrap<RecitationLike>(ayahRaw, "recitations");
-  const arabicNames = new Map(unwrap<ChapterReciterLike>(arabicRaw, "reciters").map((r) => [r.id, r.translatedName?.name]));
+  const ayahArabic = new Map(unwrap<RecitationLike>(ayahArabicRaw, "recitations").map((r) => [r.id, r.translatedName?.name]));
+  const isArabic = (x?: string) => !!x && /[\u0600-\u06ff]/.test(x);
+  const arabicNames = new Map<number, string | undefined>();
+  for (const r of unwrap<ChapterReciterLike>(arabicRaw, "reciters")) {
+    const fromApi = r.translatedName?.name;
+    arabicNames.set(r.id, isArabic(fromApi) ? fromApi : RECITER_ARABIC_NAMES[normaliseName(r.name ?? "")]);
+  }
 
   const result: PlayerReciter[] = [];
   const usedAyah = new Set<number>();
@@ -103,15 +115,20 @@ export const listReciters = async (): Promise<PlayerReciter[]> => {
   for (const r of chapter) {
     const latin = (r.name ?? "").replace(/\s*Streaming$/i, "").trim();
     const key = normaliseName(latin);
+    const mine = surnameKey(latin);
+    const sameSurname = (a: RecitationLike) => { const k = surnameKey(a.reciterName ?? ""); return k.length >= 3 && mine.length >= 3 && (k.endsWith(mine) || mine.endsWith(k)); };
     const match = ayah.find((a) => !usedAyah.has(a.id) && normaliseName(a.reciterName ?? "") === key && styleOf(a.style) === styleOf(r.style?.name))
-      ?? (styleOf(r.style?.name) === "murattal" ? ayah.find((a) => !usedAyah.has(a.id) && normaliseName(a.reciterName ?? "") === key) : undefined);
+      ?? (styleOf(r.style?.name) === "murattal" ? ayah.find((a) => !usedAyah.has(a.id) && normaliseName(a.reciterName ?? "") === key) : undefined)
+      // The two catalogues share ids for the classic reciters (1..12); accept that when the surname agrees.
+      ?? ayah.find((a) => !usedAyah.has(a.id) && a.id === r.id && sameSurname(a) && styleOf(a.style) === styleOf(r.style?.name))
+      ?? ayah.find((a) => !usedAyah.has(a.id) && sameSurname(a) && styleOf(a.style) === styleOf(r.style?.name) && !ayah.some((o) => o.id !== a.id && sameSurname(o) && styleOf(o.style) === styleOf(a.style)));
     if (match) usedAyah.add(match.id);
-    const arabic = arabicNames.get(r.id);
+    const arabic = arabicNames.get(r.id) ?? (match ? ayahArabic.get(match.id) : undefined);
     result.push({
       id: `c${r.id}`,
       chapterReciterId: r.id,
       recitationId: match?.id ?? null,
-      arabicName: arabic && /[؀-ۿ]/.test(arabic) ? arabic : latin,
+      arabicName: isArabic(arabic) ? (arabic as string) : latin,
       latinName: latin + (/Streaming$/i.test(r.name ?? "") ? " (streaming)" : ""),
       riwayah: r.qirat?.name ? `${r.qirat.name}` : "Hafs",
       style: r.style?.name?.toLowerCase() ?? null,
@@ -122,12 +139,12 @@ export const listReciters = async (): Promise<PlayerReciter[]> => {
   for (const a of ayah) {
     if (usedAyah.has(a.id)) continue;
     const latin = a.reciterName ?? String(a.id);
-    const arabic = a.translatedName?.languageName === "arabic" ? a.translatedName.name : undefined;
+    const arabic = ayahArabic.get(a.id) ?? RECITER_ARABIC_NAMES[normaliseName(latin)];
     result.push({
       id: `a${a.id}`,
       chapterReciterId: null,
       recitationId: a.id,
-      arabicName: arabic ?? latin,
+      arabicName: isArabic(arabic) ? (arabic as string) : latin,
       latinName: latin,
       riwayah: "Hafs",
       style: a.style?.toLowerCase() ?? null,
@@ -139,8 +156,7 @@ export const listReciters = async (): Promise<PlayerReciter[]> => {
 };
 
 export const listTranslations = async (language?: string): Promise<PlayerTranslation[]> => {
-  const client = await getContentClient();
-  const raw = (await client.content.v4.resources.translations.list(language ? ({ language } as never) : undefined)) as unknown;
+  const raw = await contentGet("resources/translations", { language }, 24 * 3600 * 1000);
   return unwrap<TranslationResourceLike>(raw, "translations").map((t) => ({
     id: String(t.id),
     apiId: t.id,
@@ -153,8 +169,7 @@ export const listTranslations = async (language?: string): Promise<PlayerTransla
 export interface TafsirResource { id: number; name: string; author: string | null; language: string; slug: string }
 
 export const listTafsirs = async (): Promise<TafsirResource[]> => {
-  const client = await getContentClient();
-  const raw = (await client.content.v4.resources.tafsirs.list()) as unknown;
+  const raw = await contentGet("resources/tafsirs", undefined, 24 * 3600 * 1000);
   return unwrap<TafsirResourceLike>(raw, "tafsirs").map((t) => ({
     id: t.id,
     name: t.name ?? t.translatedName?.name ?? String(t.id),
@@ -165,10 +180,7 @@ export const listTafsirs = async (): Promise<TafsirResource[]> => {
 };
 
 export const getTafsirForAyah = async (tafsirId: string, verseKey: string): Promise<{ name: string; text: string } | null> => {
-  const client = await getContentClient();
-  const op = client.content.v4.raw.listAyahTafsirs;
-  if (typeof op !== "function") throw new Error("SDK operation listAyahTafsirs is not available");
-  const raw = (await op({ path: { resource_id: tafsirId, ayah_key: verseKey } })) as {
+  const raw = (await contentGet(`tafsirs/${encodeURIComponent(tafsirId)}/by_ayah/${encodeURIComponent(verseKey)}`, undefined, 24 * 3600 * 1000)) as {
     tafsir?: { resource_name?: string; resourceName?: string; text?: string };
   };
   const t = raw?.tafsir;
@@ -180,8 +192,7 @@ export const getTafsirForAyah = async (tafsirId: string, verseKey: string): Prom
 export interface ChapterAudio { chapterId: number; reciterId: number; audioUrl: string; durationMs: number; fileSize: number | null; timestamps: ChapterTimestamp[] }
 
 export const getChapterAudio = async (chapterReciterId: number, chapterId: number, withTimestamps = true): Promise<ChapterAudio | null> => {
-  const client = await getContentClient();
-  const raw = (await client.content.v4.audio.chapterRecitation.get(String(chapterReciterId) as never, String(chapterId) as never, (withTimestamps ? { segments: true } : undefined) as never)) as unknown;
+  const raw = await contentGet(`chapter_recitations/${chapterReciterId}/${chapterId}`, withTimestamps ? { segments: true } : undefined, 24 * 3600 * 1000);
   const f = ((raw as { audioFile?: Record<string, unknown> })?.audioFile ?? raw) as { audioUrl?: string; audio_url?: string; duration?: number; fileSize?: number; timestamps?: unknown[] } | undefined;
   const url = f?.audioUrl ?? f?.audio_url;
   if (!url) return null;
@@ -210,18 +221,16 @@ const TEXT_TTL_MS = 60 * 60 * 1000;
 const textCache = new Map<string, Promise<ChapterText>>();
 
 const fetchChapterText = async (chapterId: number, translationId: number | null): Promise<ChapterText> => {
-  const client = await getContentClient();
-  const chapterRaw = (await client.content.v4.chapters.get(String(chapterId) as never, { language: "ar" } as never)) as unknown;
+  const chapterRaw = await contentGet(`chapters/${chapterId}`, { language: "ar" }, 24 * 3600 * 1000);
   const chapter = ((chapterRaw as { chapter?: ChapterLike })?.chapter ?? chapterRaw) as ChapterLike | undefined;
   if (!chapter?.id) throw Object.assign(new Error("Surah not found"), { status: 404 });
   const surah = toPlayerSurah(chapter);
   const wantsBasmala = surah.hasBismillah && chapterId !== 1 && chapterId !== 9;
   // words=false keeps this call ~10x smaller; words are derived with splitUthmaniWords.
-  const [versesRaw, basmalaRaw] = await Promise.all([
-    client.content.v4.verses.byChapter(String(chapterId) as never, { page: 1, perPage: 300, words: false, translations: translationId ? [translationId] : undefined, fields: { textUthmani: true } } as never) as Promise<unknown>,
-    wantsBasmala ? (client.content.v4.verses.byKey("1:1" as never, { words: false, fields: { textUthmani: true } } as never) as Promise<unknown>) : Promise.resolve(null),
+  const [verses, basmalaRaw] = await Promise.all([
+    contentGetAll<VerseLike>(`verses/by_chapter/${chapterId}`, "verses", { words: false, translations: translationId ? [translationId] : undefined, fields: "text_uthmani", translation_fields: "resource_id" }, 300, TEXT_TTL_MS),
+    wantsBasmala ? contentGet("verses/by_key/1:1", { words: false, fields: "text_uthmani" }, TEXT_TTL_MS) : Promise.resolve(null),
   ]);
-  const verses = unwrap<VerseLike>(versesRaw, "verses");
   const basmalaVerse = basmalaRaw ? (((basmalaRaw as { verse?: VerseLike }).verse ?? basmalaRaw) as VerseLike) : null;
   return { surah, ayahs: verses.map((v) => toAyah(v, translationId)), basmala: basmalaVerse?.verseKey ? toAyah(basmalaVerse, null) : null, fetchedAt: Date.now() };
 };
@@ -243,9 +252,7 @@ const getChapterText = (chapterId: number, translationId: number | null): Promis
 
 /** Per-ayah audio for one reciter and chapter: url + word timings relative to each file. */
 const getAyahAudio = async (recitationId: number, chapterId: number): Promise<Map<string, { url: string; timings: ReturnType<typeof normaliseAyahWordTimings> }>> => {
-  const client = await getContentClient();
-  const raw = (await client.content.v4.audio.verseRecitation.byChapter(String(chapterId) as never, String(recitationId), { perPage: 300, segments: true } as never)) as unknown;
-  const files = unwrap<{ verseKey?: string; verse_key?: string; url?: string; segments?: unknown[] }>(raw, "audioFiles");
+  const files = await contentGetAll<{ verseKey?: string; verse_key?: string; url?: string; segments?: unknown[] }>(`recitations/${recitationId}/by_chapter/${chapterId}`, "audioFiles", { segments: true }, 300, 24 * 3600 * 1000);
   const map = new Map<string, { url: string; timings: ReturnType<typeof normaliseAyahWordTimings> }>();
   for (const f of files) {
     const key = f.verseKey ?? f.verse_key;
@@ -256,8 +263,7 @@ const getAyahAudio = async (recitationId: number, chapterId: number): Promise<Ma
 
 /** Word meanings for one ayah (lazy, on tap). */
 export const getAyahWords = async (verseKey: string, wordLocale = "en"): Promise<PlayerWord[]> => {
-  const client = await getContentClient();
-  const raw = (await client.content.v4.verses.byKey(verseKey as never, { words: true, language: wordLocale, fields: { textUthmani: true }, wordFields: { textUthmani: true, translation: true, transliteration: true } } as never)) as unknown;
+  const raw = await contentGet(`verses/by_key/${encodeURIComponent(verseKey)}`, { words: true, language: wordLocale, fields: "text_uthmani", word_fields: "text_uthmani" }, 24 * 3600 * 1000);
   const v = ((raw as { verse?: VerseLike }).verse ?? raw) as VerseLike;
   return toWords(v.words);
 };

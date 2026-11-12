@@ -6,7 +6,6 @@ import {
   NO_TRANSLATION,
   PLAYBACK_RATES,
   PLAYER_STORAGE_KEYS,
-  STATIONS,
   LOCALES,
   TEXT_SIZE_SCALE,
   WALLPAPERS,
@@ -384,14 +383,15 @@ export default function QuranPlayer({ initialSurah, profileGender = "unspecified
     return wallpaperForSurah(n, wallpaperMode === "auto-art" ? "art" : wallpaperMode === "auto-live" ? "live" : "nature");
   }, [wallpaperMode, fixedWallpaper, state.surah, internetWallpapers]);
   useEffect(() => {
-    if (state.panel !== "tafsir" || !segment?.ayah || state.tafsir?.key === segment.key) return;
+    const tafsirOpen = state.panel === "tafsir" || (docked && view === "focus" && menuTab === "tafsir");
+    if (!tafsirOpen || !segment?.ayah || state.tafsir?.key === segment.key) return;
     let cancelled = false;
     dispatch({ type: "tafsirLoading" });
     fetchTafsir(tafsirId, segment.ayah.key)
       .then((res) => !cancelled && dispatch({ type: "tafsir", key: segment.key, text: res?.text ?? null }))
       .catch(() => !cancelled && dispatch({ type: "tafsir", key: segment.key, text: null }));
     return () => { cancelled = true; };
-  }, [state.panel, segment, state.tafsir?.key, tafsirId]);
+  }, [state.panel, segment, state.tafsir?.key, tafsirId, docked, view, menuTab]);
 
   /* ---------- keyboard / remote ---------- */
   useEffect(() => {
@@ -472,12 +472,6 @@ export default function QuranPlayer({ initialSurah, profileGender = "unspecified
     <>
                 {tab === "surahs" && (<>
                   <input className={styles.search} placeholder={t.search} value={query} onChange={(e) => setQuery(e.target.value)} />
-                  <div className={styles.kicker}>{t.stations}</div>
-                  {STATIONS.map((st) => (
-                    <button key={st.id} className={`${styles.row} ${station?.id === st.id ? styles.rowActive : ""}`} onClick={() => { setStation(st); openSurahNumber(st.surahs[0], true); dispatch({ type: "panel", panel: "surahs" }); }}>
-                      <span className={styles.rowMain}><span>{st.title[ar ? "ar" : "en"]}</span><span className={styles.rowSub}>{st.subtitle[ar ? "ar" : "en"]}</span></span><span>▶</span>
-                    </button>
-                  ))}
                   <div className={styles.kicker}>{t.surahs}</div>
                   {filteredSurahs.map((s) => (
                     <button key={s.number} className={`${styles.row} ${state.surah?.number === s.number ? styles.rowActive : ""}`} onClick={() => { setStation(null); openSurahNumber(s.number, true); }}>

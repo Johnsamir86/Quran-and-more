@@ -3,7 +3,7 @@
     "name": "Quran and More",
     "slug": "quran-and-more",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "quranandmore",
     "userInterfaceStyle": "automatic",
@@ -20,7 +20,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "foundation.quranandmore.app"
+      "package": "foundation.quranandmore.app",
+      "versionCode": 2
     },
     "web": {
       "output": "single",
@@ -44,7 +45,7 @@
       "reactCompiler": true
     },
     "extra": {
-      "apiBaseUrl": "http://localhost:3000"
+      "apiBaseUrl": "https://quran-and-more.netlify.app"
     }
   }
 }

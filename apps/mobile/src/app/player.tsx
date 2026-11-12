@@ -390,8 +390,6 @@ export default function PlayerScreen() {
           <ScrollView contentContainerStyle={{ padding: 12, gap: 8 }}>
             {state.panel === "surahs" && (<>
               <TextInput value={query} onChangeText={setQuery} placeholder={T.search} placeholderTextColor={c.muted} style={[st.input, { color: c.ink, borderColor: c.line }]} />
-              <Text style={{ color: c.muted, fontSize: 12 }}>{T.stations}</Text>
-              {STATIONS.map((s) => <Row key={s.id} c={c} active={station?.id === s.id} title={s.title[ar ? "ar" : "en"]} sub={s.subtitle[ar ? "ar" : "en"]} onPress={() => { setStation(s); openSurahNumber(s.surahs[0], true); dispatch({ type: "panel", panel: "surahs" }); }} />)}
               <Text style={{ color: c.muted, fontSize: 12 }}>{T.surahs}</Text>
               {filteredSurahs.map((s) => <Row key={s.number} c={c} active={state.surah?.number === s.number} title={`${digits(s.number)}. ${s.arabicName}`} sub={`${s.latinName} · ${s.verseCount}`} onPress={() => { setStation(null); openSurahNumber(s.number, true); }} />)}
             </>)}
