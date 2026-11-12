@@ -131,7 +131,7 @@ def align_surah(reciter: str, surah: int, audio_path: str, text_dir="data/text")
         words += [(romanize(w), "basmala", i + 1) for i, w in enumerate(BASMALA)]
     for v in meta["verses"]:
         for w in v["words"]:
-            words.append((romanize(w["uthmani"] or w["simple"]), v["key"], w["position"]))
+            words.append((romanize(w["simple"] or w["uthmani"]), v["key"], w["position"]))
 
     ref = "".join(r for r, _, _ in words)
     word_start_char = []; c = 0
@@ -140,15 +140,23 @@ def align_surah(reciter: str, surah: int, audio_path: str, text_dir="data/text")
 
     # Whole-file alignment whenever the trellis fits in memory (T x (2L+1) int8 backpointers).
     n_tokens = sum(len(r) for r, _, _ in words)
-    if T * (2 * n_tokens + 1) <= SINGLE_PIECE_BUDGET:
+    single = T * (2 * n_tokens + 1) <= SINGLE_PIECE_BUDGET
+    if single:
         anc = []
     else:
-        # Anchors on vowel-stripped strings: the model emits vowels, the romanised text often does not.
-        def strip_v(txt):
-            keep = [(c, i) for i, c in enumerate(txt) if c not in "aeiou"]
-            return "".join(c for c, _ in keep), [i for _, i in keep]
-        dec_s, dec_map = strip_v(dec); ref_s, ref_map = strip_v(ref)
-        anc = [(dec_frames[dec_map[i]], ref_map[j]) for i, j in anchors_idx(dec_s, ref_s, k=ANCHOR_K_STRIPPED)]
+        anc = anchors(dec, dec_frames, ref)
+        if len(anc) < T / MAX_PIECE_FRAMES * 2:
+            # Few raw anchors: add matches on vowel-stripped strings (the model emits vowels, the romanised text may not).
+            def strip_v(txt):
+                keep = [(c, i) for i, c in enumerate(txt) if c not in "aeiou"]
+                return "".join(c for c, _ in keep), [i for _, i in keep]
+            dec_s, dec_map = strip_v(dec); ref_s, ref_map = strip_v(ref)
+            extra = [(dec_frames[dec_map[i]], ref_map[j]) for i, j in anchors_idx(dec_s, ref_s, k=ANCHOR_K_STRIPPED)]
+            merged = sorted(set(anc) | set(extra))
+            # keep monotonic in ref index
+            anc, last_r = [], -1
+            for f, r in merged:
+                if r > last_r: anc.append((f, r)); last_r = r
     # Word-start anchors: (frame, word index)
     starts = []
     for f, r in anc:
@@ -181,7 +189,7 @@ def align_surah(reciter: str, surah: int, audio_path: str, text_dir="data/text")
     # Fallback split for anchor-less long stretches (proportional by word count)
     fixed = []
     for f0, f1, w0, w1 in pieces:
-        n = max(1, math.ceil((f1 - f0) / MAX_PIECE_FRAMES))
+        n = 1 if single else max(1, math.ceil((f1 - f0) / MAX_PIECE_FRAMES))
         for j in range(n):
             a = f0 + (f1 - f0) * j // n; b = f0 + (f1 - f0) * (j + 1) // n
             wa = w0 + (w1 - w0) * j // n; wb = w0 + (w1 - w0) * (j + 1) // n
@@ -235,7 +243,7 @@ def align_surah(reciter: str, surah: int, audio_path: str, text_dir="data/text")
     if out_verses: out_verses[-1]["toMs"] = max(out_verses[-1]["toMs"], duration_ms)
     result = {
         "reciter": reciter, "chapter": surah, "durationMs": duration_ms,
-        "method": {"model": "torchaudio MMS_FA (wav2vec2 CTC, uroman)", "version": 2, "istiadha": has_ist, "basmala": has_basmala, "pieces": len(pieces), "fallbackPieces": sum(1 for p in pieces if p[4]), "lowConfidenceWords": low_conf, "words": len(words)},
+        "method": {"model": "torchaudio MMS_FA (wav2vec2 CTC, uroman)", "version": 3, "istiadha": has_ist, "basmala": has_basmala, "pieces": len(pieces), "fallbackPieces": sum(1 for p in pieces if p[4]), "lowConfidenceWords": low_conf, "words": len(words)},
         "timestamps": out_verses,
     }
     result["method"]["seconds"] = round(time.time() - t0, 1)
