@@ -117,27 +117,31 @@ def align_surah(reciter: str, surah: int, audio_path: str, text_dir="data/text")
 
     # Reference word list: [isti'adha?] [basmala?] verse words...
     words = []  # (romanized, verse_key or None, position)
-    # Which opening phrases are actually recited? Force-align each candidate prefix against the
-    # first 25 s and keep the best-scoring one (CTC scores drop sharply when the words are absent).
+    # Which opening phrases are actually recited? Force-align each candidate prefix together with
+    # the first words of verse 1 against the opening 30 s; a prefix that is not in the audio squeezes
+    # the real first words and scores lower than aligning those words alone.
     _, tokenizer0, aligner0 = model()
     ist = [romanize(w) for w in ISTIADHA]
     bas = [romanize(w) for w in BASMALA]
     may_basmala = bool(meta["bismillah_pre"] and surah not in (1, 9))
-    candidates = [("ist+bas", ist + bas) if may_basmala else None, ("ist", ist), ("bas", bas) if may_basmala else None]
-    head = em[: min(T, 1250)]
-    best, best_score = None, 0.45
-    for cand in candidates:
-        if not cand: continue
+    first_words = [romanize(w["simple"] or w["uthmani"]) for w in meta["verses"][0]["words"]][:8]
+    candidates = [("none", []), ("ist", ist)] + ([("bas", bas), ("ist+bas", ist + bas)] if may_basmala else [])
+    head = em[: min(T, 1500)]
+    def mean_score(tokens_words):
         try:
-            spans = aligner0(head, tokenizer0(cand[1]))
+            spans = aligner0(head, tokenizer0(tokens_words))
             sc = [sum(x.score * (x.end - x.start) for x in ws) / max(1, sum(x.end - x.start for x in ws)) for ws in spans if ws]
-            score = sum(sc) / len(sc) if sc else 0.0
+            return sum(sc) / len(sc) if sc else 0.0, sc
         except Exception:  # noqa: BLE001
-            score = 0.0
-        if score > best_score or (best and score >= best_score and len(cand[1]) > len(best[1]) and score >= 0.6):
-            best, best_score = cand, score
-    has_ist = bool(best and "ist" in best[0])
-    has_basmala = bool(best and "bas" in best[0])
+            return 0.0, []
+    best, best_score = "none", -1.0
+    for name, prefix in candidates:
+        total, sc = mean_score(prefix + first_words)
+        prefix_ok = not prefix or (len(sc) >= len(prefix) and sum(sc[:len(prefix)]) / len(prefix) >= 0.5)
+        if prefix_ok and total > best_score + (0.03 if prefix else 0.0):
+            best, best_score = name, total
+    has_ist = "ist" in best
+    has_basmala = "bas" in best
     if has_ist:
         words += [(r, "istiadha", i + 1) for i, r in enumerate(ist)]
     if has_basmala:
@@ -256,7 +260,7 @@ def align_surah(reciter: str, surah: int, audio_path: str, text_dir="data/text")
     if out_verses: out_verses[-1]["toMs"] = max(out_verses[-1]["toMs"], duration_ms)
     result = {
         "reciter": reciter, "chapter": surah, "durationMs": duration_ms,
-        "method": {"model": "torchaudio MMS_FA (wav2vec2 CTC, uroman)", "version": 4, "istiadha": has_ist, "basmala": has_basmala, "pieces": len(pieces), "fallbackPieces": sum(1 for p in pieces if p[4]), "lowConfidenceWords": low_conf, "words": len(words)},
+        "method": {"model": "torchaudio MMS_FA (wav2vec2 CTC, uroman)", "version": 5, "istiadha": has_ist, "basmala": has_basmala, "pieces": len(pieces), "fallbackPieces": sum(1 for p in pieces if p[4]), "lowConfidenceWords": low_conf, "words": len(words)},
         "timestamps": out_verses,
     }
     result["method"]["seconds"] = round(time.time() - t0, 1)
