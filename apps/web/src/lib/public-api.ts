@@ -20,6 +20,9 @@ export const publicJson = (body: unknown, init?: { status?: number; maxAgeSecond
       "x-api-version": PUBLIC_API_VERSION,
       "access-control-allow-origin": "*",
       "cache-control": `public, s-maxage=${init?.maxAgeSeconds ?? 3600}, stale-while-revalidate=86400`,
+      // Netlify's Next runtime only varies the CDN cache on its own query params; vary on all of ours
+      // (reciter, translation, layout, language...) or every variant would share one cached body.
+      "netlify-vary": "query",
     },
   });
 
