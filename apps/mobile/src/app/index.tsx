@@ -27,11 +27,23 @@ export default function ChapterListScreen() {
       keyExtractor={(c) => String(c.id)}
       contentContainerStyle={styles.list}
       ListHeaderComponent={
-        <Link href="/player" asChild>
-          <Pressable style={[styles.row, { backgroundColor: "#1d9e75" }]} accessibilityRole="button">
-            <Text style={[styles.name, { color: "#fff" }]}>{locale === "ar" ? "▶ المشغّل: استمع واقرأ وتدبّر" : "▶ Player: listen, read, translate, tafsir"}</Text>
-          </Pressable>
-        </Link>
+        <View style={{ gap: 8 }}>
+          <Link href="/player" asChild>
+            <Pressable style={[styles.row, { backgroundColor: "#1d9e75" }]} accessibilityRole="button">
+              <Text style={[styles.name, { color: "#fff" }]}>{locale === "ar" ? "▶ المشغّل: استمع واقرأ وتدبّر" : "▶ Player: listen, read, translate, tafsir"}</Text>
+            </Pressable>
+          </Link>
+          <Link href="/family" asChild>
+            <Pressable style={[styles.row, { backgroundColor: "rgba(29,158,117,0.15)" }]} accessibilityRole="button">
+              <Text style={styles.name}>{locale === "ar" ? "👨‍👩‍👧 العائلة: ملف لكل فرد" : "👨‍👩‍👧 Family: a profile for everyone"}</Text>
+            </Pressable>
+          </Link>
+          <Link href="/mushaf" asChild>
+            <Pressable style={[styles.row, { backgroundColor: "#15201b" }]} accessibilityRole="button">
+              <Text style={[styles.name, { color: "#fff" }]}>{locale === "ar" ? "📖 المصحف: صفحة بصفحة بالخط العثماني" : "📖 Mushaf: page by page, official fonts"}</Text>
+            </Pressable>
+          </Link>
+        </View>
       }
       renderItem={({ item }) => (
         <Link href={{ pathname: "/read/[chapterId]", params: { chapterId: String(item.id) } }} asChild>

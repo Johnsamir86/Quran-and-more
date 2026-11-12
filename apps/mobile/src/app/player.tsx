@@ -5,18 +5,19 @@ import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "r
 import { ActivityIndicator, FlatList, Modal, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View, useColorScheme } from "react-native";
 
 import {
-  NO_TRANSLATION, PLAYBACK_RATES, PLAYER_STORAGE_KEYS, STATIONS, TEXT_SIZE_SCALE, currentSegment, decideAtSegmentEnd, initialPlayerState,
+  NO_TRANSLATION, PLAYBACK_RATES, isBookmarked, notesFor, PLAYER_STORAGE_KEYS, STATIONS, TEXT_SIZE_SCALE, currentSegment, decideAtSegmentEnd, initialPlayerState,
   locateInAyah, locateInChapter, nextSurahNumber, playerReducer, resolveLocale,
   type PlayerPanel, type PlayerReciter, type PlayerState, type PlayerSurah, type PlayerTranslation, type PlayerWord, type RepeatMode, type Station, type TextSize,
 } from "@qam/core";
 
+import { useFamily, useProgressTicker } from "@/lib/family";
 import { fetchPlayerSurah, fetchReciters, fetchSurahs, fetchTafsir, fetchTranslations } from "@/lib/player-api";
 
 const locale = resolveLocale(Intl.DateTimeFormat().resolvedOptions().locale);
 const ar = locale === "ar";
 const T = ar
-  ? { surahs: "السور", reciter: "القارئ", translation: "الترجمة", tafsir: "التفسير", settings: "الإعدادات", stations: "الإذاعة", none: "النص العربي وحده", textSize: "حجم النص", autoAdvance: "الانتقال التلقائي إلى السورة التالية", motion: "تمرير تلقائي", small: "صغير", medium: "متوسط", large: "كبير", ayah: "الآية", basmala: "البسملة", basmalaNote: "البسملة ليست آية من هذه السورة، ولا تفسير لها هنا.", loading: "جارٍ التحميل…", offline: "تعذّر الاتصال بخدمة المحتوى. تحقق من اتصالك ثم أعد المحاولة.", retry: "إعادة المحاولة", close: "إغلاق", search: "بحث عن سورة…", listenWith: "بصوت", unavailable: "غير متاح", title: "القرآن الكريم", repeat: "التكرار", repeatOff: "بدون", repeatAyah: "كل آية", repeatRange: "نطاق", repeatSurah: "السورة", times: "مرات", speed: "السرعة", sleep: "مؤقت النوم", off: "إيقاف", gapless: "تلاوة متصلة", perAyah: "آية بآية" }
-  : { surahs: "Surahs", reciter: "Reciter", translation: "Translation", tafsir: "Tafsir", settings: "Settings", stations: "Radio", none: "Arabic text only", textSize: "Text size", autoAdvance: "Auto-advance to next surah", motion: "Auto-scroll", small: "Small", medium: "Medium", large: "Large", ayah: "Ayah", basmala: "Basmala", basmalaNote: "The Basmala is not an ayah of this surah, so there is no tafsir here.", loading: "Loading…", offline: "Could not reach the content service. Check your connection and try again.", retry: "Try again", close: "Close", search: "Search a surah…", listenWith: "Recited by", unavailable: "not available", title: "The Noble Quran", repeat: "Repeat", repeatOff: "Off", repeatAyah: "Each ayah", repeatRange: "Range", repeatSurah: "Surah", times: "times", speed: "Speed", sleep: "Sleep timer", off: "Off", gapless: "Gapless", perAyah: "Ayah by ayah" };
+  ? { surahs: "السور", reciter: "القارئ", translation: "الترجمة", tafsir: "التفسير", settings: "الإعدادات", stations: "الإذاعة", none: "النص العربي وحده", textSize: "حجم النص", autoAdvance: "الانتقال التلقائي إلى السورة التالية", motion: "تمرير تلقائي", small: "صغير", medium: "متوسط", large: "كبير", ayah: "الآية", basmala: "البسملة", basmalaNote: "البسملة ليست آية من هذه السورة، ولا تفسير لها هنا.", loading: "جارٍ التحميل…", offline: "تعذّر الاتصال بخدمة المحتوى. تحقق من اتصالك ثم أعد المحاولة.", retry: "إعادة المحاولة", close: "إغلاق", search: "بحث عن سورة…", listenWith: "بصوت", unavailable: "غير متاح", title: "القرآن الكريم", repeat: "التكرار", repeatOff: "بدون", repeatAyah: "كل آية", repeatRange: "نطاق", repeatSurah: "السورة", times: "مرات", speed: "السرعة", sleep: "مؤقت النوم", off: "إيقاف", gapless: "تلاوة متصلة", perAyah: "آية بآية", bookmark: "علامة", bookmarked: "محفوظة", notes: "ملاحظاتي", noteHint: "اكتب تدبّرك على هذه الآية…", saveNote: "حفظ", noProfile: "اختر ملفًا من صفحة العائلة أولًا" }
+  : { surahs: "Surahs", reciter: "Reciter", translation: "Translation", tafsir: "Tafsir", settings: "Settings", stations: "Radio", none: "Arabic text only", textSize: "Text size", autoAdvance: "Auto-advance to next surah", motion: "Auto-scroll", small: "Small", medium: "Medium", large: "Large", ayah: "Ayah", basmala: "Basmala", basmalaNote: "The Basmala is not an ayah of this surah, so there is no tafsir here.", loading: "Loading…", offline: "Could not reach the content service. Check your connection and try again.", retry: "Try again", close: "Close", search: "Search a surah…", listenWith: "Recited by", unavailable: "not available", title: "The Noble Quran", repeat: "Repeat", repeatOff: "Off", repeatAyah: "Each ayah", repeatRange: "Range", repeatSurah: "Surah", times: "times", speed: "Speed", sleep: "Sleep timer", off: "Off", gapless: "Gapless", perAyah: "Ayah by ayah", bookmark: "Bookmark", bookmarked: "Saved", notes: "My notes", noteHint: "Write your reflection on this ayah…", saveNote: "Save", noProfile: "Choose a profile on the Family page first" };
 const DEFAULT_TAFSIR = ar ? "926" : "169";
 const digits = (n: number) => (ar ? n.toLocaleString("ar-EG", { useGrouping: false }) : String(n));
 
@@ -37,10 +38,14 @@ export default function PlayerScreen() {
   const [query, setQuery] = useState("");
   const [hydrated, setHydrated] = useState(false);
   const listRef = useRef<FlatList>(null);
+  const family = useFamily();
+  const [noteDraft, setNoteDraft] = useState("");
+  const [notesOpen, setNotesOpen] = useState(false);
 
   const player = useAudioPlayer(null);
   const status = useAudioPlayerStatus(player);
   const segment = currentSegment(state);
+  useProgressTicker(segment?.ayah?.key ?? null, null, state.isPlaying && !!family.profile);
 
   useEffect(() => { setAudioModeAsync({ playsInSilentMode: true, shouldPlayInBackground: true, interruptionMode: "doNotMix" }).catch(() => undefined); }, []);
 
@@ -241,7 +246,13 @@ export default function PlayerScreen() {
                 {item.translation ? <Text style={{ color: c.muted, fontSize: 15 * scale, lineHeight: 23 * scale }}>{item.translation}</Text> : null}
                 <View style={st.segMeta}>
                   <Text style={{ color: c.muted, fontSize: 12 }}>{item.ayah ? `${T.ayah} ${digits(item.ayah.number)} / ${digits(state.surah?.verseCount ?? 0)}` : T.basmala}</Text>
-                  {item.ayah ? <Pressable onPress={() => { dispatch({ type: "seek", index }); if (state.panel !== "tafsir") dispatch({ type: "panel", panel: "tafsir" }); }}><Text style={{ color: c.accent, fontSize: 13 }}>{T.tafsir}</Text></Pressable> : null}
+                  {item.ayah ? (
+                    <View style={{ flexDirection: "row", gap: 14 }}>
+                      <Pressable onPress={() => family.profile ? family.dispatch({ type: "bookmark/toggle", verseKey: item.ayah!.key }) : undefined}><Text style={{ color: c.accent, fontSize: 13 }}>🔖 {isBookmarked(family.state, item.ayah.key) ? T.bookmarked : T.bookmark}</Text></Pressable>
+                      <Pressable onPress={() => { dispatch({ type: "seek", index }); setNotesOpen(true); }}><Text style={{ color: c.accent, fontSize: 13 }}>📝 {T.notes}</Text></Pressable>
+                      <Pressable onPress={() => { dispatch({ type: "seek", index }); if (state.panel !== "tafsir") dispatch({ type: "panel", panel: "tafsir" }); }}><Text style={{ color: c.accent, fontSize: 13 }}>{T.tafsir}</Text></Pressable>
+                    </View>
+                  ) : null}
                 </View>
               </Pressable>
             );
@@ -264,6 +275,25 @@ export default function PlayerScreen() {
           <Btn label="»" onPress={() => state.surah && openSurahNumber(nextSurahNumber(state.surah.number), state.isPlaying)} c={c} />
         </View>
       </View>
+
+      {/* notes */}
+      <Modal visible={notesOpen} animationType="slide" transparent onRequestClose={() => setNotesOpen(false)}>
+        <Pressable style={st.backdrop} onPress={() => setNotesOpen(false)} />
+        <View style={[st.sheet, { backgroundColor: c.card, padding: 14, gap: 10 }]}>
+          <Text style={{ color: c.ink, fontWeight: "700", fontSize: 16 }}>{T.notes} · {segment?.ayah?.key ?? ""}</Text>
+          {!family.profile ? <Text style={{ color: c.muted }}>{T.noProfile}</Text> : (
+            <>
+              <TextInput value={noteDraft} onChangeText={setNoteDraft} placeholder={T.noteHint} placeholderTextColor={c.muted} multiline style={[st.input, { color: c.ink, borderColor: c.line, minHeight: 90 }]} />
+              <Pressable onPress={() => { if (segment?.ayah && noteDraft.trim()) { family.dispatch({ type: "note/save", verseKey: segment.ayah.key, body: noteDraft }); setNoteDraft(""); } }} style={[st.chip, { borderColor: c.accent, backgroundColor: c.accent, alignSelf: "flex-start" }]}><Text style={{ color: "#fff" }}>{T.saveNote}</Text></Pressable>
+              <ScrollView style={{ maxHeight: 220 }} contentContainerStyle={{ gap: 8 }}>
+                {segment?.ayah ? notesFor(family.state, family.profile.id).filter((n) => n.verseKey === segment.ayah!.key).map((n) => (
+                  <View key={n.id} style={[st.listRow, { borderColor: c.line }]}><Text style={{ color: c.ink }}>{n.body}</Text><Pressable onPress={() => family.dispatch({ type: "note/remove", id: n.id })}><Text style={{ color: "#b91c1c", fontSize: 12 }}>✕</Text></Pressable></View>
+                )) : null}
+              </ScrollView>
+            </>
+          )}
+        </View>
+      </Modal>
 
       {/* panel */}
       <Modal visible={state.panel !== null} animationType="slide" transparent onRequestClose={() => dispatch({ type: "panel", panel: state.panel })}>

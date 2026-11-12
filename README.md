@@ -21,6 +21,15 @@ docs/research   Verified API findings, catalog of the 24 apps on the Quran.com
 docs/           Architecture and roadmap.
 ```
 
+## What works today
+
+- `/player` listen, read, translate and study tafsir in one screen, any reciter,
+  gapless with word highlighting, repeat and memorisation controls
+- `/mushaf` printed page layouts (Madani, Tajweed, KFGQPC, IndoPak) with the
+  official fonts, tap any word to listen from there
+- `/family` profiles for every family member with bookmarks, notes and progress
+- Public API v1 under `/api/public/v1` for integrations
+
 ## Run
 
 ```bash

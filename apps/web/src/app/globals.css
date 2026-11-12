@@ -30,3 +30,12 @@ select,
 textarea {
   font: inherit;
 }
+
+
+/* Family profile UI modes (set by FamilyProvider on <html>) */
+:root { --profile-scale: 1; }
+html[data-ui-mode="senior"] { font-size: calc(16px * var(--profile-scale)); }
+html[data-ui-mode="kids"] { font-size: calc(16px * var(--profile-scale)); }
+html[data-high-contrast="true"] { --line: rgba(0,0,0,0.35); }
+html[data-high-contrast="true"] body { color: #000; }
+@media (prefers-color-scheme: dark) { html[data-high-contrast="true"] body { color: #fff; } }

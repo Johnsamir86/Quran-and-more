@@ -3,6 +3,17 @@
 Phase 0 (done): research, prelive API connection, monorepo, core domain,
 database schema, public API v1 (content), mobile skeleton.
 
+Done so far in Phase 1 (2026-11-12):
+- Unified player (web + mobile): gapless engine with word sync, full
+  reciter catalogue, translations, tafsir, word meanings, repeat, speed,
+  sleep timer, stations, resume
+- Mushaf page view (web + mobile): Madani v1/v2, Tajweed colour, KFGQPC
+  Hafs, IndoPak 15/16 with the official per-page fonts loaded on demand
+- Family profiles (local-first): parent / child / adult / senior / teacher,
+  kids and senior UI modes, per-profile bookmarks, notes, daily minutes and
+  streaks; sync to the Quran Foundation account is wired for when user
+  login scopes are enabled on the client
+
 Phase 1, Core reader on every screen
 - Mushaf page view with every layout (Madani 15/16, IndoPak, Tajweed, KFGQPC)
 - Translation mode, word-by-word, tap-to-hear, surah info, juz/hizb/page nav

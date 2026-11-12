@@ -6,6 +6,7 @@ import {
 } from "next/font/google";
 
 import { starterConfig } from "../../starter.config";
+import { FamilyProvider } from "@/components/family/family-provider";
 import ShellGate from "@/components/shell-gate";
 import "./globals.css";
 
@@ -42,8 +43,10 @@ export default function RootLayout({
       <body
         className={`${bodyFont.variable} ${arabicFont.variable} ${monoFont.variable}`}
       >
-        <ShellGate />
-        {children}
+        <FamilyProvider>
+          <ShellGate />
+          {children}
+        </FamilyProvider>
       </body>
     </html>
   );

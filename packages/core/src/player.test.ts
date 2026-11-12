@@ -142,3 +142,20 @@ describe("splitUthmaniWords", () => {
     expect(splitUthmaniWords("  الٓمٓ ")).toEqual([{ position: 1, text: "الٓمٓ" }]);
   });
 });
+
+describe("mushaf lines", () => {
+  it("labels header and basmala lines above a surah's first line", async () => {
+    const { buildMushafLines, MUSHAF_LAYOUTS } = await import("./mushaf");
+    const layout = MUSHAF_LAYOUTS[0];
+    const verses = [
+      { verseKey: "2:1", words: [{ position: 1, lineNumber: 3, glyph: "ﱁ", text: "الٓمٓ" }, { position: 2, charTypeName: "end", lineNumber: 3, glyph: "ﱂ", text: "١" }] },
+      { verseKey: "2:2", words: [{ position: 1, lineNumber: 4, glyph: "ﱃ", text: "ذَٰلِكَ" }] },
+    ];
+    const lines = buildMushafLines(layout, verses, new Map([["2:1", { number: 2, hasBasmala: true }]]));
+    expect(lines).toHaveLength(15);
+    expect(lines[0].kind).toBe("surah-header");
+    expect(lines[1].kind).toBe("basmala");
+    expect(lines[2].words.map((w) => w.glyph)).toEqual(["ﱁ", "ﱂ"]);
+    expect(lines[2].words[1].isEndMarker).toBe(true);
+  });
+});

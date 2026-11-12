@@ -8,7 +8,10 @@ import {
   PLAYER_STORAGE_KEYS,
   STATIONS,
   TEXT_SIZE_SCALE,
+  bookmarksFor,
   currentSegment,
+  isBookmarked,
+  notesFor,
   decideAtSegmentEnd,
   initialPlayerState,
   locateInAyah,
@@ -25,6 +28,9 @@ import {
   type TextSize,
 } from "@qam/core";
 
+import Link from "next/link";
+
+import { useFamily, useProgressTicker } from "@/components/family/family-provider";
 import { fetchPlayerSurah, fetchReciters, fetchSurahs, fetchTafsir, fetchTranslations, fetchWords } from "@/lib/player-client";
 
 import styles from "./player.module.css";
@@ -49,6 +55,7 @@ const COPY = {
     speed: "السرعة", sleep: "مؤقت النوم", off: "إيقاف", minutes: "دقيقة", wordByWord: "ترجمة الكلمات عند الضغط",
     styleMurattal: "مرتّل", styleMujawwad: "مجوّد", styleMuallim: "معلّم", gaplessOnly: "متصلة", ayahOnly: "آية بآية", both: "متصلة + آية بآية",
     share: "مشاركة", copied: "تم نسخ الرابط", remaining: "المتبقي",
+    bookmark: "علامة", bookmarked: "محفوظة", notes: "ملاحظاتي", noteHint: "اكتب تدبّرك أو ملاحظتك على هذه الآية…", saveNote: "حفظ الملاحظة", deleteNote: "حذف", family: "العائلة", noProfile: "اختر ملفًا من صفحة العائلة لحفظ العلامات والملاحظات", library: "المحفوظات",
   },
   en: {
     kicker: "The Noble Quran", surahs: "Surahs", reciter: "Reciter", translation: "Translation", tafsir: "Tafsir",
@@ -65,6 +72,7 @@ const COPY = {
     speed: "Speed", sleep: "Sleep timer", off: "Off", minutes: "min", wordByWord: "Tap a word for its meaning",
     styleMurattal: "Murattal", styleMujawwad: "Mujawwad", styleMuallim: "Muallim", gaplessOnly: "gapless", ayahOnly: "ayah by ayah", both: "gapless + ayah by ayah",
     share: "Share", copied: "Link copied", remaining: "remaining",
+    bookmark: "Bookmark", bookmarked: "Saved", notes: "My notes", noteHint: "Write your reflection or note on this ayah…", saveNote: "Save note", deleteNote: "Delete", family: "Family", noProfile: "Choose a profile on the Family page to save bookmarks and notes", library: "Saved",
   },
 } as const;
 
@@ -99,6 +107,9 @@ export default function QuranPlayer({ initialSurah, profileGender = "unspecified
   const [wordTip, setWordTip] = useState<{ key: string; position: number } | null>(null);
   const [wordMeanings, setWordMeanings] = useState<Record<string, { translation?: string | null; transliteration?: string | null; audioUrl?: string | null }[]>>({});
   const [toast, setToast] = useState<string | null>(null);
+  const family = useFamily();
+  const [noteDraft, setNoteDraft] = useState("");
+  const [notesPanel, setNotesPanel] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const stateRef = useRef<PlayerState>(state);
@@ -160,6 +171,7 @@ export default function QuranPlayer({ initialSurah, profileGender = "unspecified
 
   const segment = currentSegment(state);
   const gapless = state.engine === "gapless" && !!state.chapterAudio;
+  useProgressTicker(segment?.ayah?.key ?? null, null, state.isPlaying && !!family.profile);
 
   /* ---------- audio source + play state ---------- */
   const desiredSrc = gapless ? state.chapterAudio?.url ?? null : segment?.audioUrl ?? null;
@@ -413,7 +425,9 @@ export default function QuranPlayer({ initialSurah, profileGender = "unspecified
               {p === "surahs" ? "☰" : p === "reciter" ? "🎙" : p === "translation" ? "🌐" : p === "tafsir" ? "📖" : "⚙"} <span>{t[p]}</span>
             </button>
           ))}
+          <button className={`${styles.chip} ${notesPanel ? styles.chipActive : ""}`} onClick={() => { setNotesPanel((v) => !v); if (state.panel) dispatch({ type: "panel", panel: state.panel }); }} aria-pressed={notesPanel}>📝 <span>{t.notes}</span></button>
           <button className={styles.chip} onClick={share} aria-label={t.share}>↗ <span>{t.share}</span></button>
+          <Link className={styles.chip} href="/family" title={t.family}>{family.profile ? `${(family.profile as { avatar?: string }).avatar ?? "🌙"} ` : "👨‍👩‍👧 "}<span>{family.profile?.displayName ?? t.family}</span></Link>
         </nav>
       </header>
 
@@ -458,6 +472,10 @@ export default function QuranPlayer({ initialSurah, profileGender = "unspecified
                     <span>{isBasmala ? t.basmala : `${t.ayah} ${num(seg.ayah!.number)} ${t.of} ${num(state.surah?.verseCount ?? 0)}`}</span>
                     {!isBasmala && (
                       <span className={styles.segmentActions}>
+                        <button className={styles.tafsirBtn} onClick={(e) => { e.stopPropagation(); if (!family.profile) { setToast(t.noProfile); window.setTimeout(() => setToast(null), 2500); return; } family.dispatch({ type: "bookmark/toggle", verseKey: seg.ayah!.key }); }} aria-pressed={isBookmarked(family.state, seg.ayah!.key)}>
+                          {isBookmarked(family.state, seg.ayah!.key) ? `🔖 ${t.bookmarked}` : `🔖 ${t.bookmark}`}
+                        </button>
+                        <button className={styles.tafsirBtn} onClick={(e) => { e.stopPropagation(); dispatch({ type: "seek", index: i }); setNotesPanel(true); if (state.panel) dispatch({ type: "panel", panel: state.panel }); }}>📝 {t.notes}{notesFor(family.state, family.profile?.id ?? "").filter((n) => n.verseKey === seg.ayah!.key).length ? " •" : ""}</button>
                         <button className={styles.tafsirBtn} onClick={(e) => { e.stopPropagation(); setRepeat({ mode: "ayah", count: state.repeat.mode === "ayah" ? state.repeat.count : 3 }); dispatch({ type: "seek", index: i }); dispatch({ type: "play" }); }}>↻ {t.repeatAyah}</button>
                         <button className={styles.tafsirBtn} onClick={(e) => { e.stopPropagation(); dispatch({ type: "seek", index: i }); if (state.panel !== "tafsir") dispatch({ type: "panel", panel: "tafsir" }); }}>{t.tafsir}</button>
                       </span>
@@ -580,6 +598,39 @@ export default function QuranPlayer({ initialSurah, profileGender = "unspecified
                   <label className={styles.settingRow}><span>{t.motion}</span><input type="checkbox" checked={state.motion} onChange={(e) => dispatch({ type: "motion", value: e.target.checked })} /></label>
                   <p className={styles.rowSub}>{t.wordByWord}</p>
                 </>)}
+              </div>
+            </aside>
+          </div>
+        )}
+        {notesPanel && (
+          <div className={styles.panel} onClick={() => setNotesPanel(false)}>
+            <aside className={styles.panelSheet} onClick={(e) => e.stopPropagation()} role="dialog" aria-label={t.notes}>
+              <div className={styles.panelHead}>
+                <span>{t.notes} · {segment?.ayah?.key ?? ""}</span>
+                <button className={styles.chip} onClick={() => setNotesPanel(false)}>{t.close}</button>
+              </div>
+              <div className={styles.panelBody}>
+                {!family.profile ? (
+                  <p className={styles.rowSub}><Link href="/family" className={styles.tafsirBtn}>{t.noProfile}</Link></p>
+                ) : !segment?.ayah ? <p className={styles.rowSub}>{t.basmalaNote}</p> : (
+                  <>
+                    <p className={styles.arabic} lang="ar" translate="no" style={{ fontSize: "1.2em" }}>{segment.arabic}</p>
+                    <textarea className={styles.search} rows={4} placeholder={t.noteHint} value={noteDraft} onChange={(e) => setNoteDraft(e.target.value)} />
+                    <button className={`${styles.chip} ${styles.chipActive}`} disabled={!noteDraft.trim()} onClick={() => { family.dispatch({ type: "note/save", verseKey: segment.ayah!.key, body: noteDraft }); setNoteDraft(""); }}>{t.saveNote}</button>
+                    {notesFor(family.state, family.profile.id).filter((n) => n.verseKey === segment.ayah!.key).map((n) => (
+                      <div key={n.id} className={styles.row} style={{ cursor: "default" }}>
+                        <span className={styles.rowMain}><span style={{ whiteSpace: "pre-wrap" }}>{n.body}</span><span className={styles.rowSub}>{new Date(n.updatedAt).toLocaleString(locale)}</span></span>
+                        <button className={styles.tafsirBtn} onClick={() => family.dispatch({ type: "note/remove", id: n.id })}>{t.deleteNote}</button>
+                      </div>
+                    ))}
+                    <div className={styles.kicker} style={{ marginTop: 12 }}>{t.library}</div>
+                    {bookmarksFor(family.state, family.profile.id).slice(0, 12).map((b) => (
+                      <button key={b.id} className={styles.row} onClick={() => { const [s2, a2] = b.verseKey.split(":"); if (Number(s2) === state.surah?.number) { const idx = state.segments.findIndex((x) => x.key === b.verseKey); if (idx >= 0) { seekFromTimeRef.current = false; dispatch({ type: "seek", index: idx }); } } else openSurahNumber(Number(s2), false); void a2; }}>
+                        <span>🔖 {b.verseKey}</span>
+                      </button>
+                    ))}
+                  </>
+                )}
               </div>
             </aside>
           </div>
