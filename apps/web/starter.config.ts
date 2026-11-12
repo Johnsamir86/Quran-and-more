@@ -1,9 +1,9 @@
 export const starterConfig = {
   app: {
     description:
-      "Reader-first Quran Foundation starter powered by the official SDK.",
-    name: "Quran Foundation Starter",
-    shortName: "QF Starter",
+      "One Quran experience for the whole family, on every screen.",
+    name: "Quran and More",
+    shortName: "Quran+",
   },
   branding: {
     accent: "#55d5ff",
