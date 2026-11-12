@@ -1,8 +1,10 @@
 import "server-only";
 
 import {
+  EXTRA_RECITERS,
   absoluteAudioUrl,
   buildSegments,
+  extraChapterAudioUrl,
   normaliseAyahWordTimings,
   normaliseTimestamps,
   reciterGender,
@@ -152,7 +154,7 @@ export const listReciters = async (): Promise<PlayerReciter[]> => {
       gender: reciterGender(a.id) === "female" ? "female" : "male",
     });
   }
-  return result.sort((x, y) => x.latinName.localeCompare(y.latinName));
+  return [...result, ...EXTRA_RECITERS].sort((x, y) => x.latinName.localeCompare(y.latinName));
 };
 
 export const listTranslations = async (language?: string): Promise<PlayerTranslation[]> => {
@@ -279,13 +281,18 @@ export const getAyahWords = async (verseKey: string, wordLocale = "en"): Promise
  */
 export const loadPlayerSurah = async (
   chapterId: number,
-  reciter: { chapterReciterId: number | null; recitationId: number | null; id: string },
+  reciter: { chapterReciterId: number | null; recitationId: number | null; id: string; audioBase?: string },
   translationId: number | null,
 ): Promise<PlayerSurahPayload | null> => {
   const [text, ayahAudio, chapterAudio] = await Promise.all([
     getChapterText(chapterId, translationId),
     reciter.recitationId ? getAyahAudio(reciter.recitationId, chapterId).catch(() => new Map()) : Promise.resolve(new Map()),
-    reciter.chapterReciterId ? getChapterAudio(reciter.chapterReciterId, chapterId).catch(() => null) : Promise.resolve(null),
+    reciter.chapterReciterId
+      ? getChapterAudio(reciter.chapterReciterId, chapterId).catch(() => null)
+      : reciter.audioBase
+        // Archive reciter: one file per surah, no timestamps (plays without word sync).
+        ? Promise.resolve<ChapterAudio>({ chapterId, reciterId: 0, audioUrl: extraChapterAudioUrl({ audioBase: reciter.audioBase }, chapterId), durationMs: 0, fileSize: null, timestamps: [] })
+        : Promise.resolve(null),
   ]);
   const withAudio = (a: PlayerAyah): PlayerAyah => {
     const f = ayahAudio.get(a.key);

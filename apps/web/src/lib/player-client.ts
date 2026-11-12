@@ -19,8 +19,8 @@ const get = async <T>(path: string): Promise<T> => {
   return (await res.json()) as T;
 };
 
-export const reciterParam = (r: Pick<PlayerReciter, "chapterReciterId" | "recitationId">): string =>
-  [r.chapterReciterId !== null ? `c${r.chapterReciterId}` : null, r.recitationId !== null ? `a${r.recitationId}` : null].filter(Boolean).join(":");
+export const reciterParam = (r: Pick<PlayerReciter, "chapterReciterId" | "recitationId"> & { id?: string }): string =>
+  [r.chapterReciterId !== null ? `c${r.chapterReciterId}` : null, r.recitationId !== null ? `a${r.recitationId}` : null].filter(Boolean).join(":") || r.id || "";
 
 export const fetchSurahs = (language: string) =>
   get<{ chapters: { id: number; nameArabic: string; nameSimple: string; translatedName: string; versesCount: number; bismillahPre: boolean; revelationPlace: string }[] }>(

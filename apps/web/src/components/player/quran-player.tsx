@@ -61,7 +61,7 @@ const COPY = {
     perAyah: "تلاوة آية بآية", repeat: "التكرار", repeatOff: "بدون تكرار", repeatAyah: "تكرار كل آية", repeatRange: "تكرار نطاق",
     repeatSurah: "تكرار السورة", times: "مرات", infinite: "∞", from: "من الآية", to: "إلى الآية", pauseBetween: "وقفة بعد كل آية (ثوانٍ)",
     speed: "السرعة", sleep: "مؤقت النوم", off: "إيقاف", minutes: "دقيقة", wordByWord: "ترجمة الكلمات عند الضغط",
-    styleMurattal: "مرتّل", styleMujawwad: "مجوّد", styleMuallim: "معلّم", gaplessOnly: "متصلة", ayahOnly: "آية بآية", both: "متصلة + آية بآية",
+    styleMurattal: "مرتّل", styleMujawwad: "مجوّد", styleMuallim: "معلّم", gaplessOnly: "متصلة", ayahOnly: "آية بآية", both: "متصلة + آية بآية", noSync: "سورة كاملة · بدون تزامن الكلمات", noSyncShort: "سورة كاملة · بدون تزامن",
     share: "مشاركة", copied: "تم نسخ الرابط", remaining: "المتبقي",
     wallpaper: "الخلفية", autoNature: "طبيعة حسب السورة", autoArt: "زخرفة إسلامية حسب السورة", autoLive: "خلفية حيّة حسب السورة", plainBg: "بدون خلفية", fixedBg: "خلفية ثابتة", internetBg: "صور من الإنترنت (Pexels)", internetOff: "أضف مفتاح Pexels في الإعدادات لعرض صور من الإنترنت", focusView: "شاشة واحدة", listView: "قائمة", language: "لغة الواجهة", wbwLanguage: "لغة معاني الكلمات", tafsirPick: "اختيار التفسير", nextUp: "التالية", credit: "الصورة",
     bookmark: "علامة", bookmarked: "محفوظة", notes: "ملاحظاتي", noteHint: "اكتب تدبّرك أو ملاحظتك على هذه الآية…", saveNote: "حفظ الملاحظة", deleteNote: "حذف", family: "العائلة", noProfile: "اختر ملفًا من صفحة العائلة لحفظ العلامات والملاحظات", library: "المحفوظات",
@@ -79,7 +79,7 @@ const COPY = {
     perAyah: "Ayah-by-ayah recitation", repeat: "Repeat", repeatOff: "Off", repeatAyah: "Repeat each ayah", repeatRange: "Repeat a range",
     repeatSurah: "Repeat surah", times: "times", infinite: "∞", from: "From ayah", to: "To ayah", pauseBetween: "Pause after each ayah (seconds)",
     speed: "Speed", sleep: "Sleep timer", off: "Off", minutes: "min", wordByWord: "Tap a word for its meaning",
-    styleMurattal: "Murattal", styleMujawwad: "Mujawwad", styleMuallim: "Muallim", gaplessOnly: "gapless", ayahOnly: "ayah by ayah", both: "gapless + ayah by ayah",
+    styleMurattal: "Murattal", styleMujawwad: "Mujawwad", styleMuallim: "Muallim", gaplessOnly: "gapless", ayahOnly: "ayah by ayah", both: "gapless + ayah by ayah", noSync: "Full surah · no word sync", noSyncShort: "full surah · no word sync",
     share: "Share", copied: "Link copied", remaining: "remaining",
     wallpaper: "Wallpaper", autoNature: "Nature, changes with the surah", autoArt: "Islamic art, changes with the surah", autoLive: "Live, changes with the surah", plainBg: "No wallpaper", fixedBg: "Fixed wallpaper", internetBg: "Internet photos (Pexels)", internetOff: "Add a Pexels key in settings to show internet photos", focusView: "One screen", listView: "List", language: "Interface language", wbwLanguage: "Word meanings language", tafsirPick: "Choose tafsir", nextUp: "Next", credit: "Photo",
     bookmark: "Bookmark", bookmarked: "Saved", notes: "My notes", noteHint: "Write your reflection or note on this ayah…", saveNote: "Save note", deleteNote: "Delete", family: "Family", noProfile: "Choose a profile on the Family page to save bookmarks and notes", library: "Saved",
@@ -301,6 +301,11 @@ export default function QuranPlayer({ initialSurah, profileGender = "unspecified
     const s = stateRef.current;
     if (!audio) return;
     const ms = audio.currentTime * 1000;
+    if (s.engine === "gapless" && !s.chapterAudio?.hasTimestamps) {
+      // Full-surah file without timestamps: no ayah tracking, just progress.
+      setProgress(audio.duration ? audio.currentTime / audio.duration : 0);
+      return;
+    }
     if (s.engine === "gapless") {
       const seg = s.segments[s.index];
       if (seg && seg.toMs !== null && ms >= seg.toMs - 40) {
@@ -415,7 +420,7 @@ export default function QuranPlayer({ initialSurah, profileGender = "unspecified
   const filteredTranslations = languageFilter === "all" ? translations : translations.filter((x) => x.languageName === languageFilter);
   const scale = TEXT_SIZE_SCALE[state.textSize];
   const styleLabel = (s: string | null) => (s === "mujawwad" ? t.styleMujawwad : s === "muallim" ? t.styleMuallim : t.styleMurattal);
-  const capability = (r: PlayerReciter) => (r.chapterReciterId && r.recitationId ? t.both : r.chapterReciterId ? t.gaplessOnly : t.ayahOnly);
+  const capability = (r: PlayerReciter) => (r.source === "quranicaudio" ? t.noSyncShort : r.chapterReciterId && r.recitationId ? t.both : r.chapterReciterId ? t.gaplessOnly : t.ayahOnly);
   const sleepLeft = state.sleepUntil ? Math.max(0, Math.ceil((state.sleepUntil - Date.now()) / 60000)) : 0;
 
   const statusLine = (() => {
@@ -426,7 +431,7 @@ export default function QuranPlayer({ initialSurah, profileGender = "unspecified
     const parts = [];
     if (station) parts.push(`${t.playingStation}: ${station.title[ar ? "ar" : "en"]}`);
     else if (state.reciter) parts.push(`${t.listenWith} ${ar ? state.reciter.arabicName : state.reciter.latinName} · ${t.riwayah} ${state.reciter.riwayah}`);
-    parts.push(gapless ? t.gapless : t.perAyah);
+    parts.push(gapless ? (state.chapterAudio?.hasTimestamps ? t.gapless : t.noSync) : t.perAyah);
     if (state.repeat.mode !== "off") parts.push(`${t.repeat}: ${state.repeat.mode === "ayah" ? t.repeatAyah : state.repeat.mode === "range" ? t.repeatRange : t.repeatSurah} ×${state.repeat.count === Infinity ? t.infinite : num(state.repeat.count)}`);
     if (state.sleepUntil) parts.push(`${t.sleep} ${num(sleepLeft)} ${t.minutes}`);
     return parts.join(" · ");

@@ -1,5 +1,7 @@
 import type { NextRequest } from "next/server";
 
+import { extraReciterById, isExtraReciterId } from "@qam/core";
+
 import { loadPlayerSurah } from "@/lib/player-api";
 import { publicError, publicJson } from "@/lib/public-api";
 
@@ -20,18 +22,20 @@ export async function GET(request: NextRequest, context: { params: Promise<{ cha
   const reciterParam = sp.get("reciter") ?? "c7:a7";
   let chapterReciterId: number | null = null;
   let recitationId: number | null = null;
-  for (const part of reciterParam.split(":")) {
+  const extra = isExtraReciterId(reciterParam) ? extraReciterById(reciterParam) : undefined;
+  if (isExtraReciterId(reciterParam) && !extra) return publicError("Unknown reciter", 404);
+  for (const part of extra ? [] : reciterParam.split(":")) {
     const m = /^([ca])?(\d+)$/.exec(part.trim());
     if (!m) continue;
     const n = Number.parseInt(m[2], 10);
     if (m[1] === "c") chapterReciterId = n;
     else recitationId = n;
   }
-  if (chapterReciterId === null && recitationId === null) return publicError("reciter must look like c7, a7 or c7:a7");
+  if (!extra && chapterReciterId === null && recitationId === null) return publicError("reciter must look like c7, a7, c7:a7 or x-<reciter>");
   const translationRaw = sp.get("translation");
   const translation = translationRaw && translationRaw !== "none" ? Number.parseInt(translationRaw, 10) || null : null;
   try {
-    const payload = await loadPlayerSurah(id, { chapterReciterId, recitationId, id: reciterParam }, translation);
+    const payload = await loadPlayerSurah(id, { chapterReciterId, recitationId, id: reciterParam, audioBase: extra?.audioBase }, translation);
     if (!payload) return publicError("Surah not available", 404);
     return publicJson(payload, { maxAgeSeconds: 3600 });
   } catch (error) {

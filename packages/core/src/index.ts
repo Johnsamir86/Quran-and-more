@@ -5,6 +5,7 @@ export * from "./restricted-mode";
 export * from "./qf/env";
 export * from "./qf/reciters";
 export * from "./player";
+export * from "./extra-reciters";
 export * from "./stations";
 export * from "./mushaf";
 export * from "./family-store";

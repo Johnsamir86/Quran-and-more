@@ -4,8 +4,8 @@ import { API_BASE_URL } from "./api";
 
 export interface PlayerSurahPayload { surah: PlayerSurah; reciterId: string; translationId: number | null; segments: PlayerSegment[]; chapterAudio: ChapterAudioInfo | null }
 
-export const reciterParam = (r: Pick<PlayerReciter, "chapterReciterId" | "recitationId">): string =>
-  [r.chapterReciterId !== null ? `c${r.chapterReciterId}` : null, r.recitationId !== null ? `a${r.recitationId}` : null].filter(Boolean).join(":");
+export const reciterParam = (r: Pick<PlayerReciter, "chapterReciterId" | "recitationId"> & { id?: string }): string =>
+  [r.chapterReciterId !== null ? `c${r.chapterReciterId}` : null, r.recitationId !== null ? `a${r.recitationId}` : null].filter(Boolean).join(":") || r.id || "";
 
 const get = async <T>(path: string): Promise<T> => {
   const res = await fetch(`${API_BASE_URL}${path}`, { headers: { accept: "application/json" } });
