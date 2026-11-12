@@ -26,6 +26,8 @@ LEAD_MS = 100             # CTC spikes trail onsets; benchmark vs official Afasy
 WINDOW_S, CTX_S = 30.0, 2.0
 MAX_PIECE_FRAMES = 10000  # 200 s
 ANCHOR_K = 10
+ANCHOR_K_STRIPPED = 8
+SINGLE_PIECE_BUDGET = 1_500_000_000  # ~1.5 GB of int8 backpointers
 ISTIADHA = ["أعوذ", "بالله", "من", "الشيطان", "الرجيم"]
 BASMALA = ["بسم", "الله", "الرحمن", "الرحيم"]
 
@@ -44,8 +46,14 @@ def decode_audio(path: str) -> np.ndarray:
     raw = subprocess.run(cmd, check=True, capture_output=True).stdout
     return np.frombuffer(raw, dtype=np.float32).copy()
 
+import re as _re
+_QURANIC_MARKS = _re.compile(r"[\u0653-\u065F\u06D6-\u06ED\u0640\u06DF\u06E0\u06E1\u06E2\u06E3\u06E4\u06E5\u06E6\u06E7\u06E8\u06EA\u06EB\u06EC\u06ED\u08D3-\u08FF\u0610-\u061A\u200B-\u200F\uFEFF]")
+def clean_arabic(word: str) -> str:
+    """Drop pause/annotation marks and tatweel; keep letters, hamza forms and the short-vowel harakat."""
+    return _QURANIC_MARKS.sub("", word)
+
 def romanize(word: str) -> str:
-    r = _uroman.romanize_string(word).lower()
+    r = _uroman.romanize_string(clean_arabic(word)).lower()
     r = "".join(c for c in r if "a" <= c <= "z" or c == "'")
     return r or "a"
 
@@ -77,7 +85,10 @@ def greedy(em: torch.Tensor):
     return "".join(chars), frames
 
 def anchors(dec: str, dec_frames, ref: str, k=ANCHOR_K):
-    """Unique k-grams in both strings, monotonic (longest increasing subsequence on ref index)."""
+    return [(dec_frames[i], r) for i, r in anchors_idx(dec, ref, k)]
+
+def anchors_idx(dec: str, ref: str, k=ANCHOR_K):
+    """Unique k-grams in both strings, monotonic (longest increasing subsequence on ref index). Returns (dec index, ref index)."""
     from collections import Counter
     rc = Counter(ref[i:i + k] for i in range(len(ref) - k + 1))
     dc = Counter(dec[i:i + k] for i in range(len(dec) - k + 1))
@@ -94,7 +105,7 @@ def anchors(dec: str, dec_frames, ref: str, k=ANCHOR_K):
     seq = []; n = tails_idx[-1] if tails_idx else -1
     while n != -1: seq.append(cands[n]); n = prev[n]
     seq.reverse()
-    return [(dec_frames[i], r) for i, r in seq]
+    return seq
 
 def align_surah(reciter: str, surah: int, audio_path: str, text_dir="data/text"):
     t0 = time.time()
@@ -120,15 +131,24 @@ def align_surah(reciter: str, surah: int, audio_path: str, text_dir="data/text")
         words += [(romanize(w), "basmala", i + 1) for i, w in enumerate(BASMALA)]
     for v in meta["verses"]:
         for w in v["words"]:
-            words.append((romanize(w["simple"] or w["uthmani"]), v["key"], w["position"]))
+            words.append((romanize(w["uthmani"] or w["simple"]), v["key"], w["position"]))
 
     ref = "".join(r for r, _, _ in words)
     word_start_char = []; c = 0
     for r, _, _ in words: word_start_char.append(c); c += len(r)
     start_to_word = {s: i for i, s in enumerate(word_start_char)}
 
-    # Cut points at word-start anchors, every <= MAX_PIECE_FRAMES frames.
-    anc = anchors(dec, dec_frames, ref)
+    # Whole-file alignment whenever the trellis fits in memory (T x (2L+1) int8 backpointers).
+    n_tokens = sum(len(r) for r, _, _ in words)
+    if T * (2 * n_tokens + 1) <= SINGLE_PIECE_BUDGET:
+        anc = []
+    else:
+        # Anchors on vowel-stripped strings: the model emits vowels, the romanised text often does not.
+        def strip_v(txt):
+            keep = [(c, i) for i, c in enumerate(txt) if c not in "aeiou"]
+            return "".join(c for c, _ in keep), [i for _, i in keep]
+        dec_s, dec_map = strip_v(dec); ref_s, ref_map = strip_v(ref)
+        anc = [(dec_frames[dec_map[i]], ref_map[j]) for i, j in anchors_idx(dec_s, ref_s, k=ANCHOR_K_STRIPPED)]
     # Word-start anchors: (frame, word index)
     starts = []
     for f, r in anc:
@@ -215,7 +235,7 @@ def align_surah(reciter: str, surah: int, audio_path: str, text_dir="data/text")
     if out_verses: out_verses[-1]["toMs"] = max(out_verses[-1]["toMs"], duration_ms)
     result = {
         "reciter": reciter, "chapter": surah, "durationMs": duration_ms,
-        "method": {"model": "torchaudio MMS_FA (wav2vec2 CTC, uroman)", "version": 1, "istiadha": has_ist, "basmala": has_basmala, "pieces": len(pieces), "fallbackPieces": sum(1 for p in pieces if p[4]), "lowConfidenceWords": low_conf, "words": len(words)},
+        "method": {"model": "torchaudio MMS_FA (wav2vec2 CTC, uroman)", "version": 2, "istiadha": has_ist, "basmala": has_basmala, "pieces": len(pieces), "fallbackPieces": sum(1 for p in pieces if p[4]), "lowConfidenceWords": low_conf, "words": len(words)},
         "timestamps": out_verses,
     }
     result["method"]["seconds"] = round(time.time() - t0, 1)
