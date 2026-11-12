@@ -41,7 +41,7 @@ const get = async <T>(path: string): Promise<T> => {
 
 export const fetchChapters = (locale = "en") => get<{ chapters: ChapterSummary[] }>(`/api/public/v1/chapters?language=${locale}`);
 /** Translation resource ids. Prelive sandbox has 85 (Abdel Haleem); production default is 131 (The Clear Quran). */
-const TRANSLATION_IDS = (process.env.EXPO_PUBLIC_TRANSLATION_IDS ?? "85").split(",").map((s) => s.trim()).filter(Boolean);
+const TRANSLATION_IDS = (process.env.EXPO_PUBLIC_TRANSLATION_IDS ?? "85").split(",").map((id: string) => id.trim()).filter(Boolean);
 
 interface PublicVerse {
   verseKey: string;
