@@ -2,13 +2,12 @@ import { Link } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { resolveLocale } from "@qam/core";
-
 import { fetchChapters, type ChapterSummary } from "@/lib/api";
-
-const locale = resolveLocale(Intl.DateTimeFormat().resolvedOptions().locale);
+import { useI18n } from "@/lib/i18n";
+import { LanguagePicker } from "@/lib/ui";
 
 export default function ChapterListScreen() {
+  const { m, locale } = useI18n();
   const [chapters, setChapters] = useState<ChapterSummary[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -16,7 +15,7 @@ export default function ChapterListScreen() {
     fetchChapters(locale)
       .then((r) => setChapters(r.chapters))
       .catch((e: Error) => setError(e.message));
-  }, []);
+  }, [locale]);
 
   if (error) return <View style={styles.center}><Text style={styles.error}>{error}</Text></View>;
   if (!chapters) return <View style={styles.center}><ActivityIndicator size="large" /></View>;
@@ -28,28 +27,31 @@ export default function ChapterListScreen() {
       contentContainerStyle={styles.list}
       ListHeaderComponent={
         <View style={{ gap: 8 }}>
+          <View style={{ flexDirection: "row", justifyContent: "flex-end" }}><LanguagePicker /></View>
           <Link href="/player" asChild>
             <Pressable style={[styles.row, { backgroundColor: "#1d9e75" }]} accessibilityRole="button">
-              <Text style={[styles.name, { color: "#fff" }]}>{locale === "ar" ? "▶ المشغّل: استمع واقرأ وتدبّر" : "▶ Player: listen, read, translate, tafsir"}</Text>
+              <Text style={[styles.name, { color: "#fff" }]}>▶ {m.home.tiles.player.title}: {m.home.tiles.player.sub}</Text>
             </Pressable>
           </Link>
           <Link href="/family" asChild>
             <Pressable style={[styles.row, { backgroundColor: "rgba(29,158,117,0.15)" }]} accessibilityRole="button">
-              <Text style={styles.name}>{locale === "ar" ? "👨‍👩‍👧 العائلة: ملف لكل فرد" : "👨‍👩‍👧 Family: a profile for everyone"}</Text>
+              <Text style={styles.name}>👨‍👩‍👧 {m.home.tiles.family.title}: {m.home.tiles.family.sub}</Text>
             </Pressable>
           </Link>
           <Link href="/mushaf" asChild>
             <Pressable style={[styles.row, { backgroundColor: "#15201b" }]} accessibilityRole="button">
-              <Text style={[styles.name, { color: "#fff" }]}>{locale === "ar" ? "📖 المصحف: صفحة بصفحة بالخط العثماني" : "📖 Mushaf: page by page, official fonts"}</Text>
+              <Text style={[styles.name, { color: "#fff" }]}>📖 {m.home.tiles.mushaf.title}: {m.home.tiles.mushaf.sub}</Text>
             </Pressable>
           </Link>
           <View style={styles.grid}>
             {([
-              ["/search", "🔎", locale === "ar" ? "بحث" : "Search"],
-              ["/learn", "🎓", locale === "ar" ? "تعلّم" : "Learn"],
-              ["/play", "🎮", locale === "ar" ? "العب" : "Play"],
-              ["/hifz", "🧠", locale === "ar" ? "حفظ" : "Memorise"],
-              ["/ask", "💬", locale === "ar" ? "اسأل" : "Ask"],
+              ["/search", "🔎", m.nav.search],
+              ["/learn", "🎓", m.nav.learn],
+              ["/play", "🎮", m.nav.play],
+              ["/hifz", "🧠", m.nav.hifz],
+              ["/ask", "💬", m.nav.ask],
+              ["/azan", "🕌", m.nav.azan],
+              ["/story", "✨", m.nav.story],
             ] as const).map(([href, icon, label]) => (
               <Link key={href} href={href} asChild>
                 <Pressable style={styles.tile} accessibilityRole="button"><Text style={styles.tileIcon}>{icon}</Text><Text style={styles.tileLabel}>{label}</Text></Pressable>
@@ -64,7 +66,7 @@ export default function ChapterListScreen() {
             <View style={styles.badge}><Text style={styles.badgeText}>{item.id}</Text></View>
             <View style={styles.rowBody}>
               <Text style={styles.name}>{item.nameSimple}</Text>
-              <Text style={styles.meta}>{item.translatedName} · {item.versesCount} ayahs · {item.revelationPlace}</Text>
+              <Text style={styles.meta}>{item.translatedName} · {item.versesCount} {m.common.ayat} · {item.revelationPlace}</Text>
             </View>
             <Text style={styles.arabic}>{item.nameArabic}</Text>
           </Pressable>

@@ -7,20 +7,16 @@ import { checkOrder, learnFor, levelForXp, type Exercise, type Lesson, type Less
 
 import { useFamily } from "@/components/family/family-provider";
 
-import StudyShell, { useToday, useUiLocale } from "./study-shell";
+import { useI18n } from "@/lib/i18n";
+
+import StudyShell, { useToday } from "./study-shell";
 import styles from "./study.module.css";
 
 interface Surah { id: number; nameArabic: string; nameSimple: string; translatedName: string; versesCount: number }
 
-const COPY = {
-  ar: { title: "تعلّم", pick: "اختر سورة لتبدأ", start: "ابدأ الدرس", xp: "نقاط", level: "المستوى", streak: "أيام متتالية", check: "تحقق", next: "التالي", correct: "صحيح!", wrong: "ليس صحيحًا. الإجابة:", done: "أحسنت! أكملت الدرس", earned: "حصلت على", again: "درس جديد", meaning: "ما معنى هذه الكلمة؟", word: "أي كلمة تعني:", hidden: "أكمل الآية بالكلمة الناقصة", order: "رتّب كلمات الآية", reset: "إعادة", loading: "جارٍ إعداد الدرس…", noProfile: "اختر ملفًا من صفحة العائلة لحفظ تقدّمك", lessonsDone: "دروس مكتملة", juz30: "جزء عمّ", all: "كل السور", listen: "استمع", skip: "تخطَّ", short: "سور قصيرة", stage: "المرحلة" },
-  en: { title: "Learn", pick: "Pick a surah to start", start: "Start lesson", xp: "XP", level: "Level", streak: "day streak", check: "Check", next: "Next", correct: "Correct!", wrong: "Not quite. The answer:", done: "Well done! Lesson complete", earned: "You earned", again: "New lesson", meaning: "What does this word mean?", word: "Which word means:", hidden: "Complete the ayah with the missing word", order: "Put the words of the ayah in order", reset: "Reset", loading: "Preparing the lesson…", noProfile: "Choose a profile on the Family page to save your progress", lessonsDone: "lessons done", juz30: "Juz Amma", all: "All surahs", listen: "Listen", skip: "Skip", short: "Short surahs", stage: "Stage" },
-};
-
 export default function LearnPage() {
-  const locale = useUiLocale();
-  const ar = locale === "ar";
-  const t = ar ? COPY.ar : COPY.en;
+  const { locale, m } = useI18n();
+  const t = m.learn;
   const family = useFamily();
   const today = useToday();
   const [surahs, setSurahs] = useState<Surah[]>([]);
@@ -165,7 +161,7 @@ export default function LearnPage() {
             <button className={styles.btnGhost} onClick={() => setLesson(null)}>{t.pick}</button>
             <Link className={styles.btnGhost} href={`/player?surah=${lesson.chapterId}`}>▶ {t.listen}</Link>
           </div>
-          <p className={styles.muted}>{ayahs.length} {ar ? "آيات في هذه السورة" : "ayat in this surah"}</p>
+          <p className={styles.muted}>{ayahs.length} {t.ayatInSurah}</p>
         </section>
       ) : null}
     </StudyShell>

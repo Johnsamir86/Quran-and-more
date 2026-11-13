@@ -6,15 +6,15 @@ import { GAME_LABELS, bestScores, scoreAnswer, type GameKind, type GameRound } f
 
 import { useFamily } from "@/lib/family";
 import { fetchRound } from "@/lib/study-api";
-import { Arabic, Body, Button, Card, Chip, H1, H2, Kicker, Loading, Muted, Option, Pill, Progress, Row, Screen, StudyNav, isAr, locale, num, usePalette } from "@/lib/ui";
+import { useI18n } from "@/lib/i18n";
+import { Arabic, Body, Button, Card, Chip, H1, H2, Kicker, Loading, Muted, Option, Pill, Progress, Row, Screen, StudyNav, usePalette } from "@/lib/ui";
 
 const KINDS: GameKind[] = ["guess-surah", "next-ayah", "missing-word", "which-juz"];
-const T = isAr
-  ? { title: "العب", pick: "اختر لعبة", scope: "النطاق", juz30: "جزء عمّ", short: "سور قصيرة", all: "كل القرآن", start: "ابدأ", loading: "جارٍ تجهيز الجولة…", score: "النقاط", time: "الوقت", correct: "صحيح", wrong: "خطأ. الإجابة:", next: "التالي", done: "انتهت الجولة", again: "جولة أخرى", best: "أفضل النتائج", of: "من", leaderboard: "لوحة العائلة", noProfile: "اختر ملفًا لحفظ نتائجك" }
-  : { title: "Play", pick: "Choose a game", scope: "Scope", juz30: "Juz Amma", short: "Short surahs", all: "Whole Quran", start: "Start", loading: "Preparing the round…", score: "Score", time: "Time", correct: "Correct", wrong: "Wrong. The answer:", next: "Next", done: "Round over", again: "Play again", best: "Best scores", of: "of", leaderboard: "Family board", noProfile: "Choose a profile to save your scores" };
 
 export default function PlayScreen() {
   const c = usePalette();
+  const { m, locale, isAr, num } = useI18n();
+  const T = m.play;
   const family = useFamily();
   const [kind, setKind] = useState<GameKind>("guess-surah");
   const [scope, setScope] = useState<"juz30" | "short" | "all">("juz30");
@@ -51,7 +51,7 @@ export default function PlayScreen() {
     setI((n) => n + 1); setChosen(null); startTimer(round.secondsPerQuestion);
   };
   const best = bestScores(family.state, kind).slice(0, 5);
-  const label = GAME_LABELS[kind];
+  const label = { icon: GAME_LABELS[kind].icon, title: T.games[kind].title };
 
   return (
     <Screen>
@@ -69,14 +69,14 @@ export default function PlayScreen() {
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
             {KINDS.map((k) => (
               <View key={k} style={{ width: "47%", flexGrow: 1 }}>
-                <Option label={`${GAME_LABELS[k].icon} ${isAr ? GAME_LABELS[k].ar : GAME_LABELS[k].en}\n${isAr ? GAME_LABELS[k].arSub : GAME_LABELS[k].enSub}`} state={k === kind ? "selected" : "idle"} onPress={() => setKind(k)} />
+                <Option label={`${GAME_LABELS[k].icon} ${T.games[k].title}\n${T.games[k].sub}`} state={k === kind ? "selected" : "idle"} onPress={() => setKind(k)} />
               </View>
             ))}
           </View>
           <Kicker>{T.scope}</Kicker>
           <Row>{(["juz30", "short", "all"] as const).map((s) => <Chip key={s} label={T[s]} active={scope === s} onPress={() => setScope(s)} />)}</Row>
           <Button label={`▶ ${T.start}`} onPress={start} />
-          {best.length ? (<><Kicker>{T.best} · {isAr ? label.ar : label.en}</Kicker>{best.map((s) => <Muted key={s.id}>{family.state.profiles.find((p) => p.id === s.profileId)?.displayName ?? "?"} · {num(s.score)} · {num(s.correct)}/{num(s.total)}</Muted>)}</>) : null}
+          {best.length ? (<><Kicker>{T.best} · {label.title}</Kicker>{best.map((s) => <Muted key={s.id}>{family.state.profiles.find((p) => p.id === s.profileId)?.displayName ?? "?"} · {num(s.score)} · {num(s.correct)}/{num(s.total)}</Muted>)}</>) : null}
         </Card>
       ) : null}
       {loading ? <Loading label={T.loading} /> : null}
@@ -84,12 +84,12 @@ export default function PlayScreen() {
       {round && q && !finished ? (
         <Card>
           <Row style={{ justifyContent: "space-between" }}>
-            <Kicker>{label.icon} {isAr ? label.ar : label.en} · {num(i + 1)} / {num(round.questions.length)}</Kicker>
+            <Kicker>{label.icon} {label.title} · {num(i + 1)} / {num(round.questions.length)}</Kicker>
             <Row><Pill>⭐ {num(score)}</Pill><Pill>⏱ {num(left)}</Pill></Row>
           </Row>
           <Progress value={left / round.secondsPerQuestion} />
           <Arabic size={26} center>{q.kind === "missing-word" && q.display ? q.display : q.prompt}</Arabic>
-          {q.kind === "next-ayah" ? <Muted style={{ textAlign: "center" }}>{isAr ? "ما الآية التالية؟" : "Which ayah comes next?"}</Muted> : null}
+          {q.kind === "next-ayah" ? <Muted style={{ textAlign: "center" }}>{T.nextQuestion}</Muted> : null}
           <Row>{q.options.map((o, idx) => (
             <Option key={idx} arabic={q.kind !== "which-juz" && (q.kind !== "guess-surah" || isAr)} label={o} disabled={chosen !== null} state={chosen === null ? "idle" : idx === q.answer ? "ok" : chosen === idx ? "bad" : "idle"} onPress={() => answer(idx)} />
           ))}</Row>

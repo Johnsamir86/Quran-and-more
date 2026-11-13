@@ -1,41 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
-import { AVATARS, bookmarksFor, notesFor, resolveLocale, type AgeBand, type Gender, type ProfileRole } from "@qam/core";
+import { AVATARS, bookmarksFor, notesFor, type AgeBand, type Gender, type ProfileRole } from "@qam/core";
+
+import LanguageSelect from "@/components/language-select";
+import { useI18n } from "@/lib/i18n";
 
 import { useFamily } from "./family-provider";
 import styles from "./family.module.css";
 
-const COPY = {
-  ar: {
-    title: "العائلة", sub: "حساب واحد للوالد، وملف لكل فرد من الطفل إلى الجد. كل ملف له خطه وحجم نصه وعلاماته وملاحظاته وتقدّمه.",
-    add: "إضافة فرد", name: "الاسم", role: "الدور", gender: "الجنس", age: "الفئة العمرية", avatar: "الصورة", save: "حفظ", cancel: "إلغاء", remove: "حذف الملف",
-    roles: { parent: "والد/ة", adult: "بالغ", child: "طفل", senior: "كبير السن", teacher: "معلّم" } as Record<ProfileRole, string>,
-    genders: { male: "ذكر", female: "أنثى", unspecified: "غير محدد" } as Record<Gender, string>,
-    ages: { "0-6": "٠–٦", "7-12": "٧–١٢", "13-17": "١٣–١٧", "18-59": "١٨–٥٩", "60+": "٦٠+" } as Record<AgeBand, string>,
-    active: "الملف النشط", bookmarks: "العلامات", notes: "الملاحظات", streak: "أيام متتالية", minutes: "دقائق اليوم", continue: "تابع القراءة", none: "لا يوجد بعد",
-    open: "فتح", mushaf: "المصحف", player: "المشغّل", noProfiles: "ابدأ بإضافة أول فرد من العائلة.", edit: "تعديل", femaleNote: "ستظهر القارئات للملفات الأنثوية فقط.",
-    signin: "تسجيل الدخول بحساب Quran Foundation (للوالد) لمزامنة العلامات والملاحظات مع Quran.com",
-  },
-  en: {
-    title: "Family", sub: "One parent account, one profile per family member from child to grandparent. Each profile keeps its own font, text size, bookmarks, notes and progress.",
-    add: "Add member", name: "Name", role: "Role", gender: "Gender", age: "Age group", avatar: "Avatar", save: "Save", cancel: "Cancel", remove: "Remove profile",
-    roles: { parent: "Parent", adult: "Adult", child: "Child", senior: "Senior", teacher: "Teacher" } as Record<ProfileRole, string>,
-    genders: { male: "Male", female: "Female", unspecified: "Unspecified" } as Record<Gender, string>,
-    ages: { "0-6": "0–6", "7-12": "7–12", "13-17": "13–17", "18-59": "18–59", "60+": "60+" } as Record<AgeBand, string>,
-    active: "Active profile", bookmarks: "Bookmarks", notes: "Notes", streak: "Day streak", minutes: "Minutes today", continue: "Continue reading", none: "Nothing yet",
-    open: "Open", mushaf: "Mushaf", player: "Player", noProfiles: "Start by adding the first family member.", edit: "Edit", femaleNote: "Female reciters are shown to female profiles only.",
-    signin: "Sign in with the parent's Quran Foundation account to sync bookmarks and notes with Quran.com",
-  },
-} as const;
-
 export default function FamilyPage() {
   const { state, dispatch, profile } = useFamily();
-  const locale = useMemo(() => resolveLocale(typeof navigator !== "undefined" ? navigator.language : "ar"), []);
-  const ar = locale === "ar";
-  const t = COPY[ar ? "ar" : "en"];
+  const { locale, dir, m } = useI18n();
+  const t = m.family;
   const [editing, setEditing] = useState<null | { id?: string; displayName: string; role: ProfileRole; gender: Gender; ageBand: AgeBand; avatar: string }>(null);
 
   const startAdd = () => setEditing({ displayName: "", role: state.profiles.length ? "child" : "parent", gender: "unspecified", ageBand: state.profiles.length ? "7-12" : "18-59", avatar: AVATARS[state.profiles.length % AVATARS.length] });
@@ -55,7 +34,7 @@ export default function FamilyPage() {
   const toPlayer = (verseKey: string) => `/player?surah=${verseKey.split(":")[0]}&ayah=${verseKey.split(":")[1]}`;
 
   return (
-    <div className={styles.root} dir={ar ? "rtl" : "ltr"}>
+    <div className={styles.root} dir={dir}>
       <div className={styles.inner}>
         <header>
           <h1 className={styles.h1}>{t.title}</h1>
@@ -63,6 +42,7 @@ export default function FamilyPage() {
           <nav className={styles.nav} style={{ marginTop: 10 }}>
             <Link className={styles.btn} href="/mushaf">📖 {t.mushaf}</Link>
             <Link className={styles.btn} href="/player">▶ {t.player}</Link>
+            <LanguageSelect className={styles.input} />
           </nav>
         </header>
 

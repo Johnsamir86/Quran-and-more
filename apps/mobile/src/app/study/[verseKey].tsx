@@ -6,16 +6,16 @@ import { Pressable, Share, View } from "react-native";
 
 import { useFamily } from "@/lib/family";
 import { fetchStudy, fetchTafsirText, type StudyBundle } from "@/lib/study-api";
-import { Arabic, Body, Card, Chip, ErrorBox, H2, Kicker, Loading, Muted, Pill, Row, Screen, StudyNav, isAr, locale, num, usePalette } from "@/lib/ui";
+import { useI18n } from "@/lib/i18n";
+import { Arabic, Body, Card, Chip, ErrorBox, H2, Kicker, Loading, Muted, Pill, Row, Screen, StudyNav, usePalette } from "@/lib/ui";
 
-const T = isAr
-  ? { words: "كلمة بكلمة", translations: "الترجمات", tafsir: "التفسير", info: "عن السورة", hadith: "أحاديث متعلقة", reflections: "تدبّرات", unavailable: "متاح بعد تفعيل حساب الإنتاج", empty: "لا يوجد", prev: "السابقة", next: "التالية", listen: "استمع", share: "مشاركة", bookmark: "علامة", bookmarked: "محفوظة", juz: "جزء", page: "صفحة", hizb: "حزب", sajdah: "سجدة", occurrences: "ابحث عن الكلمة", pick: "اختر تفسيرًا" }
-  : { words: "Word by word", translations: "Translations", tafsir: "Tafsir", info: "About the surah", hadith: "Related hadith", reflections: "Reflections", unavailable: "available once the production account is enabled", empty: "none", prev: "Previous", next: "Next", listen: "Listen", share: "Share", bookmark: "Bookmark", bookmarked: "Saved", juz: "Juz", page: "Page", hizb: "Hizb", sajdah: "Sajdah", occurrences: "Find this word", pick: "Choose a tafsir" };
 const TAFSIR_KEY = "qam.study.tafsir";
 
 export default function StudyScreen() {
   const { verseKey } = useLocalSearchParams<{ verseKey: string }>();
   const c = usePalette();
+  const { m, locale, isAr, num } = useI18n();
+  const T = { ...m.study, unavailable: m.study.prodOnly, empty: m.study.none, listen: m.study.play };
   const family = useFamily();
   const [bundle, setBundle] = useState<StudyBundle | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +29,7 @@ export default function StudyScreen() {
     if (!verseKey) return;
     setBundle(null); setError(null); setSelectedWord(null);
     fetchStudy(verseKey, locale).then(setBundle).catch((e: Error) => setError(e.message));
-  }, [verseKey]);
+  }, [verseKey, locale]);
   const activeTafsir = tafsirId ?? bundle?.defaultTafsirs[0] ?? null;
   useEffect(() => {
     if (!bundle || !activeTafsir) return;

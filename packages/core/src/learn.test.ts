@@ -58,7 +58,7 @@ describe("learn", () => {
     expect(levelForXp(230).level).toBe(3);
   });
   it("records xp, streak and scores per profile", () => {
-    let s = familyReducer(initialFamilyState(), { type: "profile/add", input: { displayName: "A", role: "child", gender: "male", ageBand: "child", locale: "ar" }, id: "p1" });
+    let s = familyReducer(initialFamilyState(), { type: "profile/add", input: { displayName: "A", role: "child", gender: "male", ageBand: "7-12", locale: "ar" }, id: "p1" });
     s = familyReducer(s, { type: "learn/complete", lessonId: "112:t", xp: 80, day: "2026-01-01" });
     s = familyReducer(s, { type: "learn/complete", lessonId: "113:t", xp: 50, day: "2026-01-02" });
     expect(learnFor(s, "p1")).toMatchObject({ xp: 130, streak: 2, lessonsDone: ["112:t", "113:t"] });

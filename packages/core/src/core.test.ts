@@ -25,7 +25,8 @@ describe("locales", () => {
   it("resolves device language to a supported locale", () => {
     expect(resolveLocale("ar-EG")).toBe("ar");
     expect(resolveLocale("pt-BR")).toBe("pt");
-    expect(resolveLocale("de-DE")).toBe("en");
+    expect(resolveLocale("de-DE")).toBe("de");
+    expect(resolveLocale("xx-YY")).toBe("en");
     expect(resolveLocale(undefined)).toBe("en");
   });
 });

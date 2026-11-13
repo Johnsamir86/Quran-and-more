@@ -2,18 +2,16 @@ import { Link, Stack } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View, useColorScheme } from "react-native";
 
-import { AVATARS, bookmarksFor, notesFor, resolveLocale, type AgeBand, type Gender, type ProfileRole } from "@qam/core";
+import { AVATARS, bookmarksFor, notesFor, type AgeBand, type Gender, type ProfileRole } from "@qam/core";
 
 import { useFamily } from "@/lib/family";
-
-const locale = resolveLocale(Intl.DateTimeFormat().resolvedOptions().locale);
-const ar = locale === "ar";
-const T = ar
-  ? { title: "العائلة", sub: "ملف لكل فرد من الطفل إلى الجد، بعلاماته وملاحظاته وتقدّمه.", add: "إضافة فرد", name: "الاسم", save: "حفظ", cancel: "إلغاء", remove: "حذف", streak: "أيام متتالية", minutes: "دقائق اليوم", bookmarks: "العلامات", notes: "الملاحظات", none: "لا يوجد بعد", open: "فتح", continue: "تابع", roles: { parent: "والد/ة", adult: "بالغ", child: "طفل", senior: "كبير السن", teacher: "معلّم" } as Record<ProfileRole, string>, genders: { male: "ذكر", female: "أنثى", unspecified: "غير محدد" } as Record<Gender, string>, ages: ["0-6", "7-12", "13-17", "18-59", "60+"] as AgeBand[] }
-  : { title: "Family", sub: "A profile for every member from child to grandparent, with their own bookmarks, notes and progress.", add: "Add member", name: "Name", save: "Save", cancel: "Cancel", remove: "Remove", streak: "Day streak", minutes: "Minutes today", bookmarks: "Bookmarks", notes: "Notes", none: "Nothing yet", open: "Open", continue: "Continue", roles: { parent: "Parent", adult: "Adult", child: "Child", senior: "Senior", teacher: "Teacher" } as Record<ProfileRole, string>, genders: { male: "Male", female: "Female", unspecified: "Unspecified" } as Record<Gender, string>, ages: ["0-6", "7-12", "13-17", "18-59", "60+"] as AgeBand[] };
+import { useI18n } from "@/lib/i18n";
+import { LanguagePicker } from "@/lib/ui";
 
 export default function FamilyScreen() {
   const { state, dispatch, profile } = useFamily();
+  const { m, locale } = useI18n();
+  const T = m.family;
   const dark = useColorScheme() === "dark";
   const c = dark ? { bg: "#0d1512", card: "#13201b", ink: "#e9efea", muted: "#9fb0a7", line: "rgba(233,239,234,0.12)", accent: "#1d9e75" } : { bg: "#f6f3ea", card: "#fffdf7", ink: "#15201b", muted: "#5d6a63", line: "rgba(21,32,27,0.1)", accent: "#1d9e75" };
   const [form, setForm] = useState<null | { id?: string; displayName: string; role: ProfileRole; gender: Gender; ageBand: AgeBand; avatar: string }>(null);
@@ -31,6 +29,7 @@ export default function FamilyScreen() {
     <ScrollView style={{ flex: 1, backgroundColor: c.bg }} contentContainerStyle={{ padding: 16, gap: 14, paddingBottom: 60 }}>
       <Stack.Screen options={{ title: T.title }} />
       <Text style={{ color: c.muted }}>{T.sub}</Text>
+      <View style={st.wrap}><LanguagePicker /></View>
       <View style={st.grid}>
         {state.profiles.map((p) => (
           <Pressable key={p.id} onPress={() => dispatch({ type: "profile/select", id: p.id })} onLongPress={() => setForm({ id: p.id, displayName: p.displayName, role: p.role, gender: p.gender, ageBand: p.ageBand, avatar: (p as { avatar?: string }).avatar ?? AVATARS[0] })} style={[st.card, { backgroundColor: c.card, borderColor: p.id === state.activeProfileId ? c.accent : c.line, borderWidth: p.id === state.activeProfileId ? 2 : 1 }]}>
@@ -49,7 +48,7 @@ export default function FamilyScreen() {
           <TextInput value={form.displayName} onChangeText={(v) => setForm({ ...form, displayName: v })} placeholder={T.name} placeholderTextColor={c.muted} style={[st.input, { color: c.ink, borderColor: c.line }]} autoFocus />
           <View style={st.wrap}>{(Object.keys(T.roles) as ProfileRole[]).map((r) => <Pressable key={r} onPress={() => setForm({ ...form, role: r })} style={chip(form.role === r)}><Text style={chipText(form.role === r)}>{T.roles[r]}</Text></Pressable>)}</View>
           <View style={st.wrap}>{(Object.keys(T.genders) as Gender[]).map((g) => <Pressable key={g} onPress={() => setForm({ ...form, gender: g })} style={chip(form.gender === g)}><Text style={chipText(form.gender === g)}>{T.genders[g]}</Text></Pressable>)}</View>
-          <View style={st.wrap}>{T.ages.map((a) => <Pressable key={a} onPress={() => setForm({ ...form, ageBand: a })} style={chip(form.ageBand === a)}><Text style={chipText(form.ageBand === a)}>{a}</Text></Pressable>)}</View>
+          <View style={st.wrap}>{(Object.keys(T.ages) as AgeBand[]).map((a) => <Pressable key={a} onPress={() => setForm({ ...form, ageBand: a })} style={chip(form.ageBand === a)}><Text style={chipText(form.ageBand === a)}>{a}</Text></Pressable>)}</View>
           <View style={st.wrap}>{AVATARS.map((a) => <Pressable key={a} onPress={() => setForm({ ...form, avatar: a })} style={[st.avatarBtn, { borderColor: form.avatar === a ? c.accent : c.line }]}><Text style={{ fontSize: 20 }}>{a}</Text></Pressable>)}</View>
           <View style={[st.wrap, { justifyContent: "flex-end" }]}>
             {form.id ? <Pressable onPress={() => { dispatch({ type: "profile/remove", id: form.id! }); setForm(null); }} style={chip(false)}><Text style={{ color: "#b91c1c" }}>{T.remove}</Text></Pressable> : null}

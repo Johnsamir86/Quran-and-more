@@ -4,22 +4,18 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import StudyShell, { useUiLocale } from "./study-shell";
+import { useI18n } from "@/lib/i18n";
+
+import StudyShell from "./study-shell";
 import styles from "./study.module.css";
 
 interface NavItem { type: string; key: string; label: string; href: string }
 interface Verse { verseKey: string; chapter: number; verse: number; text: string; translation: string | null; translationName: string | null; highlight: string | null }
 interface Result { query: string; mode: string; source: string; navigation: NavItem[]; verses: Verse[]; pagination: { page: number; size: number; total: number; totalPages: number; nextPage: number | null } }
 
-const COPY = {
-  ar: { title: "بحث", placeholder: "ابحث في القرآن: كلمة، آية، سورة، أو 2:255", go: "بحث", none: "لا نتائج", nav: "انتقال سريع", verses: "آيات", more: "المزيد", results: "نتيجة", exact: "مطابقة تامة", study: "دراسة", play: "استمع", source: "المصدر", tip: "جرّب: الرحمن · الكهف · 36:1 · صبر" },
-  en: { title: "Search", placeholder: "Search the Quran: a word, an ayah, a surah, or 2:255", go: "Search", none: "No results", nav: "Jump to", verses: "Ayat", more: "More", results: "results", exact: "Exact matches", study: "Study", play: "Listen", source: "Source", tip: "Try: mercy · Al-Kahf · 36:1 · patience" },
-};
-
 export default function SearchPage() {
-  const locale = useUiLocale();
-  const ar = locale === "ar";
-  const t = ar ? COPY.ar : COPY.en;
+  const { locale, ar, m } = useI18n();
+  const t = m.search;
   const params = useSearchParams();
   const router = useRouter();
   const [q, setQ] = useState(params.get("q") ?? "");

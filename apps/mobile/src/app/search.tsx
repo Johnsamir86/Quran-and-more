@@ -3,14 +3,14 @@ import { useEffect, useState } from "react";
 import { Pressable, TextInput, View } from "react-native";
 
 import { search, type SearchResult } from "@/lib/study-api";
-import { Arabic, Button, Card, Chip, ErrorBox, H1, Kicker, Loading, Muted, Pill, Row, Screen, StudyNav, isAr, locale, num, usePalette } from "@/lib/ui";
+import { useI18n } from "@/lib/i18n";
+import { Arabic, Button, Card, Chip, ErrorBox, H1, Kicker, Loading, Muted, Pill, Row, Screen, StudyNav, usePalette } from "@/lib/ui";
 
-const T = isAr
-  ? { title: "بحث في القرآن", hint: "كلمة، عبارة، أو مفتاح آية مثل 2:255", go: "ابحث", quick: "سريع", advanced: "متقدّم", results: "نتيجة", none: "لا نتائج", nav: "انتقال", page: "صفحة", more: "المزيد", source: "المصدر" }
-  : { title: "Search the Quran", hint: "A word, a phrase, or an ayah key like 2:255", go: "Search", quick: "Quick", advanced: "Advanced", results: "results", none: "No results", nav: "Jump to", page: "page", more: "More", source: "source" };
 
 export default function SearchScreen() {
   const c = usePalette();
+  const { m, locale, num } = useI18n();
+  const T = m.search;
   const { q: initial } = useLocalSearchParams<{ q?: string }>();
   const [q, setQ] = useState(initial ?? "");
   const [mode, setMode] = useState<"quick" | "advanced">("quick");

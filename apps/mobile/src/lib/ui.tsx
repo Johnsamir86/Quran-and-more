@@ -1,13 +1,13 @@
 import { Link } from "expo-router";
-import type { ReactNode } from "react";
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View, useColorScheme, type PressableProps, type StyleProp, type TextStyle, type ViewStyle } from "react-native";
+import { useState, type ReactNode } from "react";
+import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View, useColorScheme, type PressableProps, type StyleProp, type TextStyle, type ViewStyle } from "react-native";
 
-import { resolveLocale } from "@qam/core";
+import { LOCALES, hasUiDictionary } from "@qam/core";
+
+import { useI18n } from "@/lib/i18n";
 
 /** Shared look for the study screens (search, study, learn, play, hifz, ask) — mirrors apps/web study.module.css. */
-export const locale = resolveLocale(Intl.DateTimeFormat().resolvedOptions().locale);
-export const isAr = locale === "ar";
-export const num = (n: number) => (isAr ? n.toLocaleString("ar-EG", { useGrouping: false }) : String(n));
+export { useI18n };
 export const todayIso = () => new Date().toISOString().slice(0, 10);
 
 export interface Palette { bg: string; card: string; ink: string; muted: string; line: string; accent: string; ok: string; bad: string; warn: string }
@@ -91,23 +91,50 @@ export function Loading({ label }: { label?: string }) {
 export function ErrorBox({ message }: { message: string }) { const c = usePalette(); return <Card><Text style={{ color: c.bad }}>{message}</Text></Card>; }
 
 /** Study-section navigation chips shown at the top of every study screen. */
-export function StudyNav({ current }: { current: "search" | "study" | "learn" | "play" | "hifz" | "ask" | "player" }) {
-  const items: { key: typeof current; href: string; ar: string; en: string }[] = [
-    { key: "player", href: "/player", ar: "▶ المشغّل", en: "▶ Player" },
-    { key: "search", href: "/search", ar: "🔎 بحث", en: "🔎 Search" },
-    { key: "learn", href: "/learn", ar: "🎓 تعلّم", en: "🎓 Learn" },
-    { key: "play", href: "/play", ar: "🎮 العب", en: "🎮 Play" },
-    { key: "hifz", href: "/hifz", ar: "🧠 حفظ", en: "🧠 Memorise" },
-    { key: "ask", href: "/ask", ar: "💬 اسأل", en: "💬 Ask" },
+export function StudyNav({ current }: { current: "search" | "study" | "learn" | "play" | "hifz" | "ask" | "player" | "azan" | "story" }) {
+  const { m } = useI18n();
+  const items: { key: typeof current; href: string; icon: string }[] = [
+    { key: "player", href: "/player", icon: "▶" },
+    { key: "search", href: "/search", icon: "🔎" },
+    { key: "learn", href: "/learn", icon: "🎓" },
+    { key: "play", href: "/play", icon: "🎮" },
+    { key: "hifz", href: "/hifz", icon: "🧠" },
+    { key: "ask", href: "/ask", icon: "💬" },
+    { key: "azan", href: "/azan", icon: "🕌" },
   ];
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6, paddingBottom: 4 }}>
       {items.map((it) => (
         <Link key={it.key} href={it.href as never} asChild>
-          <Chip label={isAr ? it.ar : it.en} active={it.key === current} />
+          <Chip label={`${it.icon} ${m.nav[it.key === "study" ? "search" : it.key]}`} active={it.key === current} />
         </Link>
       ))}
+      <LanguagePicker compact />
     </ScrollView>
+  );
+}
+
+/** Interface-language picker: a chip with the current language that opens the full list (66 languages; those without their own UI text show "EN"). */
+export function LanguagePicker({ compact }: { compact?: boolean }) {
+  const { locale, m, setLocale } = useI18n();
+  const c = usePalette();
+  const [open, setOpen] = useState(false);
+  const current = LOCALES.find((l) => l.code === locale);
+  return (
+    <>
+      <Chip label={`🌐 ${compact ? (current?.code.toUpperCase() ?? "EN") : (current?.nativeName ?? "English")}`} onPress={() => setOpen(true)} accessibilityLabel={m.common.uiLanguage} />
+      <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
+        <Pressable style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.4)", justifyContent: "center", padding: 20 }} onPress={() => setOpen(false)}>
+          <View style={{ backgroundColor: c.card, borderRadius: 18, maxHeight: "80%", padding: 12, gap: 8 }} onStartShouldSetResponder={() => true}>
+            <H2>{m.common.chooseLanguage}</H2>
+            <ScrollView contentContainerStyle={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+              {LOCALES.map((l) => <Chip key={l.code} label={`${l.nativeName}${hasUiDictionary(l.code) ? "" : " · EN"}`} active={l.code === locale} onPress={() => { setLocale(l.code); setOpen(false); }} />)}
+            </ScrollView>
+            <Button label={m.common.close} ghost onPress={() => setOpen(false)} />
+          </View>
+        </Pressable>
+      </Modal>
+    </>
   );
 }
 

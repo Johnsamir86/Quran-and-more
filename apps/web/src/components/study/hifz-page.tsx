@@ -7,7 +7,9 @@ import { compareRecitation, type RecitationResult } from "@qam/core";
 
 import { useFamily } from "@/components/family/family-provider";
 
-import StudyShell, { useToday, useUiLocale } from "./study-shell";
+import { useI18n } from "@/lib/i18n";
+
+import StudyShell, { useToday } from "./study-shell";
 import styles from "./study.module.css";
 
 /**
@@ -24,19 +26,13 @@ type Grade = "forgot" | "hard" | "good" | "easy";
 const STORE = "qam.hifz.v1";
 const INTERVALS: Record<Grade, number> = { forgot: 0, hard: 1, good: 4, easy: 9 };
 
-const COPY = {
-  ar: { title: "حفظ", pick: "اختر السورة والآيات", from: "من", to: "إلى", start: "ابدأ المراجعة", reveal: "اكشف", hide: "أخفِ", grade: "كيف كان تذكّرك؟", forgot: "نسيت", hard: "صعب", good: "جيد", easy: "سهل", due: "مستحق اليوم", cards: "بطاقات", listen: "استمع", mic: "اختبار بالميكروفون", micStop: "إيقاف", micUnsupported: "المتصفح لا يدعم التعرف على الكلام (جرّب Chrome)", accuracy: "الدقة", heard: "ما سُمع", next: "التالية", done: "انتهت جولة اليوم", again: "جولة أخرى", noProfile: "التقدّم يُحفظ على هذا الجهاز", methods: "طرق الحفظ", method6446: "طريقة 6446: كرّر كل آية 20 مرة في 4 مجموعات", method3x3: "طريقة 3×3: ثلاث آيات منفردة ثم موصولة", reps: "تكرار", chain: "سلسلة", schedule: "موعد المراجعة التالي", today: "اليوم", tomorrow: "غدًا", days: "أيام" },
-  en: { title: "Memorise", pick: "Pick a surah and ayah range", from: "From", to: "To", start: "Start review", reveal: "Reveal", hide: "Hide", grade: "How was your recall?", forgot: "Forgot", hard: "Hard", good: "Good", easy: "Easy", due: "due today", cards: "cards", listen: "Listen", mic: "Microphone check", micStop: "Stop", micUnsupported: "This browser has no speech recognition (try Chrome)", accuracy: "Accuracy", heard: "Heard", next: "Next", done: "Today's round is done", again: "Another round", noProfile: "Progress is saved on this device", methods: "Memorisation methods", method6446: "6446 method: repeat each ayah 20 times in 4 sets", method3x3: "3×3 method: three ayat alone, then chained", reps: "reps", chain: "chain", schedule: "Next review", today: "today", tomorrow: "tomorrow", days: "days" },
-};
-
 const load = (): Record<string, Card> => { try { return JSON.parse(localStorage.getItem(STORE) ?? "{}") as Record<string, Card>; } catch { return {}; } };
 const save = (cards: Record<string, Card>) => { try { localStorage.setItem(STORE, JSON.stringify(cards)); } catch { /* ignore */ } };
 const addDays = (day: string, n: number) => { const d = new Date(`${day}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
 
 export default function HifzPage() {
-  const locale = useUiLocale();
-  const ar = locale === "ar";
-  const t = ar ? COPY.ar : COPY.en;
+  const { locale, m, num } = useI18n();
+  const t = m.hifz;
   const today = useToday();
   const family = useFamily();
   const [surahs, setSurahs] = useState<Surah[]>([]);
@@ -93,7 +89,6 @@ export default function HifzPage() {
     recRef.current = rec; setListening(true); setHeard(""); setResult(null); rec.start();
   };
   const dueCount = Object.values(cards).filter((c) => c.due <= today).length;
-  const num = (n: number) => (ar ? n.toLocaleString("ar-EG", { useGrouping: false }) : String(n));
   const dueLabel = (c?: Card) => !c ? "" : c.due <= today ? t.today : c.due === addDays(today, 1) ? t.tomorrow : `${num(Math.round((new Date(c.due).getTime() - new Date(today).getTime()) / 86400000))} ${t.days}`;
 
   return (

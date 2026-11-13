@@ -6,28 +6,26 @@ import { ActivityIndicator, BackHandler, FlatList, ImageBackground, Pressable, S
 
 import {
   NO_TRANSLATION, PLAYBACK_RATES, isBookmarked, notesFor, PLAYER_STORAGE_KEYS, STATIONS, TEXT_SIZE_SCALE, currentSegment, decideAtSegmentEnd, initialPlayerState,
-  locateInAyah, locateInChapter, nextSurahNumber, playerReducer, resolveLocale, WALLPAPERS, WALLPAPER_STORAGE_KEY, wallpaperById, wallpaperForSurah,
+  locateInAyah, locateInChapter, nextSurahNumber, playerReducer, WALLPAPERS, WALLPAPER_STORAGE_KEY, wallpaperById, wallpaperForSurah,
   type PlayerPanel, type Wallpaper, type WallpaperMode, type PlayerReciter, type PlayerState, type PlayerSurah, type PlayerTranslation, type PlayerWord, type RepeatMode, type Station, type TextSize,
 } from "@qam/core";
 
 import { useFamily, useProgressTicker } from "@/lib/family";
+import { useI18n } from "@/lib/i18n";
 import { fetchPlayerSurah, fetchReciters, fetchSurahs, fetchTafsir, fetchTafsirs, fetchTranslations, type TafsirResource } from "@/lib/player-api";
+import { LanguagePicker } from "@/lib/ui";
 
-const locale = resolveLocale(Intl.DateTimeFormat().resolvedOptions().locale);
-const ar = locale === "ar";
-const T = ar
-  ? { surahs: "السور", reciter: "القارئ", translation: "الترجمة", tafsir: "التفسير", settings: "الإعدادات", stations: "الإذاعة", none: "النص العربي وحده", textSize: "حجم النص", autoAdvance: "الانتقال التلقائي إلى السورة التالية", motion: "تمرير تلقائي", small: "صغير", medium: "متوسط", large: "كبير", ayah: "الآية", basmala: "البسملة", basmalaNote: "البسملة ليست آية من هذه السورة، ولا تفسير لها هنا.", loading: "جارٍ التحميل…", offline: "تعذّر الاتصال بخدمة المحتوى. تحقق من اتصالك ثم أعد المحاولة.", retry: "إعادة المحاولة", close: "إغلاق", search: "بحث عن سورة…", listenWith: "بصوت", unavailable: "غير متاح", title: "القرآن الكريم", repeat: "التكرار", repeatOff: "بدون", repeatAyah: "كل آية", repeatRange: "نطاق", repeatSurah: "السورة", times: "مرات", speed: "السرعة", sleep: "مؤقت النوم", off: "إيقاف", gapless: "تلاوة متصلة", perAyah: "آية بآية", bookmark: "علامة", bookmarked: "محفوظة", notes: "ملاحظاتي", noteHint: "اكتب تدبّرك على هذه الآية…", saveNote: "حفظ", noProfile: "اختر ملفًا من صفحة العائلة أولًا", wallpaper: "الخلفية", autoNature: "طبيعة حسب السورة", autoArt: "زخرفة إسلامية", autoLive: "خلفية حيّة", plainBg: "بدون خلفية", fixedBg: "خلفية ثابتة", focusView: "شاشة واحدة", listView: "قائمة", tafsirPick: "اختيار التفسير", nextUp: "التالية", of: "من", repeatAyahShort: "تكرار", noSync: "سورة كاملة · تزامن آلي" }
-  : { surahs: "Surahs", reciter: "Reciter", translation: "Translation", tafsir: "Tafsir", settings: "Settings", stations: "Radio", none: "Arabic text only", textSize: "Text size", autoAdvance: "Auto-advance to next surah", motion: "Auto-scroll", small: "Small", medium: "Medium", large: "Large", ayah: "Ayah", basmala: "Basmala", basmalaNote: "The Basmala is not an ayah of this surah, so there is no tafsir here.", loading: "Loading…", offline: "Could not reach the content service. Check your connection and try again.", retry: "Try again", close: "Close", search: "Search a surah…", listenWith: "Recited by", unavailable: "not available", title: "The Noble Quran", repeat: "Repeat", repeatOff: "Off", repeatAyah: "Each ayah", repeatRange: "Range", repeatSurah: "Surah", times: "times", speed: "Speed", sleep: "Sleep timer", off: "Off", gapless: "Gapless", perAyah: "Ayah by ayah", bookmark: "Bookmark", bookmarked: "Saved", notes: "My notes", noteHint: "Write your reflection on this ayah…", saveNote: "Save", noProfile: "Choose a profile on the Family page first", wallpaper: "Background", autoNature: "Nature per surah", autoArt: "Islamic art", autoLive: "Live", plainBg: "None", fixedBg: "Fixed background", focusView: "One screen", listView: "List", tafsirPick: "Choose tafsir", nextUp: "Next", of: "of", repeatAyahShort: "Repeat", noSync: "full surah · auto-aligned sync" };
 type SidePanel = Exclude<PlayerPanel, null> | "wallpaper" | "notes" | null;
 
-const DEFAULT_TAFSIR = ar ? "926" : "169";
-const digits = (n: number) => (ar ? n.toLocaleString("ar-EG", { useGrouping: false }) : String(n));
 
 const load = async <V,>(key: string, fallback: V): Promise<V> => { try { const raw = await AsyncStorage.getItem(key); return raw ? (JSON.parse(raw) as V) : fallback; } catch { return fallback; } };
 const save = (key: string, value: unknown) => AsyncStorage.setItem(key, JSON.stringify(value)).catch(() => undefined);
 
 export default function PlayerScreen() {
   const { surah: surahParam } = useLocalSearchParams<{ surah?: string }>();
+  const { m, locale, isAr: ar, num: digits } = useI18n();
+  const T = m.player;
+  const DEFAULT_TAFSIR = ar ? "926" : "169";
   const dark = useColorScheme() === "dark";
   const c = dark ? { bg: "#0d1512", card: "#13201b", ink: "#e9efea", muted: "#9fb0a7", line: "rgba(233,239,234,0.12)", accent: "#1d9e75" } : { bg: "#f6f3ea", card: "#fffdf7", ink: "#15201b", muted: "#5d6a63", line: "rgba(21,32,27,0.1)", accent: "#1d9e75" };
 
@@ -445,6 +443,7 @@ export default function PlayerScreen() {
                   {(["small", "medium", "large"] as TextSize[]).map((sz) => <Pressable key={sz} onPress={() => dispatch({ type: "textSize", size: sz })} style={[st.chip, { borderColor: c.line, backgroundColor: state.textSize === sz ? c.accent : "transparent" }]}><Text style={{ color: state.textSize === sz ? "#fff" : c.ink, fontSize: 13 }}>{T[sz]}</Text></Pressable>)}
                 </View>
               </View>
+              <View style={[st.setting, { borderColor: c.line }]}><Text style={{ color: c.ink, flex: 1 }}>{T.language}</Text><LanguagePicker /></View>
               <View style={[st.setting, { borderColor: c.line }]}><Text style={{ color: c.ink, flex: 1 }}>{T.autoAdvance}</Text><Switch value={state.autoAdvance} onValueChange={(v) => dispatch({ type: "autoAdvance", value: v })} /></View>
               <View style={[st.setting, { borderColor: c.line }]}><Text style={{ color: c.ink, flex: 1 }}>{T.motion}</Text><Switch value={state.motion} onValueChange={(v) => dispatch({ type: "motion", value: v })} /></View>
             </>)}

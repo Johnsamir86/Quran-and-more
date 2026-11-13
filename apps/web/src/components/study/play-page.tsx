@@ -7,18 +7,14 @@ import { GAME_LABELS, bestScores, scoreAnswer, type GameKind, type GameRound } f
 
 import { useFamily } from "@/components/family/family-provider";
 
-import StudyShell, { useUiLocale } from "./study-shell";
+import { useI18n } from "@/lib/i18n";
+
+import StudyShell from "./study-shell";
 import styles from "./study.module.css";
 
-const COPY = {
-  ar: { title: "العب", pick: "اختر لعبة", scope: "النطاق", all: "كل القرآن", juz30: "جزء عمّ", short: "سور قصيرة", start: "ابدأ", loading: "جارٍ التحضير…", score: "النقاط", time: "الوقت", next: "التالي", result: "النتيجة", again: "العب مجددًا", home: "الألعاب", best: "أفضل النتائج", correct: "إجابات صحيحة", noProfile: "اختر ملفًا من صفحة العائلة لحفظ نتائجك", study: "دراسة الآية", nextIs: "الآية التالية هي" },
-  en: { title: "Play", pick: "Choose a game", scope: "Scope", all: "Whole Quran", juz30: "Juz Amma", short: "Short surahs", start: "Start", loading: "Preparing…", score: "Score", time: "Time", next: "Next", result: "Result", again: "Play again", home: "Games", best: "Best scores", correct: "correct", noProfile: "Choose a profile on the Family page to save your scores", study: "Study the ayah", nextIs: "The next ayah is" },
-};
-
 export default function PlayPage() {
-  const locale = useUiLocale();
-  const ar = locale === "ar";
-  const t = ar ? COPY.ar : COPY.en;
+  const { locale, m, num } = useI18n();
+  const t = m.play;
   const family = useFamily();
   const [scope, setScope] = useState<"all" | "juz30" | "short">("juz30");
   const [round, setRound] = useState<GameRound | null>(null);
@@ -62,7 +58,6 @@ export default function PlayPage() {
     setI((x) => x + 1); setChosen(null); setLeft(round.secondsPerQuestion);
   };
   const best = bestScores(family.state).slice(0, 8);
-  const num = (n: number) => (ar ? n.toLocaleString("ar-EG", { useGrouping: false }) : String(n));
 
   return (
     <StudyShell title={t.title}>
@@ -73,24 +68,24 @@ export default function PlayPage() {
             <div className={styles.row}><span className={styles.muted}>{t.scope}:</span>{(["juz30", "short", "all"] as const).map((s) => <button key={s} className={`${styles.chip} ${scope === s ? styles.chipActive : ""}`} onClick={() => setScope(s)}>{t[s]}</button>)}</div>
           </div>
           <div className={styles.tiles}>
-            {(Object.keys(GAME_LABELS) as GameKind[]).map((k) => <button key={k} className={styles.tile} onClick={() => start(k)}><span className={styles.tileIcon}>{GAME_LABELS[k].icon}</span><strong>{ar ? GAME_LABELS[k].ar : GAME_LABELS[k].en}</strong><span className={styles.muted}>{ar ? GAME_LABELS[k].arSub : GAME_LABELS[k].enSub}</span></button>)}
+            {(Object.keys(GAME_LABELS) as GameKind[]).map((k) => <button key={k} className={styles.tile} onClick={() => start(k)}><span className={styles.tileIcon}>{GAME_LABELS[k].icon}</span><strong>{t.games[k].title}</strong><span className={styles.muted}>{t.games[k].sub}</span></button>)}
           </div>
           {!family.profile ? <p className={styles.muted}><Link href="/family">{t.noProfile}</Link></p> : null}
         </section>
-        {best.length ? <section className={styles.card}><div className={styles.kicker}>{t.best}</div>{best.map((s) => { const p = family.state.profiles.find((x) => x.id === s.profileId); return <div key={s.id} className={styles.row} style={{ justifyContent: "space-between" }}><span>{(p as { avatar?: string } | undefined)?.avatar ?? "🌙"} {p?.displayName ?? "—"} · {ar ? GAME_LABELS[s.kind as GameKind]?.ar : GAME_LABELS[s.kind as GameKind]?.en}</span><span className={styles.pill}>⭐ {num(s.score)} · {num(s.correct)}/{num(s.total)}</span></div>; })}</section> : null}
+        {best.length ? <section className={styles.card}><div className={styles.kicker}>{t.best}</div>{best.map((s) => { const p = family.state.profiles.find((x) => x.id === s.profileId); return <div key={s.id} className={styles.row} style={{ justifyContent: "space-between" }}><span>{(p as { avatar?: string } | undefined)?.avatar ?? "🌙"} {p?.displayName ?? "—"} · {t.games[s.kind as GameKind]?.title}</span><span className={styles.pill}>⭐ {num(s.score)} · {num(s.correct)}/{num(s.total)}</span></div>; })}</section> : null}
       </>) : null}
       {loading ? <p className={styles.muted}>{t.loading}</p> : null}
 
       {round && q && !done ? (
         <section className={styles.card}>
           <div className={styles.row} style={{ justifyContent: "space-between" }}>
-            <span className={styles.kicker}>{ar ? GAME_LABELS[round.kind].ar : GAME_LABELS[round.kind].en} · {num(i + 1)} / {num(round.questions.length)}</span>
+            <span className={styles.kicker}>{t.games[round.kind].title} · {num(i + 1)} / {num(round.questions.length)}</span>
             <span className={styles.row}><span className={styles.pill}>⭐ {num(score)}</span><span className={styles.pill} style={{ background: left <= 5 ? "rgba(185,28,28,0.15)" : undefined }}>⏱ {num(left)}</span></span>
           </div>
           <div className={styles.progress}><div className={styles.progressBar} style={{ width: `${Math.round((left / round.secondsPerQuestion) * 100)}%` }} /></div>
           <p className={`${styles.arabic} ${styles.arabicBig}`} lang="ar" translate="no" style={{ fontSize: q.prompt.length > 200 ? "1.4em" : undefined }}>{q.display ?? q.prompt}</p>
           <div className={styles.options}>
-            {q.options.map((o, idx) => <button key={idx} className={`${styles.option} ${/[؀-ۿ]/.test(o) && round.kind !== "guess-surah" ? styles.optionAr : ""} ${chosen === null ? "" : idx === q.answer ? styles.optionOk : chosen === idx ? styles.optionBad : ""}`} lang={/[؀-ۿ]/.test(o) ? "ar" : undefined} disabled={chosen !== null} onClick={() => answer(idx)}>{round.kind === "which-juz" ? `${ar ? "الجزء" : "Juz"} ${num(Number(o))}` : o}</button>)}
+            {q.options.map((o, idx) => <button key={idx} className={`${styles.option} ${/[؀-ۿ]/.test(o) && round.kind !== "guess-surah" ? styles.optionAr : ""} ${chosen === null ? "" : idx === q.answer ? styles.optionOk : chosen === idx ? styles.optionBad : ""}`} lang={/[؀-ۿ]/.test(o) ? "ar" : undefined} disabled={chosen !== null} onClick={() => answer(idx)}>{round.kind === "which-juz" ? `${t.juz} ${num(Number(o))}` : o}</button>)}
           </div>
           {chosen !== null ? <div className={styles.row}><button className={styles.btn} onClick={next}>{t.next}</button><Link className={styles.btnGhost} href={`/study/${q.verseKey}`}>{t.study} {q.verseKey}</Link></div> : null}
         </section>

@@ -3,20 +3,20 @@ import { useEffect, useState } from "react";
 import { Pressable, TextInput, View } from "react-native";
 
 import { ask, fetchAyahOfDay, type AskResult, type AyahOfDay } from "@/lib/study-api";
-import { Arabic, Body, Button, Card, Chip, ErrorBox, H1, H2, Kicker, Loading, Muted, Pill, Row, Screen, StudyNav, isAr, locale, usePalette } from "@/lib/ui";
+import { useI18n } from "@/lib/i18n";
+import { Arabic, Body, Button, Card, Chip, ErrorBox, H1, H2, Kicker, Loading, Muted, Pill, Row, Screen, StudyNav, usePalette } from "@/lib/ui";
 
-const T = isAr
-  ? { title: "اسأل القرآن", hint: "اكتب سؤالك… مثل: ماذا يقول القرآن عن الصبر؟", send: "اسأل", today: "آية اليوم", sources: "المصادر", pending: "بانتظار مراجعة علمية", model: "إجابة نموذج لغوي مقيّدة بالمصادر", retrieval: "آيات وتفاسير ذات صلة (بدون نموذج لغوي)", report: "إبلاغ عن خطأ", open: "افتح الآية", examples: ["ماذا يقول القرآن عن الصبر؟", "آيات عن بر الوالدين", "ما جزاء الصدق؟"] }
-  : { title: "Ask the Quran", hint: "Type a question… e.g. What does the Quran say about patience?", send: "Ask", today: "Ayah of the day", sources: "Sources", pending: "pending scholarly review", model: "Language-model answer restricted to the sources", retrieval: "Related ayat and tafsir (no language model)", report: "Report a problem", open: "Open ayah", examples: ["What does the Quran say about patience?", "Ayat about kindness to parents", "What is the reward for honesty?"] };
 
 export default function AskScreen() {
   const c = usePalette();
+  const { m, locale } = useI18n();
+  const T = { ...m.ask, hint: m.ask.placeholder, send: m.ask.ask };
   const [q, setQ] = useState("");
   const [history, setHistory] = useState<AskResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [today, setToday] = useState<AyahOfDay | null>(null);
-  useEffect(() => { fetchAyahOfDay(locale).then(setToday).catch(() => undefined); }, []);
+  useEffect(() => { fetchAyahOfDay(locale).then(setToday).catch(() => undefined); }, [locale]);
 
   const send = async (text = q) => {
     const question = text.trim(); if (question.length < 3) return;

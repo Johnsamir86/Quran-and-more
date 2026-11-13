@@ -3,21 +3,17 @@
 import Link from "next/link";
 import { useState } from "react";
 
-import StudyShell, { useUiLocale } from "./study-shell";
+import { useI18n } from "@/lib/i18n";
+
+import StudyShell from "./study-shell";
 import styles from "./study.module.css";
 
 interface Source { verseKey: string; text: string; translation: string | null; tafsir: { name: string; text: string } | null }
 interface Answer { question: string; mode: "retrieval" | "model"; answer: string | null; sources: Source[]; disclaimer: string; model: string | null }
 
-const COPY = {
-  ar: { title: "اسأل", placeholder: "اسأل عن معنى آية أو موضوع في القرآن…", ask: "اسأل", sources: "المصادر", retrieval: "آيات وتفاسير ذات صلة (بدون نموذج لغوي)", model: "إجابة النموذج مع الاستشهاد الحرفي", tafsir: "تفسير", study: "دراسة", report: "إبلاغ", reported: "شكرًا، تم تسجيل البلاغ", pending: "بانتظار مراجعة علمية", intro: "الإجابات تُبنى فقط من الآيات والتفاسير الموجودة في المصادر، وتُنقل الآيات حرفيًا دون تغيير. لا فتاوى.", examples: ["ما معنى آية الكرسي؟", "ماذا يقول القرآن عن الصبر؟", "ما قصة أصحاب الكهف؟"], nokey: "أضف ANTHROPIC_API_KEY في إعدادات الخادم لتفعيل صياغة الإجابة؛ المصادر تظهر الآن مباشرة." },
-  en: { title: "Ask", placeholder: "Ask about the meaning of an ayah or a topic in the Quran…", ask: "Ask", sources: "Sources", retrieval: "Related ayat and tafsir (no language model)", model: "Model answer with verbatim citations", tafsir: "Tafsir", study: "Study", report: "Report", reported: "Thanks, the report is recorded", pending: "pending scholarly review", intro: "Answers are built only from the ayat and tafsir in the sources; ayat are quoted verbatim and never altered. No fatwas.", examples: ["What does Ayat al-Kursi mean?", "What does the Quran say about patience?", "The story of the people of the cave"], nokey: "Set ANTHROPIC_API_KEY on the server to enable composed answers; sources are shown directly for now." },
-};
-
 export default function AskPage() {
-  const locale = useUiLocale();
-  const ar = locale === "ar";
-  const t = ar ? COPY.ar : COPY.en;
+  const { locale, m } = useI18n();
+  const t = m.ask;
   const [q, setQ] = useState("");
   const [items, setItems] = useState<Answer[]>([]);
   const [loading, setLoading] = useState(false);

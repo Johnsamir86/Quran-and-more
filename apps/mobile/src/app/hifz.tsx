@@ -5,7 +5,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Pressable, View } from "react-native";
 
 import { fetchChapterRows, fetchHifzAyahs, type ChapterRow, type HifzAyah } from "@/lib/study-api";
-import { Arabic, Button, Card, Chip, H1, H2, Kicker, Loading, Muted, Pill, Progress, Row, Screen, StudyNav, isAr, locale, num, todayIso, usePalette } from "@/lib/ui";
+import { useI18n } from "@/lib/i18n";
+import { Arabic, Button, Card, Chip, H1, H2, Kicker, Loading, Muted, Pill, Progress, Row, Screen, StudyNav, todayIso, usePalette } from "@/lib/ui";
 
 /**
  * Memorisation trainer (Tasmi'-style): hide the ayah, recall it, peek, grade
@@ -17,14 +18,13 @@ interface CardRec { verseKey: string; due: string; interval: number; ease: numbe
 type Grade = "forgot" | "hard" | "good" | "easy";
 const STORE = "qam.hifz.v1";
 const INTERVALS: Record<Grade, number> = { forgot: 0, hard: 1, good: 4, easy: 9 };
-const T = isAr
-  ? { title: "حفظ", pick: "اختر السورة والآيات", from: "من", to: "إلى", start: "ابدأ المراجعة", reveal: "اكشف", hide: "أخفِ", grade: "كيف كان تذكّرك؟", forgot: "نسيت", hard: "صعب", good: "جيد", easy: "سهل", due: "مستحق اليوم", cards: "بطاقات", listen: "استمع", next: "التالية", done: "انتهت جولة اليوم", again: "جولة أخرى", note: "التقدّم يُحفظ على هذا الجهاز", methods: "طرق الحفظ", method6446: "طريقة 6446: كرّر كل آية 20 مرة في 4 مجموعات", method3x3: "طريقة 3×3: ثلاث آيات منفردة ثم موصولة", reps: "تكرار", schedule: "موعد المراجعة التالي", today: "اليوم", tomorrow: "غدًا", days: "أيام", ayah: "آية", loading: "جارٍ التحميل…" }
-  : { title: "Memorise", pick: "Pick a surah and ayah range", from: "From", to: "To", start: "Start review", reveal: "Reveal", hide: "Hide", grade: "How was your recall?", forgot: "Forgot", hard: "Hard", good: "Good", easy: "Easy", due: "due today", cards: "cards", listen: "Listen", next: "Next", done: "Today's round is done", again: "Another round", note: "Progress is saved on this device", methods: "Memorisation methods", method6446: "6446 method: repeat each ayah 20 times in 4 sets", method3x3: "3×3 method: three ayat alone, then chained", reps: "reps", schedule: "Next review", today: "today", tomorrow: "tomorrow", days: "days", ayah: "ayah", loading: "Loading…" };
 
 const addDays = (day: string, n: number) => { const d = new Date(`${day}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
 
 export default function HifzScreen() {
   const c = usePalette();
+  const { m, locale, isAr, num } = useI18n();
+  const T = { ...m.hifz, note: m.hifz.noProfile };
   const today = todayIso();
   const [surahs, setSurahs] = useState<ChapterRow[]>([]);
   const [surah, setSurah] = useState(112);
@@ -43,7 +43,7 @@ export default function HifzScreen() {
   useEffect(() => {
     AsyncStorage.getItem(STORE).then((raw) => { if (raw) setCards(JSON.parse(raw) as Record<string, CardRec>); }).catch(() => undefined);
     fetchChapterRows(locale).then(setSurahs).catch(() => undefined);
-  }, []);
+  }, [locale]);
   const verseCount = surahs.find((s) => s.id === surah)?.versesCount ?? 7;
   useEffect(() => { setFrom(1); setTo(Math.min(verseCount, 5)); }, [surah, verseCount]);
   const persist = (next: Record<string, CardRec>) => { setCards(next); AsyncStorage.setItem(STORE, JSON.stringify(next)).catch(() => undefined); };
@@ -141,6 +141,7 @@ export default function HifzScreen() {
 
 function Stepper({ value, min, max, onChange }: { value: number; min: number; max: number; onChange: (n: number) => void }) {
   const c = usePalette();
+  const { num } = useI18n();
   return (
     <Row>
       <Pressable onPress={() => onChange(Math.max(min, value - 1))} style={{ borderWidth: 1, borderColor: c.line, borderRadius: 999, width: 34, height: 34, alignItems: "center", justifyContent: "center" }}><H2>−</H2></Pressable>

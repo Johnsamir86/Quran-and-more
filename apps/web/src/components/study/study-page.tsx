@@ -7,7 +7,9 @@ import { isBookmarked } from "@qam/core";
 
 import { useFamily } from "@/components/family/family-provider";
 
-import StudyShell, { useUiLocale } from "./study-shell";
+import { useI18n } from "@/lib/i18n";
+
+import StudyShell from "./study-shell";
 import styles from "./study.module.css";
 
 interface Word { position: number; text: string; translation: string | null; transliteration: string | null; audioUrl: string | null }
@@ -21,15 +23,9 @@ interface Bundle {
   availability: { hadith: string; answers: string; reflections: string }; prev: string | null; next: string | null;
 }
 
-const COPY = {
-  ar: { title: "دراسة الآية", words: "كلمة بكلمة", translations: "الترجمات", tafsir: "التفسير", compare: "قارن التفاسير", hadith: "أحاديث متعلقة", answers: "أسئلة وأجوبة", reflections: "تدبّرات", info: "عن السورة", prev: "السابقة", next: "التالية", play: "استمع", bookmark: "علامة", bookmarked: "محفوظة", share: "مشاركة", copy: "نسخ", copied: "تم النسخ", juz: "الجزء", page: "الصفحة", hizb: "الحزب", sajdah: "سجدة", none: "لا يوجد", prodOnly: "متاح عند تفعيل حساب الإنتاج في Quran Foundation", loading: "جارٍ التحميل…", searchWord: "ابحث عن الكلمة", listenWord: "استمع للكلمة", noProfile: "اختر ملفًا من صفحة العائلة أولًا", occurrences: "مواضع الكلمة" },
-  en: { title: "Study", words: "Word by word", translations: "Translations", tafsir: "Tafsir", compare: "Compare tafsirs", hadith: "Related hadith", answers: "Questions and answers", reflections: "Reflections", info: "About the surah", prev: "Previous", next: "Next", play: "Listen", bookmark: "Bookmark", bookmarked: "Saved", share: "Share", copy: "Copy", copied: "Copied", juz: "Juz", page: "Page", hizb: "Hizb", sajdah: "Sajdah", none: "None", prodOnly: "Available once the production Quran Foundation account is enabled", loading: "Loading…", searchWord: "Search this word", listenWord: "Listen to the word", noProfile: "Choose a profile on the Family page first", occurrences: "Occurrences" },
-};
-
 export default function StudyPage({ verseKey }: { verseKey: string }) {
-  const locale = useUiLocale();
-  const ar = locale === "ar";
-  const t = ar ? COPY.ar : COPY.en;
+  const { locale, m, num, isRtl } = useI18n();
+  const t = m.study;
   const family = useFamily();
   const [b, setB] = useState<Bundle | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -62,7 +58,6 @@ export default function StudyPage({ verseKey }: { verseKey: string }) {
   }, [picked, b, verseKey]);
 
   const tafsirsByLang = useMemo(() => { const m = new Map<string, Bundle["tafsirs"]>(); for (const x of b?.tafsirs ?? []) m.set(x.language, [...(m.get(x.language) ?? []), x]); return m; }, [b]);
-  const num = (n: number) => (ar ? n.toLocaleString("ar-EG", { useGrouping: false }) : String(n));
   const say = (m: string) => { setToast(m); window.setTimeout(() => setToast(null), 2000); };
   const share = async () => {
     if (!b) return;
@@ -81,13 +76,13 @@ export default function StudyPage({ verseKey }: { verseKey: string }) {
           <section className={styles.card}>
             <div className={styles.row} style={{ justifyContent: "space-between" }}>
               <div>
-                <div className={styles.kicker}>{ar ? "سورة" : "Surah"} {b.chapter.arabicName} · {b.chapter.latinName}</div>
-                <h1 className={styles.h1}>{ar ? "الآية" : "Ayah"} {num(b.verse)} {ar ? "من" : "of"} {num(b.chapter.verseCount)}</h1>
+                <div className={styles.kicker}>{t.surah} {b.chapter.arabicName} · {b.chapter.latinName}</div>
+                <h1 className={styles.h1}>{t.ayah} {num(b.verse)} {t.of} {num(b.chapter.verseCount)}</h1>
                 <div className={styles.muted}>{b.juz ? `${t.juz} ${num(b.juz)} · ` : ""}{b.hizb ? `${t.hizb} ${num(b.hizb)} · ` : ""}{b.page ? `${t.page} ${num(b.page)}` : ""}{b.sajdah ? ` · ${t.sajdah} ۩` : ""}</div>
               </div>
               <div className={styles.row}>
-                {b.prev ? <Link className={styles.chip} href={`/study/${b.prev}`}>{ar ? "→" : "←"} {t.prev}</Link> : null}
-                {b.next ? <Link className={styles.chip} href={`/study/${b.next}`}>{t.next} {ar ? "←" : "→"}</Link> : null}
+                {b.prev ? <Link className={styles.chip} href={`/study/${b.prev}`}>{isRtl ? "→" : "←"} {t.prev}</Link> : null}
+                {b.next ? <Link className={styles.chip} href={`/study/${b.next}`}>{t.next} {isRtl ? "←" : "→"}</Link> : null}
               </div>
             </div>
             <p className={`${styles.arabic} ${styles.arabicBig}`} lang="ar" translate="no">{b.text} <span style={{ color: "var(--accent)", fontSize: "0.6em" }}>﴿{num(b.verse)}﴾</span></p>

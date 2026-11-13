@@ -20,7 +20,6 @@ import {
   locateInChapter,
   nextSurahNumber,
   playerReducer,
-  resolveLocale,
   type PlayerReciter,
   type PlayerState,
   type PlayerSurah,
@@ -37,6 +36,7 @@ import {
 import Link from "next/link";
 
 import { useFamily, useProgressTicker } from "@/components/family/family-provider";
+import { setUiLocale, useI18n } from "@/lib/i18n";
 import { fetchPlayerSurah, fetchReciters, fetchSurahs, fetchTafsir, fetchTafsirs, fetchTranslations, fetchWallpapers, fetchWords, type TafsirResource } from "@/lib/player-client";
 
 import WallpaperLayer from "./wallpaper";
@@ -46,45 +46,6 @@ import styles from "./player.module.css";
 /* ------------------------------------------------------------------ */
 /* Copy (Arabic first, English fallback)                               */
 /* ------------------------------------------------------------------ */
-
-const COPY = {
-  ar: {
-    kicker: "القرآن الكريم", surahs: "السور", reciter: "القارئ", translation: "الترجمة", tafsir: "التفسير",
-    settings: "الإعدادات", stations: "الإذاعة", play: "تشغيل", pause: "إيقاف مؤقت", nextAyah: "الآية التالية",
-    prevAyah: "الآية السابقة", nextSurah: "السورة التالية", restart: "من البداية", retry: "إعادة المحاولة",
-    close: "إغلاق", none: "النص العربي وحده", textSize: "حجم النص", autoAdvance: "الانتقال التلقائي إلى السورة التالية",
-    motion: "تمرير تلقائي وحركة", small: "صغير", medium: "متوسط", large: "كبير", ayah: "الآية", of: "من",
-    basmala: "البسملة", basmalaNote: "البسملة ليست آية من هذه السورة، ولا تفسير لها هنا.", loading: "جارٍ التحميل…",
-    offline: "تعذّر الاتصال بخدمة المحتوى. تحقق من اتصالك ثم أعد المحاولة. إعداداتك محفوظة.",
-    unavailable: "غير متاح", listenWith: "الاستماع بصوت", riwayah: "رواية", allLanguages: "كل اللغات",
-    search: "بحث عن سورة أو قارئ…", ended: "اكتملت سورة", playingStation: "قيد التشغيل", gapless: "تلاوة متصلة مع تزامن الكلمات",
-    perAyah: "تلاوة آية بآية", repeat: "التكرار", repeatOff: "بدون تكرار", repeatAyah: "تكرار كل آية", repeatRange: "تكرار نطاق",
-    repeatSurah: "تكرار السورة", times: "مرات", infinite: "∞", from: "من الآية", to: "إلى الآية", pauseBetween: "وقفة بعد كل آية (ثوانٍ)",
-    speed: "السرعة", sleep: "مؤقت النوم", off: "إيقاف", minutes: "دقيقة", wordByWord: "ترجمة الكلمات عند الضغط",
-    styleMurattal: "مرتّل", styleMujawwad: "مجوّد", styleMuallim: "معلّم", gaplessOnly: "متصلة", ayahOnly: "آية بآية", both: "متصلة + آية بآية", noSync: "سورة كاملة · لم تُزامَن هذه السورة بعد", noSyncShort: "سورة كاملة · تزامن آلي للكلمات",
-    share: "مشاركة", copied: "تم نسخ الرابط", remaining: "المتبقي",
-    wallpaper: "الخلفية", autoNature: "طبيعة حسب السورة", autoArt: "زخرفة إسلامية حسب السورة", autoLive: "خلفية حيّة حسب السورة", plainBg: "بدون خلفية", fixedBg: "خلفية ثابتة", internetBg: "صور من الإنترنت (Pexels)", internetOff: "أضف مفتاح Pexels في الإعدادات لعرض صور من الإنترنت", focusView: "شاشة واحدة", listView: "قائمة", language: "لغة الواجهة", wbwLanguage: "لغة معاني الكلمات", tafsirPick: "اختيار التفسير", nextUp: "التالية", credit: "الصورة",
-    bookmark: "علامة", bookmarked: "محفوظة", notes: "ملاحظاتي", noteHint: "اكتب تدبّرك أو ملاحظتك على هذه الآية…", saveNote: "حفظ الملاحظة", deleteNote: "حذف", family: "العائلة", noProfile: "اختر ملفًا من صفحة العائلة لحفظ العلامات والملاحظات", library: "المحفوظات",
-  },
-  en: {
-    kicker: "The Noble Quran", surahs: "Surahs", reciter: "Reciter", translation: "Translation", tafsir: "Tafsir",
-    settings: "Settings", stations: "Radio", play: "Play", pause: "Pause", nextAyah: "Next ayah",
-    prevAyah: "Previous ayah", nextSurah: "Next surah", restart: "From the start", retry: "Try again",
-    close: "Close", none: "Arabic text only", textSize: "Text size", autoAdvance: "Auto-advance to the next surah",
-    motion: "Auto-scroll and motion", small: "Small", medium: "Medium", large: "Large", ayah: "Ayah", of: "of",
-    basmala: "Basmala", basmalaNote: "The Basmala is not an ayah of this surah, so there is no tafsir here.", loading: "Loading…",
-    offline: "Could not reach the content service. Check your connection and try again. Your settings are saved.",
-    unavailable: "not available", listenWith: "Listen with", riwayah: "Riwayah", allLanguages: "All languages",
-    search: "Search a surah or reciter…", ended: "Completed surah", playingStation: "Now playing", gapless: "Gapless recitation with word sync",
-    perAyah: "Ayah-by-ayah recitation", repeat: "Repeat", repeatOff: "Off", repeatAyah: "Repeat each ayah", repeatRange: "Repeat a range",
-    repeatSurah: "Repeat surah", times: "times", infinite: "∞", from: "From ayah", to: "To ayah", pauseBetween: "Pause after each ayah (seconds)",
-    speed: "Speed", sleep: "Sleep timer", off: "Off", minutes: "min", wordByWord: "Tap a word for its meaning",
-    styleMurattal: "Murattal", styleMujawwad: "Mujawwad", styleMuallim: "Muallim", gaplessOnly: "gapless", ayahOnly: "ayah by ayah", both: "gapless + ayah by ayah", noSync: "Full surah · this surah is not aligned yet", noSyncShort: "full surah · auto-aligned word sync",
-    share: "Share", copied: "Link copied", remaining: "remaining",
-    wallpaper: "Wallpaper", autoNature: "Nature, changes with the surah", autoArt: "Islamic art, changes with the surah", autoLive: "Live, changes with the surah", plainBg: "No wallpaper", fixedBg: "Fixed wallpaper", internetBg: "Internet photos (Pexels)", internetOff: "Add a Pexels key in settings to show internet photos", focusView: "One screen", listView: "List", language: "Interface language", wbwLanguage: "Word meanings language", tafsirPick: "Choose tafsir", nextUp: "Next", credit: "Photo",
-    bookmark: "Bookmark", bookmarked: "Saved", notes: "My notes", noteHint: "Write your reflection or note on this ayah…", saveNote: "Save note", deleteNote: "Delete", family: "Family", noProfile: "Choose a profile on the Family page to save bookmarks and notes", library: "Saved",
-  },
-} as const;
 
 /** Default tafsir per UI language. Prelive has 926 (Jalalayn, ar) and 169 (Ibn Kathir, en). */
 const DEFAULT_TAFSIR: Record<string, string> = { ar: "926", en: "169" };
@@ -103,8 +64,7 @@ type SidePanel = MenuTab | "notes" | null;
 
 export default function QuranPlayer({ initialSurah, initialAyah, profileGender = "unspecified" }: Props) {
   const pendingAyahRef = useRef<number | null>(initialAyah ?? null);
-  const [localeOverride, setLocaleOverride] = useState<string | null>(null);
-  const locale = useMemo(() => localeOverride ?? resolveLocale(typeof navigator !== "undefined" ? navigator.language : "ar"), [localeOverride]);
+  const { locale, m, isRtl } = useI18n();
   const [view, setView] = useState<"focus" | "list">("focus");
   const [wallpaperMode, setWallpaperMode] = useState<WallpaperMode>("auto-nature");
   const [fixedWallpaper, setFixedWallpaper] = useState<string>("n-mountain-lake");
@@ -116,8 +76,7 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
   const [panel, setPanel] = useState<SidePanel>(null);
   const togglePanel = (p: Exclude<SidePanel, null>) => setPanel((cur) => (cur === p ? null : p));
   const ar = locale === "ar";
-  const t = COPY[ar ? "ar" : "en"];
-  const isRtl = ar || locale === "ur" || locale === "fa";
+  const t = m.player;
   const num = (n: number) => (ar ? toArabicDigits(n) : String(n));
 
   const [state, dispatch] = useReducer(playerReducer, undefined, () => initialPlayerState());
@@ -154,7 +113,6 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
         if (wp) { setWallpaperMode(wp.mode); setFixedWallpaper(wp.fixed); }
         setTafsirChoice(readStorage<string | null>("qam.player.tafsir", null));
         setWbwLocale(readStorage<string | null>("qam.player.wbw", null));
-        setLocaleOverride(readStorage<string | null>("qam.player.locale", null));
         const savedReciter = readStorage<string | null>(PLAYER_STORAGE_KEYS.reciter, null);
         const reciter = r.find((x) => x.id === savedReciter) ?? r.find((x) => x.chapterReciterId === 7) ?? r[0];
         if (reciter) dispatch({ type: "reciter", reciter });
@@ -190,9 +148,8 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
     writeStorage(WALLPAPER_STORAGE_KEY, { mode: wallpaperMode, fixed: fixedWallpaper });
     if (tafsirChoice) writeStorage("qam.player.tafsir", tafsirChoice);
     if (wbwLocale) writeStorage("qam.player.wbw", wbwLocale);
-    if (localeOverride) writeStorage("qam.player.locale", localeOverride);
     if (state.resume) writeStorage(PLAYER_STORAGE_KEYS.resume, state.resume);
-  }, [hydrated, state.reciter, state.translation, state.textSize, state.autoAdvance, state.motion, state.resume, state.playbackRate, view, wallpaperMode, fixedWallpaper, tafsirChoice, wbwLocale, localeOverride]);
+  }, [hydrated, state.reciter, state.translation, state.textSize, state.autoAdvance, state.motion, state.resume, state.playbackRate, view, wallpaperMode, fixedWallpaper, tafsirChoice, wbwLocale]);
 
   /* ---------- load surah ---------- */
   const loadKey = `${state.surah?.number ?? 0}|${state.reciter?.id ?? ""}|${state.translation.id}`;
@@ -584,7 +541,7 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
                   <label className={styles.settingRow}><span>{t.motion}</span><input type="checkbox" checked={state.motion} onChange={(e) => dispatch({ type: "motion", value: e.target.checked })} /></label>
                   <div className={styles.settingRow}>
                     <span>{t.language}</span>
-                    <select className={styles.search} value={locale} onChange={(e) => setLocaleOverride(e.target.value)}>
+                    <select className={styles.search} value={locale} onChange={(e) => setUiLocale(e.target.value)}>
                       {LOCALES.map((l) => <option key={l.code} value={l.code}>{l.nativeName}</option>)}
                     </select>
                   </div>

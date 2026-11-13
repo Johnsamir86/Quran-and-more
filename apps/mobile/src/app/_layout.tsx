@@ -5,6 +5,7 @@ import { I18nManager, useColorScheme } from "react-native";
 import { resolveLocale, localeDir } from "@qam/core";
 
 import { FamilyProvider } from "@/lib/family";
+import { LocaleProvider } from "@/lib/i18n";
 
 const deviceLocale = resolveLocale(Intl.DateTimeFormat().resolvedOptions().locale);
 if (localeDir(deviceLocale) === "rtl" && !I18nManager.isRTL) {
@@ -14,6 +15,7 @@ if (localeDir(deviceLocale) === "rtl" && !I18nManager.isRTL) {
 export default function RootLayout() {
   const scheme = useColorScheme();
   return (
+    <LocaleProvider>
     <FamilyProvider>
       <StatusBar style={scheme === "dark" ? "light" : "dark"} />
       <Stack
@@ -34,7 +36,10 @@ export default function RootLayout() {
         <Stack.Screen name="play" options={{ title: "" }} />
         <Stack.Screen name="hifz" options={{ title: "" }} />
         <Stack.Screen name="ask" options={{ title: "" }} />
+        <Stack.Screen name="azan" options={{ title: "" }} />
+        <Stack.Screen name="story" options={{ title: "", headerShown: false }} />
       </Stack>
     </FamilyProvider>
+    </LocaleProvider>
   );
 }

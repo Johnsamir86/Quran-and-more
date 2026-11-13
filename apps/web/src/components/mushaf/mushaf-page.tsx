@@ -1,16 +1,18 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   DEFAULT_MUSHAF_LAYOUT,
   MUSHAF_LAYOUTS,
   mushafLayoutById,
-  resolveLocale,
   type MushafPage as MushafPageData,
   type MushafWord,
 } from "@qam/core";
+
+import LanguageSelect from "@/components/language-select";
+import { useI18n } from "@/lib/i18n";
 
 import Link from "next/link";
 
@@ -49,14 +51,12 @@ const fetchPage = async (page: number, layoutId: string): Promise<MushafPageData
   return (await res.json()) as MushafPageData;
 };
 
-const toArabicDigits = (n: number) => n.toLocaleString("ar-EG", { useGrouping: false });
-
 interface Props { initialPage?: number; initialLayout?: string; highlightVerse?: string }
 
 export default function MushafPage({ initialPage, initialLayout, highlightVerse }: Props) {
   const router = useRouter();
-  const locale = useMemo(() => resolveLocale(typeof navigator !== "undefined" ? navigator.language : "ar"), []);
-  const ar = locale === "ar";
+  const { ar, dir, m, num } = useI18n();
+  const t = m.mushaf;
   const [layoutId, setLayoutId] = useState(initialLayout ?? DEFAULT_MUSHAF_LAYOUT);
   const [page, setPage] = useState(initialPage ?? 1);
   const [data, setData] = useState<MushafPageData | null>(null);
@@ -128,13 +128,13 @@ export default function MushafPage({ initialPage, initialLayout, highlightVerse 
   const showText = !fontReady || layout.fontKind === "static-font";
 
   return (
-    <div className={`${styles.root} ${layout.glyph === "textIndopak" ? styles.indopak : ""}`} dir={ar ? "rtl" : "ltr"}>
+    <div className={`${styles.root} ${layout.glyph === "textIndopak" ? styles.indopak : ""}`} dir={dir}>
       <header className={styles.top}>
         <h1 className={styles.title}>
-          <span>{ar ? "المصحف" : "Mushaf"}</span>
+          <span>{t.title}</span>
           <span className={styles.meta}>
-            {data?.surahs.map((s) => (ar ? `سورة ${s.nameArabic}` : `Surah ${s.nameArabic}`)).join(" · ")}
-            {data?.juz ? ` · ${ar ? "الجزء" : "Juz"} ${ar ? toArabicDigits(data.juz) : data.juz}` : ""}
+            {data?.surahs.map((s) => `${t.surah} ${s.nameArabic}`).join(" · ")}
+            {data?.juz ? ` · ${t.juz} ${num(data.juz)}` : ""}
           </span>
         </h1>
         <div className={styles.actions}>
@@ -142,20 +142,21 @@ export default function MushafPage({ initialPage, initialLayout, highlightVerse 
             {MUSHAF_LAYOUTS.map((l) => <option key={l.id} value={l.id}>{l.label[ar ? "ar" : "en"]}</option>)}
           </select>
           <input className={`${styles.chip} ${styles.pageInput}`} type="number" min={1} max={layout.pages} value={page} onChange={(e) => go(Number(e.target.value))} aria-label="page" />
-          <button className={styles.chip} onClick={() => router.push(`/player?surah=${data?.surahs[0]?.number ?? 1}`)}>▶ {ar ? "المشغّل" : "Player"}</button>
-          <Link className={styles.chip} href="/family">{family.profile ? `${(family.profile as { avatar?: string }).avatar ?? "🌙"} ${family.profile.displayName}` : ar ? "👨‍👩‍👧 العائلة" : "👨‍👩‍👧 Family"}</Link>
+          <button className={styles.chip} onClick={() => router.push(`/player?surah=${data?.surahs[0]?.number ?? 1}`)}>▶ {t.player}</button>
+          <Link className={styles.chip} href="/family">{family.profile ? `${(family.profile as { avatar?: string }).avatar ?? "🌙"} ${family.profile.displayName}` : `👨‍👩‍👧 ${t.family}`}</Link>
+          <LanguageSelect className={styles.select} />
         </div>
       </header>
 
       <main className={styles.stage}>
         {error ? (
-          <div className={styles.error}><p>{error}</p><button className={styles.chip} onClick={() => go(page)}>{ar ? "إعادة المحاولة" : "Try again"}</button></div>
+          <div className={styles.error}><p>{error}</p><button className={styles.chip} onClick={() => go(page)}>{t.tryAgain}</button></div>
         ) : (
           <article className={styles.paper} style={{ ["--lines" as string]: layout.lines }} lang="ar" translate="no" aria-label={`page ${page}`}>
             {(data?.lines ?? Array.from({ length: layout.lines }, (_, i) => ({ number: i + 1, words: [], kind: "ayat" as const }))).map((line) => {
               if (line.kind === "surah-header") {
                 const s = data?.surahs.find((x) => x.number === line.surahNumber);
-                return <div key={line.number} className={`${styles.line} ${styles.header}`}>{ar ? "سورة" : "Surah"} {s?.nameArabic ?? line.surahNumber}</div>;
+                return <div key={line.number} className={`${styles.line} ${styles.header}`}>{t.surah} {s?.nameArabic ?? line.surahNumber}</div>;
               }
               if (line.kind === "basmala") {
                 return <div key={line.number} className={`${styles.line} ${styles.basmala}`} style={{ fontFamily }}>{fontReady && layout.fontKind === "page-font" ? "" : "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ"}{fontReady && layout.fontKind === "page-font" ? <span className={styles.lineText} style={{ fontFamily: `var(--font-noto-arabic), serif` }}>بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</span> : null}</div>;
@@ -176,7 +177,7 @@ export default function MushafPage({ initialPage, initialLayout, highlightVerse 
                 </div>
               );
             })}
-            <div className={styles.pageNumber}>{ar ? toArabicDigits(page) : page}</div>
+            <div className={styles.pageNumber}>{num(page)}</div>
           </article>
         )}
       </main>
@@ -187,18 +188,18 @@ export default function MushafPage({ initialPage, initialLayout, highlightVerse 
             <span className={styles.tipArabic}>{selected.text}</span>
             <span className={styles.meta}>{selected.verseKey}</span>
             <span className={styles.actions}>
-              <button className={styles.chip} onClick={() => playFrom(selected)}>▶ {ar ? "استمع من هنا" : "Listen from here"}</button>
+              <button className={styles.chip} onClick={() => playFrom(selected)}>▶ {t.listenFromHere}</button>
               <button className={styles.chip} onClick={() => family.profile ? family.dispatch({ type: "bookmark/toggle", verseKey: selected.verseKey, page }) : router.push("/family")}>
-                🔖 {isBookmarked(family.state, selected.verseKey) ? (ar ? "محفوظة" : "Saved") : (ar ? "علامة" : "Bookmark")}
+                🔖 {isBookmarked(family.state, selected.verseKey) ? t.bookmarked : t.bookmark}
               </button>
-              <button className={styles.chip} onClick={() => router.push(`/player?surah=${selected.verseKey.split(":")[0]}&ayah=${selected.verseKey.split(":")[1]}&panel=tafsir`)}>{ar ? "التفسير" : "Tafsir"}</button>
+              <button className={styles.chip} onClick={() => router.push(`/player?surah=${selected.verseKey.split(":")[0]}&ayah=${selected.verseKey.split(":")[1]}&panel=tafsir`)}>{t.tafsir}</button>
             </span>
           </div>
         )}
         <div className={styles.bottomInner}>
-          <button className={styles.navBtn} onClick={() => go(page - 1)} disabled={page <= 1} aria-label="previous page">{ar ? "الصفحة السابقة ›" : "‹ Previous"}</button>
-          <span className={styles.meta}>{ar ? `صفحة ${toArabicDigits(page)} من ${toArabicDigits(layout.pages)}` : `Page ${page} of ${layout.pages}`}</span>
-          <button className={styles.navBtn} onClick={() => go(page + 1)} disabled={page >= layout.pages} aria-label="next page">{ar ? "‹ الصفحة التالية" : "Next ›"}</button>
+          <button className={styles.navBtn} onClick={() => go(page - 1)} disabled={page <= 1} aria-label="previous page">{dir === "rtl" ? `${t.prev} ›` : `‹ ${t.prev}`}</button>
+          <span className={styles.meta}>{`${t.page} ${num(page)} ${t.of} ${num(layout.pages)}`}</span>
+          <button className={styles.navBtn} onClick={() => go(page + 1)} disabled={page >= layout.pages} aria-label="next page">{dir === "rtl" ? `‹ ${t.next}` : `${t.next} ›`}</button>
         </div>
       </footer>
     </div>

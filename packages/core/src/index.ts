@@ -13,3 +13,4 @@ export * from "./wallpapers";
 export * from "./text";
 export * from "./learn";
 export * from "./games";
+export * from "./i18n";

@@ -7,14 +7,14 @@ import { checkOrder, learnFor, levelForXp, type Exercise, type Lesson, type Less
 
 import { useFamily } from "@/lib/family";
 import { fetchChapterRows, fetchLesson, type ChapterRow } from "@/lib/study-api";
-import { Arabic, Button, Card, Chip, H1, H2, Kicker, Loading, Muted, Option, Pill, Progress, Row, Screen, StudyNav, isAr, locale, num, todayIso, usePalette } from "@/lib/ui";
+import { useI18n } from "@/lib/i18n";
+import { Arabic, Button, Card, Chip, H1, H2, Kicker, Loading, Muted, Option, Pill, Progress, Row, Screen, StudyNav, todayIso, usePalette } from "@/lib/ui";
 
-const T = isAr
-  ? { title: "تعلّم", pick: "اختر سورة لتبدأ", xp: "نقاط", level: "المستوى", streak: "أيام متتالية", check: "تحقق", next: "التالي", correct: "صحيح!", wrong: "ليس صحيحًا. الإجابة:", done: "أحسنت! أكملت الدرس", earned: "حصلت على", again: "درس جديد", meaning: "ما معنى هذه الكلمة؟", word: "أي كلمة تعني:", hidden: "أكمل الآية بالكلمة الناقصة", order: "رتّب كلمات الآية", reset: "إعادة", loading: "جارٍ إعداد الدرس…", noProfile: "اختر ملفًا من صفحة العائلة لحفظ تقدّمك", lessonsDone: "دروس مكتملة", juz30: "جزء عمّ", all: "كل السور", listen: "استمع", skip: "تخطَّ", short: "سور قصيرة", stage: "المرحلة" }
-  : { title: "Learn", pick: "Pick a surah to start", xp: "XP", level: "Level", streak: "day streak", check: "Check", next: "Next", correct: "Correct!", wrong: "Not quite. The answer:", done: "Well done! Lesson complete", earned: "You earned", again: "New lesson", meaning: "What does this word mean?", word: "Which word means:", hidden: "Complete the ayah with the missing word", order: "Put the words of the ayah in order", reset: "Reset", loading: "Preparing the lesson…", noProfile: "Choose a profile on the Family page to save your progress", lessonsDone: "lessons done", juz30: "Juz Amma", all: "All surahs", listen: "Listen", skip: "Skip", short: "Short surahs", stage: "Stage" };
 
 export default function LearnScreen() {
   const c = usePalette();
+  const { m, locale, num } = useI18n();
+  const T = m.learn;
   const family = useFamily();
   const today = todayIso();
   const [surahs, setSurahs] = useState<ChapterRow[]>([]);
@@ -30,7 +30,7 @@ export default function LearnScreen() {
   const [finished, setFinished] = useState(false);
   const player = useAudioPlayer(null);
 
-  useEffect(() => { fetchChapterRows(locale).then(setSurahs).catch(() => undefined); }, []);
+  useEffect(() => { fetchChapterRows(locale).then(setSurahs).catch(() => undefined); }, [locale]);
   const progress = family.profile ? learnFor(family.state, family.profile.id) : null;
   const lvl = levelForXp(progress?.xp ?? 0);
   const visible = useMemo(() => surahs.filter((s) => (filter === "all" ? true : filter === "juz30" ? s.id >= 78 : s.versesCount <= 30)), [surahs, filter]);
@@ -136,7 +136,7 @@ export default function LearnScreen() {
         <Card style={{ alignItems: "center" }}>
           <H1>🎉</H1>
           <H2>{T.done}: {lesson.title}</H2>
-          <Muted>{T.earned} {num(score)} {T.xp} · {num(ayahs.length)} {isAr ? "آيات" : "ayat"}</Muted>
+          <Muted>{T.earned} {num(score)} {T.xp} · {num(ayahs.length)} {m.common.ayat}</Muted>
           <Row style={{ justifyContent: "center" }}>
             <Button label={T.again} onPress={() => startLesson(lesson.chapterId)} />
             <Button label={T.pick} ghost onPress={() => setLesson(null)} />
