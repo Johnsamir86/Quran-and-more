@@ -27,8 +27,10 @@ Done so far in Phase 1 (2026-11-12):
   (search, study, learn, play, memorise, ask) on the same public API; the
   microphone check stays web-only until a speech module is added
 - Focus player (web + mobile): one-screen landscape/TV layout with the
-  current ayah, word highlight and translation beneath; docked side menu
-  (surahs, reciter, translation, tafsir picker, wallpaper, settings);
+  current ayah, word highlight and translation beneath; split layout for
+  every panel (surahs, reciter, translation, tafsir, wallpaper, notes,
+  settings): a side column, or the bottom half on portrait phones, never
+  an overlay on the player, on web and Android;
   wallpapers per surah (nature photos, Islamic art patterns, live canvas,
   optional Pexels); full tafsir / reciter / translation catalogues
 
