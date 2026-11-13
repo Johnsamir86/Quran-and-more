@@ -30,6 +30,8 @@ docs/           Architecture and roadmap.
 - `/mushaf` printed page layouts (Madani, Tajweed, KFGQPC, IndoPak) with the
   official fonts, tap any word to listen from there
 - `/family` profiles for every family member with bookmarks, notes and progress
+
+Android test build: https://quran-and-more.netlify.app/android.apk (arm64; latest APK is kept on the `apk-builds` branch)
 - `/search` Quran Foundation Search API (surah, juz, page and ayah navigation
   plus verbatim verse results in 70 languages)
 - `/study/2:255` one ayah in depth: word by word with occurrence search,
