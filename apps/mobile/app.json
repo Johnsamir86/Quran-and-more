@@ -21,7 +21,7 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "foundation.quranandmore.app",
-      "versionCode": 3
+      "versionCode": 4
     },
     "web": {
       "output": "single",

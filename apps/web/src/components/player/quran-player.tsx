@@ -97,6 +97,10 @@ const toArabicDigits = (n: number) => n.toLocaleString("ar-EG", { useGrouping: f
 
 interface Props { initialSurah?: number; initialAyah?: number; profileGender?: "male" | "female" | "unspecified" }
 
+type MenuTab = "surahs" | "reciter" | "translation" | "tafsir" | "wallpaper" | "settings";
+/** The side panel shares the screen with the player (split layout); it never overlays it. */
+type SidePanel = MenuTab | "notes" | null;
+
 export default function QuranPlayer({ initialSurah, initialAyah, profileGender = "unspecified" }: Props) {
   const pendingAyahRef = useRef<number | null>(initialAyah ?? null);
   const [localeOverride, setLocaleOverride] = useState<string | null>(null);
@@ -109,8 +113,8 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
   const [tafsirs, setTafsirs] = useState<TafsirResource[]>([]);
   const [tafsirChoice, setTafsirChoice] = useState<string | null>(null);
   const [wbwLocale, setWbwLocale] = useState<string | null>(null);
-  const [docked, setDocked] = useState(false);
-  const [menuTab, setMenuTab] = useState<"surahs" | "reciter" | "translation" | "tafsir" | "wallpaper" | "settings">("reciter");
+  const [panel, setPanel] = useState<SidePanel>(null);
+  const togglePanel = (p: Exclude<SidePanel, null>) => setPanel((cur) => (cur === p ? null : p));
   const ar = locale === "ar";
   const t = COPY[ar ? "ar" : "en"];
   const isRtl = ar || locale === "ur" || locale === "fa";
@@ -131,7 +135,6 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
   const [toast, setToast] = useState<string | null>(null);
   const family = useFamily();
   const [noteDraft, setNoteDraft] = useState("");
-  const [notesPanel, setNotesPanel] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const stateRef = useRef<PlayerState>(state);
@@ -366,14 +369,10 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
   }, [segment?.key, state.motion]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /* ---------- tafsir ---------- */
+  const RTL_LANGS = ["arabic", "urdu", "persian", "farsi", "kurdish", "sindhi", "pashto", "uighur", "uyghur"];
   const tafsirId = tafsirChoice ?? (tafsirs.find((x) => x.language.toLowerCase().startsWith(LOCALES.find((l) => l.code === locale)?.name.toLowerCase() ?? "english"))?.id.toString() ?? DEFAULT_TAFSIR[locale] ?? DEFAULT_TAFSIR.en);
-  /* docked side menu on wide landscape screens */
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1100px)");
-    const apply = () => setDocked(mq.matches);
-    apply(); mq.addEventListener("change", apply);
-    return () => mq.removeEventListener("change", apply);
-  }, []);
+  const tafsirLang = tafsirs.find((x) => String(x.id) === tafsirId)?.language.toLowerCase() ?? (ar ? "arabic" : "english");
+  const tafsirDir: "rtl" | "ltr" = RTL_LANGS.some((l) => tafsirLang.startsWith(l)) ? "rtl" : "ltr";
   /* wallpaper per surah (+ internet results when enabled) */
   useEffect(() => {
     if (!state.surah) return;
@@ -389,15 +388,14 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
     return wallpaperForSurah(n, wallpaperMode === "auto-art" ? "art" : wallpaperMode === "auto-live" ? "live" : "nature");
   }, [wallpaperMode, fixedWallpaper, state.surah, internetWallpapers]);
   useEffect(() => {
-    const tafsirOpen = state.panel === "tafsir" || (docked && view === "focus" && menuTab === "tafsir");
-    if (!tafsirOpen || !segment?.ayah || state.tafsir?.key === segment.key) return;
+    if (panel !== "tafsir" || !segment?.ayah || state.tafsir?.key === segment.key) return;
     let cancelled = false;
     dispatch({ type: "tafsirLoading" });
     fetchTafsir(tafsirId, segment.ayah.key)
       .then((res) => !cancelled && dispatch({ type: "tafsir", key: segment.key, text: res?.text ?? null }))
       .catch(() => !cancelled && dispatch({ type: "tafsir", key: segment.key, text: null }));
     return () => { cancelled = true; };
-  }, [state.panel, segment, state.tafsir?.key, tafsirId, docked, view, menuTab]);
+  }, [panel, segment, state.tafsir?.key, tafsirId]);
 
   /* Deep link ?ayah=N: once the requested surah's segments are in, jump to that ayah. */
   useEffect(() => {
@@ -415,7 +413,7 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
       if (e.key === " " || e.key === "MediaPlayPause") { e.preventDefault(); dispatch({ type: "toggle" }); }
       if (e.key === "ArrowRight" || e.key === "MediaTrackNext") dispatch({ type: isRtl ? "prev" : "next" });
       if (e.key === "ArrowLeft" || e.key === "MediaTrackPrevious") dispatch({ type: isRtl ? "next" : "prev" });
-      if (e.key === "Escape" && stateRef.current.panel) dispatch({ type: "panel", panel: stateRef.current.panel });
+      if (e.key === "Escape") setPanel(null);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -481,8 +479,7 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
 
   const setRepeat = (settings: Partial<typeof state.repeat>) => dispatch({ type: "repeat", settings: { ...settings, ...(settings.mode === "range" && state.repeat.mode !== "range" ? { from: state.index, to: Math.min(state.index + 4, state.segments.length - 1) } : {}) } });
 
-  type MenuTab = "surahs" | "reciter" | "translation" | "tafsir" | "wallpaper" | "settings";
-  const panelTitle = (tab: MenuTab) => (tab === "wallpaper" ? t.wallpaper : t[tab]);
+  const panelTitle = (tab: Exclude<SidePanel, null>) => (tab === "wallpaper" ? t.wallpaper : tab === "notes" ? `${t.notes} · ${segment?.ayah?.key ?? ""}` : t[tab]);
   const panelBody = (tab: MenuTab) => (
     <>
                 {tab === "surahs" && (<>
@@ -533,10 +530,10 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
                   </select>
                 )}
                 {tab === "tafsir" && (!segment?.ayah ? <p className={styles.rowSub}>{t.basmalaNote}</p>
-                  : state.tafsirLoading ? <p className={styles.rowSub}>{t.loading}</p>
+                  : state.tafsirLoading ? (state.tafsir?.text ? <div className={styles.tafsirStale} aria-busy="true"><p className={styles.arabic} lang="ar" translate="no" style={{ fontSize: "1.3em" }}>{segment.arabic}</p><div className={styles.tafsirText} dir={tafsirDir} lang={tafsirDir === "rtl" && tafsirLang.startsWith("arabic") ? "ar" : undefined}>{state.tafsir.text}</div></div> : <p className={styles.rowSub}>{t.loading}</p>)
                   : state.tafsir?.key === segment.key && state.tafsir.text ? (<>
                     <p className={styles.arabic} lang="ar" translate="no" style={{ fontSize: "1.3em" }}>{segment.arabic}</p>
-                    <div className={styles.tafsirText} dir={ar ? "rtl" : "ltr"}>{state.tafsir.text}</div>
+                    <div className={styles.tafsirText} dir={tafsirDir} lang={tafsirDir === "rtl" && tafsirLang.startsWith("arabic") ? "ar" : undefined}>{state.tafsir.text}</div>
                   </>) : <p className={styles.rowSub}>{t.tafsir} {t.unavailable}</p>)}
 
                 {tab === "settings" && (<>
@@ -636,22 +633,22 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
         </div>
         <nav className={styles.topActions} aria-label="player panels">
           {(["surahs", "reciter", "translation", "tafsir", "settings"] as const).map((p) => (
-            <button key={p} className={`${styles.chip} ${(docked && view === "focus" ? menuTab === p : state.panel === p) ? styles.chipActive : ""}`} onClick={() => { setMenuTab(p); if (!(docked && view === "focus")) dispatch({ type: "panel", panel: p }); }} aria-pressed={state.panel === p}>
+            <button key={p} className={`${styles.chip} ${panel === p ? styles.chipActive : ""}`} onClick={() => togglePanel(p)} aria-pressed={panel === p}>
               {p === "surahs" ? "☰" : p === "reciter" ? "🎙" : p === "translation" ? "🌐" : p === "tafsir" ? "📖" : "⚙"} <span>{t[p]}</span>
             </button>
           ))}
-          <button className={`${styles.chip} ${menuTab === "wallpaper" && (docked || state.panel === "settings") ? styles.chipActive : ""}`} onClick={() => { setMenuTab("wallpaper"); if (!docked) dispatch({ type: "panel", panel: "settings" }); }}>🖼 <span>{t.wallpaper}</span></button>
+          <button className={`${styles.chip} ${panel === "wallpaper" ? styles.chipActive : ""}`} onClick={() => togglePanel("wallpaper")} aria-pressed={panel === "wallpaper"}>🖼 <span>{t.wallpaper}</span></button>
           <span className={`${styles.segmented} ${styles.viewToggle}`}>
             <button className={view === "focus" ? "on" : ""} onClick={() => setView("focus")} title={t.focusView}>▣</button>
             <button className={view === "list" ? "on" : ""} onClick={() => setView("list")} title={t.listView}>☰</button>
           </span>
-          <button className={`${styles.chip} ${notesPanel ? styles.chipActive : ""}`} onClick={() => { setNotesPanel((v) => !v); if (state.panel) dispatch({ type: "panel", panel: state.panel }); }} aria-pressed={notesPanel}>📝 <span>{t.notes}</span></button>
+          <button className={`${styles.chip} ${panel === "notes" ? styles.chipActive : ""}`} onClick={() => togglePanel("notes")} aria-pressed={panel === "notes"}>📝 <span>{t.notes}</span></button>
           <button className={styles.chip} onClick={share} aria-label={t.share}>↗ <span>{t.share}</span></button>
           <Link className={styles.chip} href="/family" title={t.family}>{family.profile ? `${(family.profile as { avatar?: string }).avatar ?? "🌙"} ` : "👨‍👩‍👧 "}<span>{family.profile?.displayName ?? t.family}</span></Link>
         </nav>
       </header>
 
-      <main className={`${view === "focus" ? `${styles.focusMain} ${docked ? styles.docked : ""}` : styles.body}`}>
+      <main className={`${view === "focus" ? styles.focusMain : styles.body} ${panel ? styles.split : ""}`}>
         {view === "focus" ? (
           <section className={styles.focusStage}>
             <div className={styles.focusCenter}>
@@ -674,8 +671,8 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
                     <span>{segment.ayah ? `${t.ayah} ${num(segment.ayah.number)} ${t.of} ${num(state.surah?.verseCount ?? 0)}` : t.basmala}</span>
                     {segment.ayah && (<>
                       <button className={styles.tafsirBtn} onClick={() => { if (!family.profile) { setToast(t.noProfile); window.setTimeout(() => setToast(null), 2500); return; } family.dispatch({ type: "bookmark/toggle", verseKey: segment.ayah!.key }); }}>{isBookmarked(family.state, segment.ayah.key) ? `🔖 ${t.bookmarked}` : `🔖 ${t.bookmark}`}</button>
-                      <button className={styles.tafsirBtn} onClick={() => { setMenuTab("tafsir"); if (!docked) dispatch({ type: "panel", panel: "tafsir" }); }}>📖 {t.tafsir}</button>
-                      <button className={styles.tafsirBtn} onClick={() => setNotesPanel(true)}>📝 {t.notes}</button>
+                      <button className={styles.tafsirBtn} onClick={() => setPanel("tafsir")}>📖 {t.tafsir}</button>
+                      <button className={styles.tafsirBtn} onClick={() => setPanel("notes")}>📝 {t.notes}</button>
                       <button className={styles.tafsirBtn} onClick={() => setRepeat({ mode: state.repeat.mode === "ayah" ? "off" : "ayah", count: 3 })}>↻ {t.repeatAyah}{state.repeat.mode === "ayah" ? " ✓" : ""}</button>
                     </>)}
                   </div>
@@ -729,9 +726,9 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
                         <button className={styles.tafsirBtn} onClick={(e) => { e.stopPropagation(); if (!family.profile) { setToast(t.noProfile); window.setTimeout(() => setToast(null), 2500); return; } family.dispatch({ type: "bookmark/toggle", verseKey: seg.ayah!.key }); }} aria-pressed={isBookmarked(family.state, seg.ayah!.key)}>
                           {isBookmarked(family.state, seg.ayah!.key) ? `🔖 ${t.bookmarked}` : `🔖 ${t.bookmark}`}
                         </button>
-                        <button className={styles.tafsirBtn} onClick={(e) => { e.stopPropagation(); dispatch({ type: "seek", index: i }); setNotesPanel(true); if (state.panel) dispatch({ type: "panel", panel: state.panel }); }}>📝 {t.notes}{notesFor(family.state, family.profile?.id ?? "").filter((n) => n.verseKey === seg.ayah!.key).length ? " •" : ""}</button>
+                        <button className={styles.tafsirBtn} onClick={(e) => { e.stopPropagation(); dispatch({ type: "seek", index: i }); setPanel("notes"); }}>📝 {t.notes}{notesFor(family.state, family.profile?.id ?? "").filter((n) => n.verseKey === seg.ayah!.key).length ? " •" : ""}</button>
                         <button className={styles.tafsirBtn} onClick={(e) => { e.stopPropagation(); setRepeat({ mode: "ayah", count: state.repeat.mode === "ayah" ? state.repeat.count : 3 }); dispatch({ type: "seek", index: i }); dispatch({ type: "play" }); }}>↻ {t.repeatAyah}</button>
-                        <button className={styles.tafsirBtn} onClick={(e) => { e.stopPropagation(); dispatch({ type: "seek", index: i }); if (state.panel !== "tafsir") dispatch({ type: "panel", panel: "tafsir" }); }}>{t.tafsir}</button>
+                        <button className={styles.tafsirBtn} onClick={(e) => { e.stopPropagation(); dispatch({ type: "seek", index: i }); setPanel("tafsir"); }}>{t.tafsir}</button>
                       </span>
                     )}
                   </div>
@@ -742,37 +739,14 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
         </div>
 
         )}
-        {view === "focus" && docked && (
-          <aside className={styles.dockedMenu} aria-label="menu">
-            <div className={styles.dockedTabs}>
-              {(["surahs", "reciter", "translation", "tafsir", "wallpaper", "settings"] as MenuTab[]).map((tab) => (
-                <button key={tab} className={`${styles.chip} ${menuTab === tab ? styles.chipActive : ""}`} onClick={() => setMenuTab(tab)}>{panelTitle(tab)}</button>
-              ))}
+        {panel && (
+          <aside className={styles.sidePanel} role="complementary" aria-label={panelTitle(panel)}>
+            <div className={styles.panelHead}>
+              <span>{panelTitle(panel)}</span>
+              <button className={styles.chip} onClick={() => setPanel(null)}>{t.close}</button>
             </div>
-            <div className={styles.dockedBody}>{panelBody(menuTab)}</div>
-          </aside>
-        )}
-        {state.panel && !(docked && view === "focus") && (
-          <div className={styles.panel} onClick={() => dispatch({ type: "panel", panel: state.panel })}>
-            <aside className={styles.panelSheet} onClick={(e) => e.stopPropagation()} role="dialog" aria-label={panelTitle(state.panel)}>
-              <div className={styles.panelHead}>
-                <span>{panelTitle(state.panel === "settings" && menuTab === "wallpaper" ? "wallpaper" : state.panel)}</span>
-                <button className={styles.chip} onClick={() => dispatch({ type: "panel", panel: state.panel })}>{t.close}</button>
-              </div>
-              <div className={styles.panelBody}>
-                {panelBody(state.panel === "settings" && menuTab === "wallpaper" ? "wallpaper" : state.panel)}
-              </div>
-            </aside>
-          </div>
-        )}
-        {notesPanel && (
-          <div className={styles.panel} onClick={() => setNotesPanel(false)}>
-            <aside className={styles.panelSheet} onClick={(e) => e.stopPropagation()} role="dialog" aria-label={t.notes}>
-              <div className={styles.panelHead}>
-                <span>{t.notes} · {segment?.ayah?.key ?? ""}</span>
-                <button className={styles.chip} onClick={() => setNotesPanel(false)}>{t.close}</button>
-              </div>
-              <div className={styles.panelBody}>
+            <div className={styles.panelBody}>
+              {panel === "notes" ? (<>
                 {!family.profile ? (
                   <p className={styles.rowSub}><Link href="/family" className={styles.tafsirBtn}>{t.noProfile}</Link></p>
                 ) : !segment?.ayah ? <p className={styles.rowSub}>{t.basmalaNote}</p> : (
@@ -794,9 +768,9 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
                     ))}
                   </>
                 )}
-              </div>
-            </aside>
-          </div>
+              </>) : panelBody(panel)}
+            </div>
+          </aside>
         )}
       </main>
 
