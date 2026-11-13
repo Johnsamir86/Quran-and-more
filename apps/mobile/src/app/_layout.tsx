@@ -28,6 +28,12 @@ export default function RootLayout() {
         <Stack.Screen name="player" options={{ title: "" }} />
         <Stack.Screen name="mushaf" options={{ title: "" }} />
         <Stack.Screen name="family" options={{ title: "" }} />
+        <Stack.Screen name="search" options={{ title: "" }} />
+        <Stack.Screen name="study/[verseKey]" options={{ title: "" }} />
+        <Stack.Screen name="learn" options={{ title: "" }} />
+        <Stack.Screen name="play" options={{ title: "" }} />
+        <Stack.Screen name="hifz" options={{ title: "" }} />
+        <Stack.Screen name="ask" options={{ title: "" }} />
       </Stack>
     </FamilyProvider>
   );

@@ -43,6 +43,19 @@ export default function ChapterListScreen() {
               <Text style={[styles.name, { color: "#fff" }]}>{locale === "ar" ? "📖 المصحف: صفحة بصفحة بالخط العثماني" : "📖 Mushaf: page by page, official fonts"}</Text>
             </Pressable>
           </Link>
+          <View style={styles.grid}>
+            {([
+              ["/search", "🔎", locale === "ar" ? "بحث" : "Search"],
+              ["/learn", "🎓", locale === "ar" ? "تعلّم" : "Learn"],
+              ["/play", "🎮", locale === "ar" ? "العب" : "Play"],
+              ["/hifz", "🧠", locale === "ar" ? "حفظ" : "Memorise"],
+              ["/ask", "💬", locale === "ar" ? "اسأل" : "Ask"],
+            ] as const).map(([href, icon, label]) => (
+              <Link key={href} href={href} asChild>
+                <Pressable style={styles.tile} accessibilityRole="button"><Text style={styles.tileIcon}>{icon}</Text><Text style={styles.tileLabel}>{label}</Text></Pressable>
+              </Link>
+            ))}
+          </View>
         </View>
       }
       renderItem={({ item }) => (
@@ -72,4 +85,8 @@ const styles = StyleSheet.create({
   name: { fontSize: 17, fontWeight: "600" },
   meta: { fontSize: 12, opacity: 0.7, marginTop: 2 },
   arabic: { fontSize: 22, fontWeight: "600", writingDirection: "rtl" },
+  grid: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  tile: { flexGrow: 1, minWidth: "30%", alignItems: "center", padding: 12, borderRadius: 14, backgroundColor: "rgba(29,158,117,0.1)", gap: 4 },
+  tileIcon: { fontSize: 24 },
+  tileLabel: { fontWeight: "600" },
 });
