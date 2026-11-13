@@ -14,3 +14,5 @@ export * from "./text";
 export * from "./learn";
 export * from "./games";
 export * from "./i18n";
+export * from "./prayer-times";
+export * from "./azan";

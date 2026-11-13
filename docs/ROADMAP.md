@@ -40,7 +40,10 @@ Phase 1, Core reader on every screen
 - Audio player: reciters by style, gapless, repeat/range/speed, highlight
 - Bookmarks, collections, notes, goals, streaks, reading history (QF APIs)
 - Family profiles: parent, child, adult, senior; kids and senior UI modes
-- 19 languages, RTL, device-language default
+- 66 interface languages (all translation languages), RTL, device-language
+  default: done (50 full dictionaries, 16 core, English fallback per string)
+- Azan: on-device prayer times per country method, muezzin choice, in-app
+  azan, push / local notifications, ayah-of-the-day story: done
 - Offline text bundle
 - Netlify deploy (web + backend), EAS builds (iOS, Android), TV targets
 

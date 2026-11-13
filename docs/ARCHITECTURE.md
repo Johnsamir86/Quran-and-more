@@ -89,6 +89,33 @@
   Lesson XP and game scores go through the same family reducer; hifz cards
   use the same `qam.hifz.v1` shape in AsyncStorage.
 
+## Azan and story
+
+- `packages/core/prayer-times.ts`: the PrayTimes-style solar algorithm with
+  Aladhan's method table (angles / minute offsets), ISO country → method and
+  Asr school, high-latitude rules; returns absolute instants so any time zone
+  and DST work. Tested against api.aladhan.com reference days.
+- `packages/core/azan.ts`: muezzin list (Islamic Network CDN, bundling and
+  streaming permitted per their forum), `AzanSettings` + normaliser, the
+  curated ayah-of-the-day pool.
+- Web: `/azan` (`components/azan`), `/story` (`components/story`),
+  `lib/azan-client.ts` (localStorage settings, Open-Meteo geocoding,
+  BigDataCloud reverse geocoding, web push subscribe). Server:
+  `lib/azan-push.ts` keeps subscriptions in Netlify Blobs (store `azan`),
+  generates the VAPID pair + cron secret on first use into
+  `config:azan` (env `VAPID_*` / `CRON_SECRET` override), and `tick()`
+  announces prayers that fell in the last 12 minutes. `netlify/functions/
+  azan-tick.mts` runs every 5 minutes and calls `/api/azan/tick`.
+  `public/sw.js` shows the notification and opens `/story?prayer=…&azan=1`,
+  which plays the chosen azan.
+- Mobile: `lib/azan.ts` (AsyncStorage settings, expo-location with on-device
+  reverse geocoding, expo-notifications: Android channel `azan` with the
+  bundled 28 s `assets/sounds/azan.wav`, one scheduled local notification per
+  prayer for the next 3 days, refreshed on every launch); `azan.tsx`,
+  `story.tsx`; `_layout.tsx` opens the story when a notification is tapped.
+- i18n: `packages/core/i18n` (English base, per-language overlays merged by
+  `getMessages`), `registry.ts` lists the dictionaries.
+
 ## Public API v1
 
 - `GET /api/public/v1/chapters` and `GET /api/public/v1/verses/:chapterId`

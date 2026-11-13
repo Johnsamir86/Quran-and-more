@@ -10,7 +10,12 @@
     "ios": {
       "icon": "./assets/expo.icon",
       "bundleIdentifier": "foundation.quranandmore.app",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "audio"
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +26,7 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "foundation.quranandmore.app",
-      "versionCode": 4
+      "versionCode": 5
     },
     "web": {
       "output": "single",
@@ -38,7 +43,22 @@
         }
       ],
       "expo-audio",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-notifications",
+        {
+          "sounds": [
+            "./assets/sounds/azan.wav"
+          ],
+          "color": "#1d9e75"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Quran and More uses your location only to compute prayer times for your city. It never leaves the device."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

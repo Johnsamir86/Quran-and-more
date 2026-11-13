@@ -8,6 +8,9 @@
   NODE_VERSION = "20"
   NPM_FLAGS = "--include=dev"
 
+[functions]
+  directory = "netlify/functions"
+
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 

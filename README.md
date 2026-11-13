@@ -25,7 +25,8 @@ docs/           Architecture and roadmap.
 
 - `/player` listen, read, translate and study tafsir in one screen, any reciter,
   gapless with word highlighting, repeat and memorisation controls. Reciters
-  outside the API catalogue (Ajmi, Muaiqly, Kurdi) get word timings from our
+  outside the API catalogue (Ajmi, Muaiqly, Kurdi, al-Banna murattal and
+  mujawwad) get word timings from our
   own forced-alignment pipeline in `tools/align`
 - `/mushaf` printed page layouts (Madani, Tajweed, KFGQPC, IndoPak) with the
   official fonts, tap any word to listen from there
@@ -46,6 +47,17 @@ Android test build: https://quran-and-more.netlify.app/android.apk (arm64; lates
 - `/ask` Quran AI in restricted mode: answers only from retrieved ayat and
   tafsir, quoted verbatim, pending scholarly review (model answers need
   `ANTHROPIC_API_KEY`)
+- `/azan` prayer times computed on the device for any city (country-specific
+  calculation method, Hanafi/standard Asr, high-latitude rule), azan in a
+  choice of muezzin voices, in-app azan at prayer time and push notifications
+  per prayer (web push via a Netlify scheduled function; local notifications
+  with the azan sound on Android/iOS)
+- `/story` ayah of the day in story form: full-screen wallpaper, the ayah, its
+  meaning, a tafsir excerpt and a reflection prompt; opened from the azan
+  notification
+- Interface in 66 languages (every language that has a Quran translation in
+  the catalogue): 50 full UI dictionaries, 16 core dictionaries, the rest
+  fall back to English per string; content stays in the chosen language
 - `/v/2:255` shareable verse links with a preview image
 - Public API v1 under `/api/public/v1` for integrations
 
