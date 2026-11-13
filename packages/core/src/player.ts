@@ -43,7 +43,7 @@ export interface PlayerReciter {
   imageUrl: string | null;
   gender: "male" | "female";
   /** Set for reciters served outside the API catalogue (see extra-reciters.ts). */
-  source?: "qf" | "quranicaudio";
+  source?: "qf" | "quranicaudio" | "mp3quran";
   audioBase?: string;
   /** True when word-level timestamps exist for gapless playback. Unknown until a surah is loaded. */
   hasTimestamps?: boolean;

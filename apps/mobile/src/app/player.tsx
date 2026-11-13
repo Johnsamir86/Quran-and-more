@@ -391,7 +391,7 @@ export default function PlayerScreen() {
               <Text style={{ color: c.muted, fontSize: 12 }}>{T.surahs}</Text>
               {filteredSurahs.map((s) => <Row key={s.number} c={c} active={state.surah?.number === s.number} title={`${digits(s.number)}. ${s.arabicName}`} sub={`${s.latinName} · ${s.verseCount}`} onPress={() => { setStation(null); openSurahNumber(s.number, true); }} />)}
             </>)}
-            {panel === "reciter" && reciters.map((r) => <Row key={r.id} c={c} active={state.reciter?.id === r.id} title={ar ? r.arabicName : r.latinName} sub={`${r.riwayah}${r.style ? ` · ${r.style}` : ""} · ${r.source === "quranicaudio" ? T.noSync : r.chapterReciterId ? T.gapless : T.perAyah}`} onPress={() => dispatch({ type: "reciter", reciter: r })} />)}
+            {panel === "reciter" && reciters.map((r) => <Row key={r.id} c={c} active={state.reciter?.id === r.id} title={ar ? r.arabicName : r.latinName} sub={`${r.riwayah}${r.style ? ` · ${r.style}` : ""} · ${(r.source && r.source !== "qf") ? T.noSync : r.chapterReciterId ? T.gapless : T.perAyah}`} onPress={() => dispatch({ type: "reciter", reciter: r })} />)}
             {panel === "translation" && (<>
               <Row c={c} active={state.translation.id === "none"} title={T.none} onPress={() => dispatch({ type: "translation", translation: NO_TRANSLATION })} />
               {translations.map((tr) => <Row key={tr.id} c={c} active={state.translation.id === tr.id} title={tr.label} sub={tr.languageName} onPress={() => dispatch({ type: "translation", translation: tr })} />)}

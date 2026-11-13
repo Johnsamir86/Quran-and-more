@@ -428,7 +428,7 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
   const filteredTranslations = languageFilter === "all" ? translations : translations.filter((x) => x.languageName === languageFilter);
   const scale = TEXT_SIZE_SCALE[state.textSize];
   const styleLabel = (s: string | null) => (s === "mujawwad" ? t.styleMujawwad : s === "muallim" ? t.styleMuallim : t.styleMurattal);
-  const capability = (r: PlayerReciter) => (r.source === "quranicaudio" ? t.noSyncShort : r.chapterReciterId && r.recitationId ? t.both : r.chapterReciterId ? t.gaplessOnly : t.ayahOnly);
+  const capability = (r: PlayerReciter) => ((r.source && r.source !== "qf") ? t.noSyncShort : r.chapterReciterId && r.recitationId ? t.both : r.chapterReciterId ? t.gaplessOnly : t.ayahOnly);
   const sleepLeft = state.sleepUntil ? Math.max(0, Math.ceil((state.sleepUntil - Date.now()) / 60000)) : 0;
 
   const statusLine = (() => {
