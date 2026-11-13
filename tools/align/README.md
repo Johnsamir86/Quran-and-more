@@ -19,5 +19,23 @@ Benchmark against the official Quran Foundation timings for Mishari al-Afasy (sa
 Al-Fatiha: word-start error mean 98 ms, max 205 ms. Ya-Sin (20 min, 12 pieces): verse-start median 30 ms,
 p95 110 ms; word-start median 45 ms, p95 705 ms. A 100 ms lead corrects the CTC onset lag.
 
+## Batch result (2026-11-13, version 6)
+
+All 342 files (114 surahs x 3 reciters) are in `apps/web/data/timings` (6.6 MB).
+
+| Reciter | Audio | Words | Low-confidence words | Fallback pieces |
+|---|---|---|---|---|
+| Ahmed al-Ajmi (`x-ajmi`) | 26.3 h | 77,858 | 3.2% | 14 |
+| Maher al-Muaiqly (`x-muaiqly`) | 32.5 h | 77,703 | 1.6% | 26 |
+| Raad al-Kurdi (`x-kurdi`) | 33.2 h | 77,713 | 4.2% | 13 |
+| Total | 92.1 h | 233,274 | 3.0% | 53 of 1,823 pieces in 25 files |
+
+A low-confidence word still gets a position (the Viterbi path is complete); it means the acoustic
+score for that word was weak, usually reverb, a long pause inside the word or a reciter's repetition.
+A fallback piece is a stretch between two anchors where exact alignment failed and words were spread
+by their letter count. Files to re-run first if a better model becomes available: al-Kurdi 14
+(5 fallback pieces, 25% low confidence), 56, 6 (verses 106-124), and al-Ajmi 30. CPU time for the
+whole batch was 14.6 h at 6.3x real time on 4 cores.
+
 Setup: `python -m venv venv && pip install --index-url https://download.pytorch.org/whl/cpu torch torchaudio && pip install uroman numpy`,
 plus ffmpeg. CPU speed is about 7x real time, so one reciter (about 20 h of audio) takes about 3 h.

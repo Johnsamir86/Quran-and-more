@@ -15,7 +15,8 @@ Done so far in Phase 1 (2026-11-12):
   login scopes are enabled on the client
 - Archive reciters (Ahmed al-Ajmi, Maher al-Muaiqly, Raad al-Kurdi) with
   word sync produced by forced alignment (torchaudio MMS_FA), benchmarked
-  within ~50-100 ms of the official timings; timings ship as JSON per surah
+  within ~50-100 ms of the official timings; all 342 surah files shipped
+  (3% low-confidence words, see `tools/align/README.md`)
 - Study layer (web + mobile): Search API with navigation and verbatim results,
   study page per ayah (word by word, translations, up to three tafsirs side
   by side, surah info, hadith / answers / reflections when the gateway
