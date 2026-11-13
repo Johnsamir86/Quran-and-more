@@ -69,7 +69,7 @@
 - iOS and Android: RevenueCat, mapping store products to the same tier ids.
 - `subscriptions` holds the source of truth; feature gates read the tier.
 
-## Study layer (web)
+## Study layer (web + mobile)
 
 - `lib/search-api.ts`: Quran Foundation Search API (client credentials, scope
   `search`) with verse hydration; open v4 search as fallback.
@@ -83,6 +83,11 @@
   learning XP and game scores live in the family store per profile.
 - Routes: `/search`, `/study/[verseKey]`, `/learn`, `/hifz`, `/play`, `/ask`,
   `/v/[verseKey]` (share landing with `/api/og/[verseKey]` preview image).
+- Mobile (`apps/mobile/src/app`): `search`, `study/[verseKey]`, `learn`,
+  `play`, `hifz`, `ask` call the same public routes through
+  `lib/study-api.ts`; `lib/ui.tsx` holds the shared palette and widgets.
+  Lesson XP and game scores go through the same family reducer; hifz cards
+  use the same `qam.hifz.v1` shape in AsyncStorage.
 
 ## Public API v1
 

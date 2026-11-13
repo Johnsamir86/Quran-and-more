@@ -98,9 +98,10 @@ Grounded Q&A with citations (Maani), tajweed feedback (Mehrab), grammar
 offline voice search (Quran Audio). All require an external model; the
 Quran MCP server can ground retrieval.
 
-## Status (2026-11-12)
+## Status (2026-11-13)
 | Area | Shipped | Next |
 |---|---|---|
+| Platforms | web (Netlify) and Android/iOS (Expo) share player, mushaf, family and all study screens | TV layout polish, EAS store builds |
 | Reading | mushaf layouts with official fonts, word by word, surah info, study page with tafsir compare | pin and compare, verse-of-the-day widget on home, themes |
 | Listening | all API reciters + 3 archive reciters with our own word timings, repeat/speed/sleep, wallpapers | offline downloads, CarPlay/Android Auto, women reciters (licence) |
 | Memorisation | hide/recall with spaced review, 6446 counter, browser speech check | staged methods with plans and reminders, mastery grid, forced-alignment ASR on device |

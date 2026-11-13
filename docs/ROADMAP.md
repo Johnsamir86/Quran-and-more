@@ -16,13 +16,15 @@ Done so far in Phase 1 (2026-11-12):
 - Archive reciters (Ahmed al-Ajmi, Maher al-Muaiqly, Raad al-Kurdi) with
   word sync produced by forced alignment (torchaudio MMS_FA), benchmarked
   within ~50-100 ms of the official timings; timings ship as JSON per surah
-- Study layer (web): Search API with navigation and verbatim results,
+- Study layer (web + mobile): Search API with navigation and verbatim results,
   study page per ayah (word by word, translations, up to three tafsirs side
   by side, surah info, hadith / answers / reflections when the gateway
   serves them), Quranlingo-style lessons with XP and streaks, Tasmi-style
   memorisation with spaced review and a browser speech check, arena games,
   restricted-mode Ask with verbatim citations, shareable verse links with
-  preview images, ayah of the day
+  preview images, ayah of the day. The Expo app has the same six screens
+  (search, study, learn, play, memorise, ask) on the same public API; the
+  microphone check stays web-only until a speech module is added
 - Focus player (web + mobile): one-screen landscape/TV layout with the
   current ayah, word highlight and translation beneath; docked side menu
   (surahs, reciter, translation, tafsir picker, wallpaper, settings);

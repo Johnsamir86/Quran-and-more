@@ -38,6 +38,8 @@ docs/           Architecture and roadmap.
 - `/learn` Quranlingo-style vocabulary lessons per surah with XP, levels and streaks
 - `/hifz` Tasmi-style memorisation: hide, recall, self-grade, spaced review,
   6446 and 3x3 drills, optional microphone check
+- The Android/iOS app (`apps/mobile`) has the same player, mushaf, family and
+  study screens (search, study, learn, play, memorise, ask) on the same API
 - `/play` arena games: which surah, next ayah, missing word, which juz
 - `/ask` Quran AI in restricted mode: answers only from retrieved ayat and
   tafsir, quoted verbatim, pending scholarly review (model answers need
