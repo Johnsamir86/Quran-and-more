@@ -1,0 +1,92 @@
+import type { PartialMessages } from "./en";
+
+export const az: PartialMessages = {
+  common: {
+    appName: "Quran və daha çox", loading: "Yüklənir…", close: "Bağla", retry: "Yenidən cəhd et", next: "Növbəti", prev: "Əvvəlki", save: "Yadda saxla", cancel: "Ləğv et", remove: "Sil", none: "Yoxdur", open: "Aç", share: "Paylaş", copy: "Kopyala",
+    copied: "Kopyalandı", search: "Axtar", more: "Daha çox", back: "Geri", language: "Dil", uiLanguage: "İnterfeys dili", of: "/", ayah: "Ayə", ayat: "ayə", surah: "Surə", juz: "Cüz", page: "Səhifə", hizb: "Hizb", sajdah: "Səcdə", listen: "Dinlə",
+    study: "Öyrən", bookmark: "Əlfəcin", bookmarked: "Saxlanıldı", notes: "Qeydlər", family: "Ailə", player: "Pleyer", mushaf: "Müshəf", settings: "Parametrlər", unavailable: "əlçatan deyil", today: "bu gün", tomorrow: "sabah", days: "gün", minutes: "dəq",
+    done: "Hazırdır", start: "Başla", again: "Yenidən", poweredBy: "Quran Foundation API-ləri ilə", privacy: "Məxfilik", terms: "Şərtlər", offline: "Məzmun xidmətinə qoşulmaq mümkün olmadı. Bağlantını yoxlayıb yenidən cəhd edin.",
+    noProfile: "Əvvəlcə Ailə səhifəsindən profil seçin", on: "Açıq", off: "Bağlı", enable: "Aktivləşdir", disable: "Söndür", chooseLanguage: "İnterfeys dilini seçin",
+  },
+  nav: { home: "Ana səhifə", search: "Axtar", learn: "Öyrən", hifz: "Əzbərlə", play: "Oyna", ask: "Soruş", player: "Pleyer", mushaf: "Müshəf", family: "Ailə", azan: "Azan", story: "Günün ayəsi" },
+  home: {
+    kicker: "Qurani-Kərim", title: "Quran və daha çox", sub: "Bütün ailə üçün vahid Quran təcrübəsi: söz sinxronlu fasiləsiz tilavət, rəsmi xətlə müshəf, bütün dillərdə təfsir və tərcümələr və hər üzv üçün profil.",
+    startListening: "Dinləməyə başla", openMushaf: "Müshəfi aç",
+    tiles: {
+      player: { title: "Pleyer", sub: "Bir ekranda dinlə, oxu, tərcümə və təfsiri öyrən; istənilən qari ilə" },
+      mushaf: { title: "Müshəf", sub: "Rəsmi şriftlər və təcvid müshəfi ilə səhifə-səhifə" },
+      family: { title: "Ailə", sub: "Uşaqdan nənə-babaya hər üzv üçün profil" },
+      search: { title: "Axtar", sub: "Bütün Quranda istənilən söz, ayə və ya surəni tap" },
+      study: { title: "Öyrən", sub: "Söz-söz, tərcümələr və yan-yana üçədək təfsir" },
+      learn: { title: "Öyrən", sub: "XP və ardıcıllıqla Quranlingo üslubunda lüğət dərsləri" },
+      hifz: { title: "Əzbərlə", sub: "Gizlət, xatırla və özünü qiymətləndir; aralıqlı təkrar və mikrofon yoxlaması ilə" },
+      play: { title: "Oyna", sub: "Hansı surə? Növbəti ayə? Çatışmayan söz? Hansı cüz?" },
+      ask: { title: "Soruş", sub: "Yalnız ayə və təfsirlərdən cavablar, hərfi sitatla, alimlərin yoxlamasını gözləyir" },
+      azan: { title: "Azan", sub: "Şəhəriniz üçün namaz vaxtları, seçdiyiniz səslə azan, hər namazda xatırlatma" },
+      story: { title: "Günün ayəsi", sub: "Hər gün bir ayə tam ekranda, mənası və bir anlıq təfəkkürlə" },
+      kahf: { title: "Kəhf surəsi", sub: "Cümə günü oxunur" },
+    },
+  },
+  player: {
+    kicker: "Qurani-Kərim", title: "Qurani-Kərim", surahs: "Surələr", reciter: "Qari", translation: "Tərcümə", tafsir: "Təfsir", settings: "Parametrlər", stations: "Radio", play: "Oxut", pause: "Fasilə", nextAyah: "Növbəti ayə", prevAyah: "Əvvəlki ayə",
+    nextSurah: "Növbəti surə", restart: "Əvvəldən", retry: "Yenidən cəhd et", close: "Bağla", none: "Yalnız ərəb mətni", textSize: "Mətn ölçüsü", autoAdvance: "Avtomatik növbəti surəyə keç", motion: "Avtomatik sürüşdürmə və hərəkət", small: "Kiçik",
+    medium: "Orta", large: "Böyük", ayah: "Ayə", of: "/", basmala: "Bəsmələ", basmalaNote: "Bəsmələ bu surənin ayəsi deyil, buna görə burada təfsir yoxdur.", loading: "Yüklənir…",
+    offline: "Məzmun xidmətinə qoşulmaq mümkün olmadı. Bağlantını yoxlayıb yenidən cəhd edin. Parametrləriniz saxlanılıb.", unavailable: "əlçatan deyil", listenWith: "Qari:", riwayah: "Rəvayət", allLanguages: "Bütün dillər", search: "Surə və ya qari axtar…",
+    ended: "Surə tamamlandı", playingStation: "İndi səslənir", gapless: "Söz sinxronlu fasiləsiz tilavət", perAyah: "Ayə-ayə tilavət", repeat: "Təkrar", repeatOff: "Bağlı", repeatAyah: "Hər ayəni təkrarla", repeatRange: "Aralığı təkrarla", repeatSurah: "Surəni təkrarla",
+    times: "dəfə", from: "Ayədən", to: "Ayəyədək", pauseBetween: "Hər ayədən sonra fasilə (saniyə)", speed: "Sürət", sleep: "Yuxu taymeri", off: "Bağlı", minutes: "dəq", wordByWord: "Mənası üçün sözə toxun", styleMurattal: "Mürəttəl", styleMujawwad: "Mücəvvəd",
+    styleMuallim: "Müəllim", gaplessOnly: "fasiləsiz", ayahOnly: "ayə-ayə", both: "fasiləsiz + ayə-ayə", noSync: "Tam surə · hələ sinxronlaşdırılmayıb", noSyncShort: "tam surə · avtomatik söz sinxronu", share: "Paylaş", copied: "Keçid kopyalandı", remaining: "qalıb",
+    wallpaper: "Fon", autoNature: "Təbiət, surə ilə dəyişir", autoArt: "İslam sənəti, surə ilə dəyişir", autoLive: "Canlı, surə ilə dəyişir", plainBg: "Fonsuz", fixedBg: "Sabit fon", internetBg: "İnternet şəkilləri (Pexels)", internetOff: "İnternet şəkilləri üçün parametrlərə Pexels açarı əlavə edin",
+    focusView: "Bir ekran", listView: "Siyahı", language: "İnterfeys dili", wbwLanguage: "Söz mənaları dili", tafsirPick: "Təfsir seç", nextUp: "Növbəti", credit: "Şəkil", bookmark: "Əlfəcin", bookmarked: "Saxlanıldı", notes: "Qeydlərim",
+    noteHint: "Bu ayə haqqında təfəkkürünüzü və ya qeydinizi yazın…", saveNote: "Qeydi saxla", deleteNote: "Sil", family: "Ailə", noProfile: "Əlfəcin və qeydləri saxlamaq üçün Ailə səhifəsindən profil seçin", library: "Saxlanılanlar", repeatAyahShort: "Təkrar",
+  },
+  mushaf: { title: "Müshəf", surah: "Surə", juz: "Cüz", player: "Pleyer", family: "Ailə", tryAgain: "Yenidən cəhd et", listenFromHere: "Buradan dinlə", bookmark: "Əlfəcin", bookmarked: "Saxlanıldı", tafsir: "Təfsir", prev: "Əvvəlki", next: "Növbəti", page: "Səhifə", of: "/", layout: "Tərtibat" },
+  family: {
+    title: "Ailə", sub: "Bir valideyn hesabı, uşaqdan nənə-babaya hər ailə üzvü üçün bir profil. Hər profil öz şriftini, mətn ölçüsünü, əlfəcinlərini, qeydlərini və irəliləyişini saxlayır.",
+    add: "Üzv əlavə et", name: "Ad", role: "Rol", gender: "Cins", age: "Yaş qrupu", avatar: "Avatar", save: "Yadda saxla", cancel: "Ləğv et", remove: "Profili sil",
+    roles: { parent: "Valideyn", adult: "Yetkin", child: "Uşaq", senior: "Yaşlı", teacher: "Müəllim" }, genders: { male: "Kişi", female: "Qadın", unspecified: "Göstərilməyib" },
+    active: "Aktiv profil", bookmarks: "Əlfəcinlər", notes: "Qeydlər", streak: "Ardıcıl günlər", minutes: "Bugünkü dəqiqələr", continue: "Oxumağa davam et", none: "Hələ yoxdur", open: "Aç", mushaf: "Müshəf", player: "Pleyer",
+    noProfiles: "İlk ailə üzvünü əlavə etməklə başlayın.", edit: "Redaktə et", femaleNote: "Qadın qarilər yalnız qadın profillərə göstərilir.", signin: "Əlfəcin və qeydləri Quran.com ilə sinxronlaşdırmaq üçün valideynin Quran Foundation hesabı ilə daxil olun", delete: "Sil",
+  },
+  search: {
+    title: "Axtar", placeholder: "Quranda axtar: söz, ayə, surə və ya 2:255", go: "Axtar", none: "Nəticə yoxdur", nav: "Keç", verses: "Ayələr", more: "Daha çox", results: "nəticə", exact: "Dəqiq uyğunluq", study: "Öyrən", play: "Dinlə", source: "Mənbə",
+    tip: "Sınayın: rəhmət · Kəhf · 36:1 · səbir", quick: "Sürətli", advanced: "Ətraflı", hint: "Söz, ifadə və ya 2:255 kimi ayə açarı",
+  },
+  study: {
+    title: "Öyrən", words: "Söz-söz", translations: "Tərcümələr", tafsir: "Təfsir", compare: "Təfsirləri müqayisə et", hadith: "Əlaqəli hədislər", answers: "Sual və cavablar", reflections: "Təfəkkürlər", info: "Surə haqqında", prev: "Əvvəlki", next: "Növbəti",
+    play: "Dinlə", bookmark: "Əlfəcin", bookmarked: "Saxlanıldı", share: "Paylaş", copy: "Kopyala", copied: "Kopyalandı", juz: "Cüz", page: "Səhifə", hizb: "Hizb", sajdah: "Səcdə", none: "Yoxdur", prodOnly: "Quran Foundation istehsal hesabı aktivləşdikdən sonra əlçatan olacaq",
+    loading: "Yüklənir…", searchWord: "Bu sözü axtar", listenWord: "Sözü dinlə", noProfile: "Əvvəlcə Ailə səhifəsindən profil seçin", occurrences: "Rast gəlinmələr", pick: "Təfsir seçin", surah: "Surə", ayah: "Ayə", of: "/",
+  },
+  learn: {
+    title: "Öyrən", pick: "Başlamaq üçün surə seçin", start: "Dərsə başla", xp: "XP", level: "Səviyyə", streak: "ardıcıl gün", check: "Yoxla", next: "Növbəti", correct: "Doğru!", wrong: "Tam deyil. Cavab:", done: "Afərin! Dərs tamamlandı", earned: "Qazandınız",
+    again: "Yeni dərs", meaning: "Bu söz nə deməkdir?", word: "Hansı söz bu mənanı verir:", hidden: "Ayəni çatışmayan sözlə tamamla", order: "Ayənin sözlərini sırala", reset: "Sıfırla", loading: "Dərs hazırlanır…", noProfile: "İrəliləyişi saxlamaq üçün Ailə səhifəsindən profil seçin",
+    lessonsDone: "dərs tamamlandı", juz30: "Əmmə cüzü", all: "Bütün surələr", listen: "Dinlə", skip: "Keç", short: "Qısa surələr", stage: "Mərhələ", ayatInSurah: "ayə bu surədə",
+  },
+  play: {
+    title: "Oyna", pick: "Oyun seç", scope: "Əhatə", all: "Bütün Quran", juz30: "Əmmə cüzü", short: "Qısa surələr", start: "Başla", loading: "Hazırlanır…", score: "Xal", time: "Vaxt", next: "Növbəti", result: "Nəticə", again: "Yenidən oyna", home: "Oyunlar",
+    best: "Ən yaxşı nəticələr", correct: "doğru", noProfile: "Nəticələri saxlamaq üçün Ailə səhifəsindən profil seçin", study: "Ayəni öyrən", nextIs: "Növbəti ayə:", wrong: "Səhv. Cavab:", done: "Raund bitdi", of: "/", leaderboard: "Ailə cədvəli", nextQuestion: "Növbəti ayə hansıdır?", juz: "Cüz",
+    games: { "guess-surah": { title: "Hansı surə?", sub: "Ayəni oxu, surəsini seç" }, "next-ayah": { title: "Növbəti ayə", sub: "Növbəti ayə hansıdır?" }, "missing-word": { title: "Çatışmayan söz", sub: "Ayəni düzgün sözlə tamamla" }, "which-juz": { title: "Hansı cüz?", sub: "Cüzü tap" } },
+  },
+  hifz: {
+    title: "Əzbərlə", pick: "Surə və ayə aralığı seçin", from: "Başlanğıc", to: "Son", start: "Təkrara başla", reveal: "Göstər", hide: "Gizlət", grade: "Xatırlamanız necə oldu?", forgot: "Unutdum", hard: "Çətin", good: "Yaxşı", easy: "Asan", due: "bu gün növbədə",
+    cards: "kart", listen: "Dinlə", mic: "Mikrofon yoxlaması", micStop: "Dayandır", micUnsupported: "Bu brauzerdə nitq tanıma yoxdur (Chrome sınayın)", accuracy: "Dəqiqlik", heard: "Eşidilən", next: "Növbəti", done: "Bugünkü raund bitdi", again: "Daha bir raund",
+    noProfile: "İrəliləyiş bu cihazda saxlanılır", methods: "Əzbərləmə üsulları", method6446: "6446 üsulu: hər ayəni 4 dəstdə 20 dəfə təkrarla", method3x3: "3×3 üsulu: üç ayə ayrı-ayrı, sonra birləşdirilmiş", reps: "təkrar", chain: "zəncir", schedule: "Növbəti təkrar",
+    today: "bu gün", tomorrow: "sabah", days: "gün", ayah: "ayə", loading: "Yüklənir…",
+  },
+  ask: {
+    title: "Soruş", placeholder: "Ayənin mənası və ya Qurandakı bir mövzu haqqında soruşun…", ask: "Soruş", sources: "Mənbələr", retrieval: "Əlaqəli ayə və təfsirlər (dil modeli olmadan)", model: "Hərfi sitatlarla model cavabı", tafsir: "Təfsir", study: "Öyrən",
+    report: "Bildir", reported: "Təşəkkürlər, bildiriş qeydə alındı", pending: "alimlərin yoxlamasını gözləyir", intro: "Cavablar yalnız mənbələrdəki ayə və təfsirlərdən qurulur; ayələr hərfi sitat gətirilir və heç vaxt dəyişdirilmir. Fətva deyil.",
+    examples: ["Ayətəl-Kürsi nə deməkdir?", "Quran səbir haqqında nə deyir?", "Mağara əhlinin hekayəsi"], nokey: "Tərtib edilmiş cavablar üçün serverdə ANTHROPIC_API_KEY təyin edin; hələlik mənbələr birbaşa göstərilir.", today: "Günün ayəsi", open: "Ayəni aç",
+  },
+  azan: {
+    title: "Azan və namaz vaxtları", prayers: { fajr: "Sübh", sunrise: "Günəş çıxışı", dhuhr: "Zöhr", asr: "Əsr", maghrib: "Məğrib", isha: "İşa" }, nextPrayer: "Növbəti namaz", inTime: "qalıb", now: "indi", location: "Məkan", useMyLocation: "Məkanımdan istifadə et",
+    locating: "Məkanınız tapılır…", locationDenied: "Məkana icazə verilmədi. Şəhərinizi seçin.", pickCity: "Şəhər seç", country: "Ölkə", city: "Şəhər", method: "Hesablama üsulu", methodAuto: "Ölkəyə görə avtomatik", muezzin: "Azan səsi", preview: "Azanı səsləndir",
+    stop: "Dayandır", notifications: "Azan bildirişləri", notificationsHelp: "Hər namaz vaxtında seçdiyiniz səslə azan bildirişi. Günün ayəsi oradan açılır.", enable: "Bildirişləri aç", enabled: "Bildirişlər açıqdır", disabled: "Bildirişlər bağlıdır",
+    unsupported: "Bu brauzer bildirişləri dəstəkləmir", denied: "Bildirişlər brauzer parametrlərində bloklanıb", testNotification: "Sınaq göndər", todayTimes: "Bugünkü vaxtlar", tomorrowTimes: "Sabah", playAtAzan: "Namaz vaxtı girəndə tətbiqdə azanı səsləndir",
+    silentPrayers: "Səssiz namazlar", story: "Günün ayəsi", openStory: "Bugünkü ayəni aç", settingsSaved: "Saxlanıldı", timezone: "Saat qurşağı", hijri: "Hicri tarix", asrHanafi: "Əsr (hənəfi)", highLat: "Yüksək enlik qaydası",
+    source: "Vaxtlar cihazda ölkənizin standart astronomik üsulu ilə hesablanır; həmişə yerli məscidlə dəqiqləşdirin.",
+  },
+  story: {
+    title: "Günün ayəsi", tapHint: "Davam üçün toxun", reflect: "Bir anlıq təfəkkür", reflectPrompt: "Bu ayə bu gün sizə nə deyir?", tafsir: "Təfsirdən", listen: "Dinlə", openStudy: "Bu ayəni öyrən", share: "Paylaş", saveNote: "Qeyd kimi saxla", noteSaved: "Qeyd saxlanıldı",
+    nextAyah: "Başqa ayə", wallpaper: "Fonu dəyiş", goodMorning: "Sabahınız xeyir", goodEvening: "Axşamınız xeyir", forPrayer: "Namaz:",
+  },
+};

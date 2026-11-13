@@ -1,0 +1,91 @@
+import type { PartialMessages } from "./en";
+
+export const no: PartialMessages = {
+  common: {
+    appName: "Koranen og mer", loading: "Laster…", close: "Lukk", retry: "Prøv igjen", next: "Neste", prev: "Forrige", save: "Lagre", cancel: "Avbryt", remove: "Fjern", none: "Ingen", open: "Åpne", share: "Del", copy: "Kopier", copied: "Kopiert", search: "Søk",
+    more: "Mer", back: "Tilbake", language: "Språk", uiLanguage: "Grensesnittspråk", of: "av", ayah: "Vers", ayat: "vers", surah: "Sure", juz: "Juz", page: "Side", hizb: "Hizb", sajdah: "Sajda", listen: "Lytt", study: "Studer", bookmark: "Bokmerke",
+    bookmarked: "Lagret", notes: "Notater", family: "Familie", player: "Spiller", mushaf: "Mushaf", settings: "Innstillinger", unavailable: "ikke tilgjengelig", today: "i dag", tomorrow: "i morgen", days: "dager", minutes: "min", done: "Ferdig", start: "Start",
+    again: "Igjen", poweredBy: "Drevet av Quran Foundations API-er", privacy: "Personvern", terms: "Vilkår", offline: "Kunne ikke nå innholdstjenesten. Sjekk tilkoblingen og prøv igjen.", noProfile: "Velg først en profil på Familiesiden",
+    on: "På", off: "Av", enable: "Slå på", disable: "Slå av", chooseLanguage: "Velg grensesnittspråk",
+  },
+  nav: { home: "Hjem", search: "Søk", learn: "Lær", hifz: "Memorer", play: "Spill", ask: "Spør", player: "Spiller", mushaf: "Mushaf", family: "Familie", azan: "Adhan", story: "Dagens vers" },
+  home: {
+    kicker: "Den edle Koranen", title: "Koranen og mer", sub: "Én Koran-opplevelse for hele familien: sømløs resitasjon med ordsynkronisering, mushafen i den offisielle skriften, tafsir og oversettelser på alle språk og en profil for hvert medlem.",
+    startListening: "Begynn å lytte", openMushaf: "Åpne mushafen",
+    tiles: {
+      player: { title: "Spiller", sub: "Lytt, les, oversett og studer tafsir på én skjerm, med hvilken som helst resitatør" },
+      mushaf: { title: "Mushaf", sub: "Side for side med de offisielle skrifttypene og tajwid-mushafen" },
+      family: { title: "Familie", sub: "En profil for hvert medlem, fra barn til besteforeldre" },
+      search: { title: "Søk", sub: "Finn hvilket som helst ord, vers eller sure i hele Koranen" },
+      study: { title: "Studier", sub: "Ord for ord, oversettelser og opptil tre tafsirer side om side" },
+      learn: { title: "Lær", sub: "Ordforrådsleksjoner i Quranlingo-stil med XP og rekker" },
+      hifz: { title: "Memorer", sub: "Skjul, husk og vurder deg selv, med spredt repetisjon og mikrofonsjekk" },
+      play: { title: "Spill", sub: "Hvilken sure? Neste vers? Manglende ord? Hvilken juz?" },
+      ask: { title: "Spør", sub: "Svar kun fra vers og tafsir, ordrett sitert, i påvente av lærdes gjennomgang" },
+      azan: { title: "Adhan", sub: "Bønnetider for byen din, adhan med stemmen du velger, en påminnelse ved hver bønn" },
+      story: { title: "Dagens vers", sub: "Ett vers om dagen i fullskjerm, med betydningen og et øyeblikk til ettertanke" },
+      kahf: { title: "Sure Al-Kahf", sub: "Leses på fredager" },
+    },
+  },
+  player: {
+    kicker: "Den edle Koranen", title: "Den edle Koranen", surahs: "Surer", reciter: "Resitatør", translation: "Oversettelse", tafsir: "Tafsir", settings: "Innstillinger", stations: "Radio", play: "Spill av", pause: "Pause", nextAyah: "Neste vers", prevAyah: "Forrige vers",
+    nextSurah: "Neste sure", restart: "Fra starten", retry: "Prøv igjen", close: "Lukk", none: "Kun arabisk tekst", textSize: "Tekststørrelse", autoAdvance: "Gå automatisk til neste sure", motion: "Automatisk rulling og bevegelse", small: "Liten", medium: "Middels",
+    large: "Stor", ayah: "Vers", of: "av", basmala: "Basmala", basmalaNote: "Basmala er ikke et vers i denne suren, så det finnes ingen tafsir her.", loading: "Laster…", offline: "Kunne ikke nå innholdstjenesten. Sjekk tilkoblingen og prøv igjen. Innstillingene dine er lagret.",
+    unavailable: "ikke tilgjengelig", listenWith: "Lytt med", riwayah: "Riwaya", allLanguages: "Alle språk", search: "Søk etter sure eller resitatør…", ended: "Sure fullført", playingStation: "Spilles nå", gapless: "Sømløs resitasjon med ordsynkronisering", perAyah: "Resitasjon vers for vers",
+    repeat: "Gjenta", repeatOff: "Av", repeatAyah: "Gjenta hvert vers", repeatRange: "Gjenta et område", repeatSurah: "Gjenta suren", times: "ganger", from: "Fra vers", to: "Til vers", pauseBetween: "Pause etter hvert vers (sekunder)", speed: "Hastighet", sleep: "Sovetimer",
+    off: "Av", minutes: "min", wordByWord: "Trykk på et ord for betydningen", styleMurattal: "Murattal", styleMujawwad: "Mujawwad", styleMuallim: "Mu'allim", gaplessOnly: "sømløs", ayahOnly: "vers for vers", both: "sømløs + vers for vers", noSync: "Hel sure · ikke synkronisert ennå",
+    noSyncShort: "hel sure · automatisk ordsynkronisering", share: "Del", copied: "Lenke kopiert", remaining: "igjen", wallpaper: "Bakgrunn", autoNature: "Natur, endres med suren", autoArt: "Islamsk kunst, endres med suren", autoLive: "Levende, endres med suren", plainBg: "Ingen bakgrunn",
+    fixedBg: "Fast bakgrunn", internetBg: "Internettbilder (Pexels)", internetOff: "Legg til en Pexels-nøkkel i innstillingene for å vise internettbilder", focusView: "Én skjerm", listView: "Liste", language: "Grensesnittspråk", wbwLanguage: "Språk for ordbetydninger", tafsirPick: "Velg tafsir",
+    nextUp: "Neste", credit: "Foto", bookmark: "Bokmerke", bookmarked: "Lagret", notes: "Mine notater", noteHint: "Skriv refleksjonen eller notatet ditt om dette verset…", saveNote: "Lagre notat", deleteNote: "Slett", family: "Familie",
+    noProfile: "Velg en profil på Familiesiden for å lagre bokmerker og notater", library: "Lagret", repeatAyahShort: "Gjenta",
+  },
+  mushaf: { title: "Mushaf", surah: "Sure", juz: "Juz", player: "Spiller", family: "Familie", tryAgain: "Prøv igjen", listenFromHere: "Lytt herfra", bookmark: "Bokmerke", bookmarked: "Lagret", tafsir: "Tafsir", prev: "Forrige", next: "Neste", page: "Side", of: "av", layout: "Oppsett" },
+  family: {
+    title: "Familie", sub: "Én foreldrekonto, én profil per familiemedlem fra barn til besteforeldre. Hver profil beholder sin skrift, tekststørrelse, bokmerker, notater og fremgang.",
+    add: "Legg til medlem", name: "Navn", role: "Rolle", gender: "Kjønn", age: "Aldersgruppe", avatar: "Avatar", save: "Lagre", cancel: "Avbryt", remove: "Fjern profil",
+    roles: { parent: "Forelder", adult: "Voksen", child: "Barn", senior: "Senior", teacher: "Lærer" }, genders: { male: "Mann", female: "Kvinne", unspecified: "Ikke oppgitt" },
+    active: "Aktiv profil", bookmarks: "Bokmerker", notes: "Notater", streak: "Dager på rad", minutes: "Minutter i dag", continue: "Fortsett å lese", none: "Ingenting ennå", open: "Åpne", mushaf: "Mushaf", player: "Spiller",
+    noProfiles: "Start med å legge til det første familiemedlemmet.", edit: "Rediger", femaleNote: "Kvinnelige resitatører vises kun for kvinnelige profiler.", signin: "Logg inn med forelderens Quran Foundation-konto for å synkronisere bokmerker og notater med Quran.com", delete: "Slett",
+  },
+  search: {
+    title: "Søk", placeholder: "Søk i Koranen: et ord, et vers, en sure eller 2:255", go: "Søk", none: "Ingen resultater", nav: "Gå til", verses: "Vers", more: "Mer", results: "resultater", exact: "Nøyaktig treff", study: "Studer", play: "Lytt", source: "Kilde",
+    tip: "Prøv: barmhjertighet · Al-Kahf · 36:1 · tålmodighet", quick: "Rask", advanced: "Avansert", hint: "Et ord, en frase eller en versnøkkel som 2:255",
+  },
+  study: {
+    title: "Studier", words: "Ord for ord", translations: "Oversettelser", tafsir: "Tafsir", compare: "Sammenlign tafsirer", hadith: "Relaterte hadither", answers: "Spørsmål og svar", reflections: "Refleksjoner", info: "Om suren", prev: "Forrige", next: "Neste", play: "Lytt",
+    bookmark: "Bokmerke", bookmarked: "Lagret", share: "Del", copy: "Kopier", copied: "Kopiert", juz: "Juz", page: "Side", hizb: "Hizb", sajdah: "Sajda", none: "Ingen", prodOnly: "Tilgjengelig når Quran Foundations produksjonskonto er aktivert", loading: "Laster…",
+    searchWord: "Søk etter dette ordet", listenWord: "Lytt til ordet", noProfile: "Velg først en profil på Familiesiden", occurrences: "Forekomster", pick: "Velg en tafsir", surah: "Sure", ayah: "Vers", of: "av",
+  },
+  learn: {
+    title: "Lær", pick: "Velg en sure for å begynne", start: "Start leksjon", xp: "XP", level: "Nivå", streak: "dager på rad", check: "Sjekk", next: "Neste", correct: "Riktig!", wrong: "Ikke helt. Svaret:", done: "Bra jobbet! Leksjonen er fullført", earned: "Du fikk",
+    again: "Ny leksjon", meaning: "Hva betyr dette ordet?", word: "Hvilket ord betyr:", hidden: "Fullfør verset med det manglende ordet", order: "Sett versets ord i riktig rekkefølge", reset: "Nullstill", loading: "Forbereder leksjonen…", noProfile: "Velg en profil på Familiesiden for å lagre fremgang",
+    lessonsDone: "leksjoner fullført", juz30: "Juz Amma", all: "Alle surer", listen: "Lytt", skip: "Hopp over", short: "Korte surer", stage: "Trinn", ayatInSurah: "vers i denne suren",
+  },
+  play: {
+    title: "Spill", pick: "Velg et spill", scope: "Omfang", all: "Hele Koranen", juz30: "Juz Amma", short: "Korte surer", start: "Start", loading: "Forbereder…", score: "Poeng", time: "Tid", next: "Neste", result: "Resultat", again: "Spill igjen", home: "Spill", best: "Beste resultater",
+    correct: "riktige", noProfile: "Velg en profil på Familiesiden for å lagre poeng", study: "Studer verset", nextIs: "Neste vers er", wrong: "Feil. Svaret:", done: "Runden er over", of: "av", leaderboard: "Familietavle", nextQuestion: "Hvilket vers kommer etterpå?", juz: "Juz",
+    games: { "guess-surah": { title: "Hvilken sure?", sub: "Les verset og velg suren" }, "next-ayah": { title: "Neste vers", sub: "Hvilket vers kommer etterpå?" }, "missing-word": { title: "Manglende ord", sub: "Fullfør verset med riktig ord" }, "which-juz": { title: "Hvilken juz?", sub: "Gjett juz" } },
+  },
+  hifz: {
+    title: "Memorer", pick: "Velg en sure og et versområde", from: "Fra", to: "Til", start: "Start repetisjon", reveal: "Vis", hide: "Skjul", grade: "Hvordan gikk det å huske?", forgot: "Glemte", hard: "Vanskelig", good: "Bra", easy: "Lett", due: "forfaller i dag", cards: "kort",
+    listen: "Lytt", mic: "Mikrofonsjekk", micStop: "Stopp", micUnsupported: "Denne nettleseren har ikke talegjenkjenning (prøv Chrome)", accuracy: "Nøyaktighet", heard: "Hørt", next: "Neste", done: "Dagens runde er ferdig", again: "En runde til",
+    noProfile: "Fremgangen lagres på denne enheten", methods: "Memoreringsmetoder", method6446: "Metode 6446: gjenta hvert vers 20 ganger i 4 sett", method3x3: "Metode 3×3: tre vers hver for seg, så sammenhengende", reps: "rep.", chain: "kjede", schedule: "Neste repetisjon",
+    today: "i dag", tomorrow: "i morgen", days: "dager", ayah: "vers", loading: "Laster…",
+  },
+  ask: {
+    title: "Spør", placeholder: "Spør om betydningen av et vers eller et tema i Koranen…", ask: "Spør", sources: "Kilder", retrieval: "Relaterte vers og tafsir (uten språkmodell)", model: "Modellsvar med ordrette sitater", tafsir: "Tafsir", study: "Studer", report: "Rapporter",
+    reported: "Takk, rapporten er registrert", pending: "venter på lærdes gjennomgang", intro: "Svarene bygges kun på versene og tafsiren i kildene; versene siteres ordrett og endres aldri. Ingen fatwaer.",
+    examples: ["Hva betyr Tronverset?", "Hva sier Koranen om tålmodighet?", "Historien om folket i hulen"], nokey: "Sett ANTHROPIC_API_KEY på serveren for å aktivere sammensatte svar; foreløpig vises kildene direkte.", today: "Dagens vers", open: "Åpne verset",
+  },
+  azan: {
+    title: "Adhan og bønnetider", prayers: { fajr: "Fajr", sunrise: "Soloppgang", dhuhr: "Dhuhr", asr: "Asr", maghrib: "Maghrib", isha: "Isha" }, nextPrayer: "Neste bønn", inTime: "om", now: "nå", location: "Sted", useMyLocation: "Bruk min posisjon", locating: "Finner posisjonen din…",
+    locationDenied: "Posisjon ble ikke tillatt. Velg byen din i stedet.", pickCity: "Velg by", country: "Land", city: "By", method: "Beregningsmetode", methodAuto: "Automatisk etter land", muezzin: "Adhan-stemme", preview: "Spill adhan", stop: "Stopp", notifications: "Adhan-varsler",
+    notificationsHelp: "Et varsel med adhan ved hver bønnetid, med stemmen du valgte. Dagens vers åpnes derfra.", enable: "Slå på varsler", enabled: "Varsler er på", disabled: "Varsler er av", unsupported: "Denne nettleseren støtter ikke varsler",
+    denied: "Varsler er blokkert i nettleserens innstillinger", testNotification: "Send en test", todayTimes: "Dagens bønnetider", tomorrowTimes: "I morgen", playAtAzan: "Spill adhan i appen ved bønnetiden", silentPrayers: "Stille bønner", story: "Dagens vers",
+    openStory: "Åpne dagens vers", settingsSaved: "Lagret", timezone: "Tidssone", hijri: "Hijri-dato", asrHanafi: "Asr (hanafi)", highLat: "Regel for høye breddegrader", source: "Tidene beregnes på enheten med landets astronomiske standardmetode; bekreft alltid med din lokale moské.",
+  },
+  story: {
+    title: "Dagens vers", tapHint: "Trykk for å fortsette", reflect: "Et øyeblikk til ettertanke", reflectPrompt: "Hva sier dette verset deg i dag?", tafsir: "Fra tafsiren", listen: "Lytt", openStudy: "Studer dette verset", share: "Del", saveNote: "Lagre som notat",
+    noteSaved: "Notat lagret", nextAyah: "Et annet vers", wallpaper: "Bytt bakgrunn", goodMorning: "God morgen", goodEvening: "God kveld", forPrayer: "Til",
+  },
+};

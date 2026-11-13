@@ -1,0 +1,92 @@
+import type { PartialMessages } from "./en";
+
+export const cs: PartialMessages = {
+  common: {
+    appName: "Korán a více", loading: "Načítání…", close: "Zavřít", retry: "Zkusit znovu", next: "Další", prev: "Předchozí", save: "Uložit", cancel: "Zrušit", remove: "Odebrat", none: "Žádný", open: "Otevřít", share: "Sdílet", copy: "Kopírovat", copied: "Zkopírováno",
+    search: "Hledat", more: "Více", back: "Zpět", language: "Jazyk", uiLanguage: "Jazyk rozhraní", of: "z", ayah: "Verš", ayat: "veršů", surah: "Súra", juz: "Džuz", page: "Strana", hizb: "Hizb", sajdah: "Sadžda", listen: "Poslouchat", study: "Studovat",
+    bookmark: "Záložka", bookmarked: "Uloženo", notes: "Poznámky", family: "Rodina", player: "Přehrávač", mushaf: "Mushaf", settings: "Nastavení", unavailable: "nedostupné", today: "dnes", tomorrow: "zítra", days: "dní", minutes: "min", done: "Hotovo",
+    start: "Začít", again: "Znovu", poweredBy: "Poháněno API Quran Foundation", privacy: "Soukromí", terms: "Podmínky", offline: "Službu obsahu se nepodařilo kontaktovat. Zkontrolujte připojení a zkuste to znovu.", noProfile: "Nejprve vyberte profil na stránce Rodina",
+    on: "Zap.", off: "Vyp.", enable: "Zapnout", disable: "Vypnout", chooseLanguage: "Vyberte jazyk rozhraní",
+  },
+  nav: { home: "Domů", search: "Hledat", learn: "Učit se", hifz: "Memorovat", play: "Hrát", ask: "Zeptat se", player: "Přehrávač", mushaf: "Mushaf", family: "Rodina", azan: "Azán", story: "Verš dne" },
+  home: {
+    kicker: "Vznešený Korán", title: "Korán a více", sub: "Jeden zážitek z Koránu pro celou rodinu: plynulá recitace se synchronizací slov, mushaf v oficiálním písmu, tafsír a překlady ve všech jazycích a profil pro každého člena.",
+    startListening: "Začít poslouchat", openMushaf: "Otevřít mushaf",
+    tiles: {
+      player: { title: "Přehrávač", sub: "Poslouchejte, čtěte, překládejte a studujte tafsír na jedné obrazovce, s kterýmkoli recitátorem" },
+      mushaf: { title: "Mushaf", sub: "Strana po straně s oficiálními fonty a tadžvídovým mushafem" },
+      family: { title: "Rodina", sub: "Profil pro každého člena, od dítěte po prarodiče" },
+      search: { title: "Hledat", sub: "Najděte jakékoli slovo, verš nebo súru v celém Koránu" },
+      study: { title: "Studium", sub: "Slovo za slovem, překlady a až tři tafsíry vedle sebe" },
+      learn: { title: "Učit se", sub: "Lekce slovní zásoby ve stylu Quranlingo s XP a sériemi" },
+      hifz: { title: "Memorovat", sub: "Skryjte, vybavte si a ohodnoťte se, s rozloženým opakováním a kontrolou mikrofonem" },
+      play: { title: "Hrát", sub: "Která súra? Další verš? Chybějící slovo? Který džuz?" },
+      ask: { title: "Zeptat se", sub: "Odpovědi pouze z veršů a tafsíru, citované doslova, čekají na posouzení učenci" },
+      azan: { title: "Azán", sub: "Časy modliteb pro vaše město, azán hlasem, který si vyberete, připomenutí ke každé modlitbě" },
+      story: { title: "Verš dne", sub: "Jeden verš denně na celou obrazovku, s jeho významem a chvílí k zamyšlení" },
+      kahf: { title: "Súra Al-Kahf", sub: "Čte se v pátek" },
+    },
+  },
+  player: {
+    kicker: "Vznešený Korán", title: "Vznešený Korán", surahs: "Súry", reciter: "Recitátor", translation: "Překlad", tafsir: "Tafsír", settings: "Nastavení", stations: "Rádio", play: "Přehrát", pause: "Pauza", nextAyah: "Další verš", prevAyah: "Předchozí verš",
+    nextSurah: "Další súra", restart: "Od začátku", retry: "Zkusit znovu", close: "Zavřít", none: "Pouze arabský text", textSize: "Velikost textu", autoAdvance: "Automaticky přejít na další súru", motion: "Automatické posouvání a pohyb", small: "Malé",
+    medium: "Střední", large: "Velké", ayah: "Verš", of: "z", basmala: "Basmala", basmalaNote: "Basmala není veršem této súry, takže zde není tafsír.", loading: "Načítání…",
+    offline: "Službu obsahu se nepodařilo kontaktovat. Zkontrolujte připojení a zkuste to znovu. Vaše nastavení jsou uložena.", unavailable: "nedostupné", listenWith: "Poslouchat s", riwayah: "Riwája", allLanguages: "Všechny jazyky", search: "Hledat súru nebo recitátora…",
+    ended: "Súra dokončena", playingStation: "Právě hraje", gapless: "Plynulá recitace se synchronizací slov", perAyah: "Recitace verš po verši", repeat: "Opakovat", repeatOff: "Vyp.", repeatAyah: "Opakovat každý verš", repeatRange: "Opakovat rozsah", repeatSurah: "Opakovat súru",
+    times: "krát", from: "Od verše", to: "Do verše", pauseBetween: "Pauza po každém verši (sekundy)", speed: "Rychlost", sleep: "Časovač spánku", off: "Vyp.", minutes: "min", wordByWord: "Klepněte na slovo pro jeho význam", styleMurattal: "Murattal", styleMujawwad: "Mudžawwad",
+    styleMuallim: "Mu'allim", gaplessOnly: "plynule", ayahOnly: "verš po verši", both: "plynule + verš po verši", noSync: "Celá súra · zatím nesynchronizována", noSyncShort: "celá súra · automatická synchronizace slov", share: "Sdílet", copied: "Odkaz zkopírován",
+    remaining: "zbývá", wallpaper: "Pozadí", autoNature: "Příroda, mění se se súrou", autoArt: "Islámské umění, mění se se súrou", autoLive: "Živé, mění se se súrou", plainBg: "Bez pozadí", fixedBg: "Pevné pozadí", internetBg: "Fotky z internetu (Pexels)",
+    internetOff: "Přidejte v nastavení klíč Pexels pro zobrazení fotek z internetu", focusView: "Jedna obrazovka", listView: "Seznam", language: "Jazyk rozhraní", wbwLanguage: "Jazyk významů slov", tafsirPick: "Vybrat tafsír", nextUp: "Další", credit: "Foto", bookmark: "Záložka",
+    bookmarked: "Uloženo", notes: "Moje poznámky", noteHint: "Napište svou úvahu nebo poznámku k tomuto verši…", saveNote: "Uložit poznámku", deleteNote: "Smazat", family: "Rodina", noProfile: "Vyberte profil na stránce Rodina pro ukládání záložek a poznámek", library: "Uložené", repeatAyahShort: "Opakovat",
+  },
+  mushaf: { title: "Mushaf", surah: "Súra", juz: "Džuz", player: "Přehrávač", family: "Rodina", tryAgain: "Zkusit znovu", listenFromHere: "Poslouchat odsud", bookmark: "Záložka", bookmarked: "Uloženo", tafsir: "Tafsír", prev: "Předchozí", next: "Další", page: "Strana", of: "z", layout: "Rozvržení" },
+  family: {
+    title: "Rodina", sub: "Jeden rodičovský účet, jeden profil pro každého člena rodiny od dítěte po prarodiče. Každý profil má vlastní písmo, velikost textu, záložky, poznámky a pokrok.",
+    add: "Přidat člena", name: "Jméno", role: "Role", gender: "Pohlaví", age: "Věková skupina", avatar: "Avatar", save: "Uložit", cancel: "Zrušit", remove: "Odebrat profil",
+    roles: { parent: "Rodič", adult: "Dospělý", child: "Dítě", senior: "Senior", teacher: "Učitel" }, genders: { male: "Muž", female: "Žena", unspecified: "Neuvedeno" },
+    active: "Aktivní profil", bookmarks: "Záložky", notes: "Poznámky", streak: "Dní v řadě", minutes: "Minut dnes", continue: "Pokračovat ve čtení", none: "Zatím nic", open: "Otevřít", mushaf: "Mushaf", player: "Přehrávač",
+    noProfiles: "Začněte přidáním prvního člena rodiny.", edit: "Upravit", femaleNote: "Recitátorky se zobrazují pouze ženským profilům.", signin: "Přihlaste se účtem Quran Foundation rodiče pro synchronizaci záložek a poznámek s Quran.com", delete: "Smazat",
+  },
+  search: {
+    title: "Hledat", placeholder: "Hledat v Koránu: slovo, verš, súru nebo 2:255", go: "Hledat", none: "Žádné výsledky", nav: "Přejít na", verses: "Verše", more: "Více", results: "výsledků", exact: "Přesná shoda", study: "Studovat", play: "Poslouchat", source: "Zdroj",
+    tip: "Zkuste: milosrdenství · Al-Kahf · 36:1 · trpělivost", quick: "Rychlé", advanced: "Pokročilé", hint: "Slovo, fráze nebo klíč verše jako 2:255",
+  },
+  study: {
+    title: "Studium", words: "Slovo za slovem", translations: "Překlady", tafsir: "Tafsír", compare: "Porovnat tafsíry", hadith: "Související hadísy", answers: "Otázky a odpovědi", reflections: "Úvahy", info: "O súře", prev: "Předchozí", next: "Další", play: "Poslouchat",
+    bookmark: "Záložka", bookmarked: "Uloženo", share: "Sdílet", copy: "Kopírovat", copied: "Zkopírováno", juz: "Džuz", page: "Strana", hizb: "Hizb", sajdah: "Sadžda", none: "Žádný", prodOnly: "Dostupné po aktivaci produkčního účtu Quran Foundation", loading: "Načítání…",
+    searchWord: "Hledat toto slovo", listenWord: "Poslechnout slovo", noProfile: "Nejprve vyberte profil na stránce Rodina", occurrences: "Výskyty", pick: "Vyberte tafsír", surah: "Súra", ayah: "Verš", of: "z",
+  },
+  learn: {
+    title: "Učit se", pick: "Vyberte súru pro začátek", start: "Začít lekci", xp: "XP", level: "Úroveň", streak: "dní v řadě", check: "Zkontrolovat", next: "Další", correct: "Správně!", wrong: "Ne tak docela. Odpověď:", done: "Výborně! Lekce dokončena", earned: "Získali jste",
+    again: "Nová lekce", meaning: "Co znamená toto slovo?", word: "Které slovo znamená:", hidden: "Doplňte verš chybějícím slovem", order: "Seřaďte slova verše", reset: "Resetovat", loading: "Příprava lekce…", noProfile: "Vyberte profil na stránce Rodina pro ukládání pokroku",
+    lessonsDone: "lekcí hotovo", juz30: "Džuz Amma", all: "Všechny súry", listen: "Poslouchat", skip: "Přeskočit", short: "Krátké súry", stage: "Fáze", ayatInSurah: "veršů v této súře",
+  },
+  play: {
+    title: "Hrát", pick: "Vyberte hru", scope: "Rozsah", all: "Celý Korán", juz30: "Džuz Amma", short: "Krátké súry", start: "Start", loading: "Příprava…", score: "Skóre", time: "Čas", next: "Další", result: "Výsledek", again: "Hrát znovu", home: "Hry", best: "Nejlepší skóre",
+    correct: "správně", noProfile: "Vyberte profil na stránce Rodina pro ukládání skóre", study: "Studovat verš", nextIs: "Další verš je", wrong: "Špatně. Odpověď:", done: "Kolo skončilo", of: "z", leaderboard: "Rodinná tabulka", nextQuestion: "Který verš následuje?", juz: "Džuz",
+    games: { "guess-surah": { title: "Která súra?", sub: "Přečtěte verš a vyberte jeho súru" }, "next-ayah": { title: "Další verš", sub: "Který verš následuje?" }, "missing-word": { title: "Chybějící slovo", sub: "Doplňte verš správným slovem" }, "which-juz": { title: "Který džuz?", sub: "Uhodněte džuz" } },
+  },
+  hifz: {
+    title: "Memorovat", pick: "Vyberte súru a rozsah veršů", from: "Od", to: "Do", start: "Začít opakování", reveal: "Odkrýt", hide: "Skrýt", grade: "Jak šlo vybavování?", forgot: "Zapomněl jsem", hard: "Těžké", good: "Dobré", easy: "Snadné", due: "na dnes", cards: "karet",
+    listen: "Poslouchat", mic: "Kontrola mikrofonem", micStop: "Zastavit", micUnsupported: "Tento prohlížeč nemá rozpoznávání řeči (zkuste Chrome)", accuracy: "Přesnost", heard: "Slyšeno", next: "Další", done: "Dnešní kolo je hotové", again: "Další kolo",
+    noProfile: "Pokrok se ukládá na tomto zařízení", methods: "Metody memorování", method6446: "Metoda 6446: opakujte každý verš 20krát ve 4 sadách", method3x3: "Metoda 3×3: tři verše zvlášť, pak spojené", reps: "opak.", chain: "řetěz", schedule: "Další opakování",
+    today: "dnes", tomorrow: "zítra", days: "dní", ayah: "verš", loading: "Načítání…",
+  },
+  ask: {
+    title: "Zeptat se", placeholder: "Zeptejte se na význam verše nebo téma v Koránu…", ask: "Zeptat se", sources: "Zdroje", retrieval: "Související verše a tafsír (bez jazykového modelu)", model: "Odpověď modelu s doslovnými citacemi", tafsir: "Tafsír", study: "Studovat",
+    report: "Nahlásit", reported: "Děkujeme, hlášení bylo zaznamenáno", pending: "čeká na posouzení učenci", intro: "Odpovědi vznikají pouze z veršů a tafsíru ve zdrojích; verše jsou citovány doslova a nikdy se nemění. Žádné fatwy.",
+    examples: ["Co znamená Verš trůnu?", "Co říká Korán o trpělivosti?", "Příběh lidí z jeskyně"], nokey: "Nastavte ANTHROPIC_API_KEY na serveru pro zapnutí sestavených odpovědí; zatím se zdroje zobrazují přímo.", today: "Verš dne", open: "Otevřít verš",
+  },
+  azan: {
+    title: "Azán a časy modliteb", prayers: { fajr: "Fadžr", sunrise: "Východ slunce", dhuhr: "Zuhr", asr: "Asr", maghrib: "Maghrib", isha: "Iša" }, nextPrayer: "Další modlitba", inTime: "za", now: "nyní", location: "Poloha", useMyLocation: "Použít mou polohu",
+    locating: "Zjišťování polohy…", locationDenied: "Poloha nebyla povolena. Vyberte své město.", pickCity: "Vybrat město", country: "Země", city: "Město", method: "Metoda výpočtu", methodAuto: "Automaticky podle země", muezzin: "Hlas azánu", preview: "Přehrát azán", stop: "Zastavit",
+    notifications: "Oznámení azánu", notificationsHelp: "Oznámení s azánem při každém čase modlitby, zvoleným hlasem. Otevře se z něj verš dne.", enable: "Zapnout oznámení", enabled: "Oznámení jsou zapnuta", disabled: "Oznámení jsou vypnuta",
+    unsupported: "Tento prohlížeč nepodporuje oznámení", denied: "Oznámení jsou zablokována v nastavení prohlížeče", testNotification: "Poslat test", todayTimes: "Dnešní časy", tomorrowTimes: "Zítra", playAtAzan: "Přehrát azán v aplikaci v čase modlitby",
+    silentPrayers: "Tiché modlitby", story: "Verš dne", openStory: "Otevřít dnešní verš", settingsSaved: "Uloženo", timezone: "Časové pásmo", hijri: "Datum hidžry", asrHanafi: "Asr (hanafí)", highLat: "Pravidlo vysokých šířek",
+    source: "Časy se počítají na zařízení standardní astronomickou metodou vaší země; vždy si je ověřte v místní mešitě.",
+  },
+  story: {
+    title: "Verš dne", tapHint: "Klepněte pro pokračování", reflect: "Chvíle k zamyšlení", reflectPrompt: "Co vám tento verš dnes říká?", tafsir: "Z tafsíru", listen: "Poslouchat", openStudy: "Studovat tento verš", share: "Sdílet", saveNote: "Uložit jako poznámku",
+    noteSaved: "Poznámka uložena", nextAyah: "Jiný verš", wallpaper: "Změnit pozadí", goodMorning: "Dobré ráno", goodEvening: "Dobrý večer", forPrayer: "K modlitbě",
+  },
+};

@@ -1,0 +1,90 @@
+import type { PartialMessages } from "./en";
+
+export const ps: PartialMessages = {
+  common: {
+    appName: "قرآن او نور", loading: "بارېږي…", close: "بندول", retry: "بیا هڅه", next: "راتلونکی", prev: "پخوانی", save: "خوندي کول", cancel: "لغوه کول", remove: "لرې کول", none: "هیڅ", open: "پرانیستل", share: "شریکول", copy: "کاپي", copied: "کاپي شو",
+    search: "لټون", more: "نور", back: "شاته", language: "ژبه", uiLanguage: "د انټرفیس ژبه", of: "له", ayah: "آیت", ayat: "آیتونه", surah: "سورت", juz: "سپاره", page: "مخ", hizb: "حزب", sajdah: "سجده", listen: "اورېدل", study: "مطالعه",
+    bookmark: "نښه", bookmarked: "خوندي شو", notes: "یادښتونه", family: "کورنۍ", player: "پلیئر", mushaf: "مصحف", settings: "تنظیمات", unavailable: "شتون نلري", today: "نن", tomorrow: "سبا", days: "ورځې", minutes: "دقیقې", done: "ترسره شو",
+    start: "پیل", again: "بیا", poweredBy: "د Quran Foundation API له لارې", privacy: "محرمیت", terms: "شرایط", offline: "د منځپانګې خدمت ته لاسرسی ونه شو. خپل اتصال وګورئ او بیا هڅه وکړئ.", noProfile: "لومړی د کورنۍ له پاڼې یو پروفایل وټاکئ",
+    on: "فعال", off: "غیرفعال", enable: "فعالول", disable: "غیرفعالول", chooseLanguage: "د انټرفیس ژبه وټاکئ",
+  },
+  nav: { home: "کور", search: "لټون", learn: "زده کړه", hifz: "حفظ", play: "لوبه", ask: "پوښتنه", player: "پلیئر", mushaf: "مصحف", family: "کورنۍ", azan: "اذان", story: "د ورځې آیت" },
+  home: {
+    kicker: "قرآن کریم", title: "قرآن او نور", sub: "د ټولې کورنۍ لپاره یوه بشپړه قرآني تجربه: د کلمو له همغږۍ سره پرله پسې تلاوت، په رسمي لیکدود مصحف، په هره ژبه تفسیر او ژباړې، او د هر غړي لپاره یو پروفایل.",
+    startListening: "اورېدل پیل کړئ", openMushaf: "مصحف پرانیزئ",
+    tiles: {
+      player: { title: "پلیئر", sub: "په یوه پرده کې واورئ، ولولئ، ژباړه او تفسیر وګورئ، د هر قاري سره" },
+      mushaf: { title: "مصحف", sub: "د رسمي فونټونو او د تجوید مصحف سره مخ په مخ" },
+      family: { title: "کورنۍ", sub: "له ماشوم څخه تر نیکه پورې د هر غړي لپاره یو پروفایل" },
+      search: { title: "لټون", sub: "په ټول قرآن کې هره کلمه، آیت یا سورت ومومئ" },
+      study: { title: "مطالعه", sub: "کلمه په کلمه، ژباړې او څنګ په څنګ تر درېیو تفسیرونو" },
+      learn: { title: "زده کړه", sub: "د Quranlingo په ډول د لغتونو درسونه له XP او پرله پسې ورځو سره" },
+      hifz: { title: "حفظ", sub: "پټ کړئ، یاد کړئ او ځان وارزوئ؛ د وقفه لرونکي تکرار او مایکروفون ازموینې سره" },
+      play: { title: "لوبه", sub: "کوم سورت؟ راتلونکی آیت؟ ورکه کلمه؟ کومه سپاره؟" },
+      ask: { title: "پوښتنه", sub: "یوازې له آیتونو او تفسیرونو ځوابونه، ټکي په ټکي نقل، د علماوو د کتنې په تمه" },
+      azan: { title: "اذان", sub: "ستاسو د ښار د لمانځه وختونه، ستاسو د خوښې په غږ اذان، د هر لمانځه یادونه" },
+      story: { title: "د ورځې آیت", sub: "هره ورځ یو آیت په بشپړه پرده، له معنا او د تدبر یوې شېبې سره" },
+      kahf: { title: "سورة الکهف", sub: "د جمعې په ورځ لوستل کېږي" },
+    },
+  },
+  player: {
+    kicker: "قرآن کریم", title: "قرآن کریم", surahs: "سورتونه", reciter: "قاري", translation: "ژباړه", tafsir: "تفسیر", settings: "تنظیمات", stations: "راډیو", play: "غږول", pause: "ودرول", nextAyah: "راتلونکی آیت", prevAyah: "پخوانی آیت", nextSurah: "راتلونکی سورت",
+    restart: "له پیله", retry: "بیا هڅه", close: "بندول", none: "یوازې عربي متن", textSize: "د متن اندازه", autoAdvance: "په اتومات ډول راتلونکي سورت ته تلل", motion: "اتومات سکرول او حرکت", small: "کوچنی", medium: "منځنی", large: "لوی", ayah: "آیت", of: "له",
+    basmala: "بسم الله", basmalaNote: "بسم الله د دې سورت آیت نه دی، نو دلته تفسیر نشته.", loading: "بارېږي…", offline: "د منځپانګې خدمت ته لاسرسی ونه شو. اتصال وګورئ او بیا هڅه وکړئ. ستاسو تنظیمات خوندي دي.", unavailable: "شتون نلري",
+    listenWith: "په غږ د", riwayah: "روایت", allLanguages: "ټولې ژبې", search: "سورت یا قاري ولټوئ…", ended: "سورت بشپړ شو", playingStation: "اوس غږېږي", gapless: "د کلمو له همغږۍ سره پرله پسې تلاوت", perAyah: "آیت په آیت تلاوت", repeat: "تکرار", repeatOff: "بند",
+    repeatAyah: "هر آیت تکرار", repeatRange: "ساحه تکرار", repeatSurah: "سورت تکرار", times: "ځله", from: "له آیت", to: "تر آیت", pauseBetween: "له هر آیت وروسته وقفه (ثانیې)", speed: "چټکتیا", sleep: "د خوب ټایمر", off: "بند", minutes: "دقیقې",
+    wordByWord: "د معنا لپاره کلمه ټک کړئ", styleMurattal: "مرتل", styleMujawwad: "مجوّد", styleMuallim: "معلم", gaplessOnly: "پرله پسې", ayahOnly: "آیت په آیت", both: "پرله پسې + آیت په آیت", noSync: "بشپړ سورت · لا همغږی شوی نه دی", noSyncShort: "بشپړ سورت · د کلمو اتومات همغږي",
+    share: "شریکول", copied: "لینک کاپي شو", remaining: "پاتې", wallpaper: "شالید", autoNature: "طبیعت، له سورت سره بدلېږي", autoArt: "اسلامي هنر، له سورت سره بدلېږي", autoLive: "ژوندی، له سورت سره بدلېږي", plainBg: "بې شالیده", fixedBg: "ثابت شالید",
+    internetBg: "د انټرنېټ انځورونه (Pexels)", internetOff: "د انټرنېټ انځورونو لپاره په تنظیماتو کې د Pexels کیلي اضافه کړئ", focusView: "یوه پرده", listView: "لیست", language: "د انټرفیس ژبه", wbwLanguage: "د کلمو د معنا ژبه", tafsirPick: "تفسیر وټاکئ", nextUp: "راتلونکی",
+    credit: "انځور", bookmark: "نښه", bookmarked: "خوندي شو", notes: "زما یادښتونه", noteHint: "پر دې آیت خپل تدبر یا یادښت ولیکئ…", saveNote: "یادښت خوندي کول", deleteNote: "ړنګول", family: "کورنۍ", noProfile: "د نښو او یادښتونو خوندي کولو لپاره د کورنۍ له پاڼې پروفایل وټاکئ",
+    library: "خوندي شوي", repeatAyahShort: "تکرار",
+  },
+  mushaf: { title: "مصحف", surah: "سورت", juz: "سپاره", player: "پلیئر", family: "کورنۍ", tryAgain: "بیا هڅه", listenFromHere: "له دې ځایه واورئ", bookmark: "نښه", bookmarked: "خوندي شو", tafsir: "تفسیر", prev: "پخوانی مخ", next: "راتلونکی مخ", page: "مخ", of: "له", layout: "ترتیب" },
+  family: {
+    title: "کورنۍ", sub: "د مور یا پلار یو حساب، له ماشوم څخه تر نیکه د هر غړي لپاره یو پروفایل. هر پروفایل خپل فونټ، د متن اندازه، نښې، یادښتونه او پرمختګ لري.",
+    add: "غړی اضافه کړئ", name: "نوم", role: "رول", gender: "جنس", age: "عمر ډله", avatar: "اواتار", save: "خوندي کول", cancel: "لغوه کول", remove: "پروفایل لرې کول",
+    roles: { parent: "مور/پلار", adult: "لوی", child: "ماشوم", senior: "مشر", teacher: "ښوونکی" }, genders: { male: "نارینه", female: "ښځینه", unspecified: "ناټاکلی" },
+    active: "فعال پروفایل", bookmarks: "نښې", notes: "یادښتونه", streak: "پرله پسې ورځې", minutes: "د نن دقیقې", continue: "لوستل ته دوام ورکړئ", none: "تر اوسه هیڅ", open: "پرانیستل", mushaf: "مصحف", player: "پلیئر",
+    noProfiles: "د کورنۍ د لومړي غړي په اضافه کولو پیل وکړئ.", edit: "سمول", femaleNote: "ښځینه قاریانې یوازې ښځینه پروفایلونو ته ښودل کېږي.", signin: "د نښو او یادښتونو د Quran.com سره همغږۍ لپاره د مور/پلار د Quran Foundation حساب سره ننوځئ", delete: "ړنګول",
+  },
+  search: {
+    title: "لټون", placeholder: "په قرآن کې ولټوئ: کلمه، آیت، سورت یا 2:255", go: "لټون", none: "پایله نشته", nav: "ورتګ", verses: "آیتونه", more: "نور", results: "پایلې", exact: "بشپړ سمون", study: "مطالعه", play: "اورېدل", source: "سرچینه",
+    tip: "هڅه وکړئ: رحمت · کهف · 36:1 · صبر", quick: "ګړندی", advanced: "پرمختللی", hint: "یوه کلمه، جمله یا د آیت کیلي لکه 2:255",
+  },
+  study: {
+    title: "مطالعه", words: "کلمه په کلمه", translations: "ژباړې", tafsir: "تفسیر", compare: "تفسیرونه پرتله کړئ", hadith: "اړوند احادیث", answers: "پوښتنې او ځوابونه", reflections: "تدبرونه", info: "د سورت په اړه", prev: "پخوانی", next: "راتلونکی", play: "اورېدل",
+    bookmark: "نښه", bookmarked: "خوندي شو", share: "شریکول", copy: "کاپي", copied: "کاپي شو", juz: "سپاره", page: "مخ", hizb: "حزب", sajdah: "سجده", none: "هیڅ", prodOnly: "د Quran Foundation د تولید حساب له فعالېدو وروسته شتون لري",
+    loading: "بارېږي…", searchWord: "دا کلمه ولټوئ", listenWord: "کلمه واورئ", noProfile: "لومړی د کورنۍ له پاڼې پروفایل وټاکئ", occurrences: "ځایونه", pick: "یو تفسیر وټاکئ", surah: "سورت", ayah: "آیت", of: "له",
+  },
+  learn: {
+    title: "زده کړه", pick: "د پیل لپاره یو سورت وټاکئ", start: "درس پیل کړئ", xp: "XP", level: "کچه", streak: "پرله پسې ورځې", check: "وګورئ", next: "راتلونکی", correct: "سم!", wrong: "بشپړ سم نه. ځواب:", done: "آفرین! درس بشپړ شو", earned: "تاسو ترلاسه کړل",
+    again: "نوی درس", meaning: "د دې کلمې معنا څه ده؟", word: "کومه کلمه معنا لري:", hidden: "آیت د ورکې کلمې سره بشپړ کړئ", order: "د آیت کلمې ترتیب کړئ", reset: "بیا تنظیم", loading: "درس چمتو کېږي…", noProfile: "د پرمختګ د خوندي کولو لپاره د کورنۍ له پاڼې پروفایل وټاکئ",
+    lessonsDone: "درسونه بشپړ شول", juz30: "د عم سپاره", all: "ټول سورتونه", listen: "اورېدل", skip: "پرېښودل", short: "لنډ سورتونه", stage: "پړاو", ayatInSurah: "آیتونه په دې سورت کې",
+  },
+  play: {
+    title: "لوبه", pick: "یوه لوبه وټاکئ", scope: "ساحه", all: "ټول قرآن", juz30: "د عم سپاره", short: "لنډ سورتونه", start: "پیل", loading: "چمتو کېږي…", score: "نمرې", time: "وخت", next: "راتلونکی", result: "پایله", again: "بیا لوبه", home: "لوبې", best: "غوره نمرې",
+    correct: "سم", noProfile: "د نمرو د خوندي کولو لپاره د کورنۍ له پاڼې پروفایل وټاکئ", study: "آیت مطالعه کړئ", nextIs: "راتلونکی آیت دی", wrong: "غلط. ځواب:", done: "پړاو پای ته ورسېد", of: "له", leaderboard: "د کورنۍ تخته", nextQuestion: "راتلونکی آیت کوم دی؟", juz: "سپاره",
+    games: { "guess-surah": { title: "کوم سورت؟", sub: "آیت ولولئ، سورت یې وټاکئ" }, "next-ayah": { title: "راتلونکی آیت", sub: "راتلونکی آیت کوم دی؟" }, "missing-word": { title: "ورکه کلمه", sub: "آیت په سمه کلمه بشپړ کړئ" }, "which-juz": { title: "کومه سپاره؟", sub: "سپاره اټکل کړئ" } },
+  },
+  hifz: {
+    title: "حفظ", pick: "سورت او د آیتونو ساحه وټاکئ", from: "له", to: "تر", start: "بیاکتنه پیل کړئ", reveal: "ښکاره کول", hide: "پټول", grade: "ستاسو یادونه څنګه وه؟", forgot: "هېر مې کړ", hard: "سخت", good: "ښه", easy: "اسان", due: "نن واجب", cards: "کارتونه",
+    listen: "اورېدل", mic: "د مایکروفون ازموینه", micStop: "ودرول", micUnsupported: "دا براوزر د وینا پېژندنه نلري (Chrome وازمویئ)", accuracy: "دقت", heard: "اورېدل شوي", next: "راتلونکی", done: "د نن پړاو بشپړ شو", again: "بل پړاو", noProfile: "پرمختګ پر دې وسیله خوندي کېږي",
+    methods: "د حفظ طریقې", method6446: "د 6446 طریقه: هر آیت په 4 ډلو کې 20 ځله تکرار کړئ", method3x3: "د 3×3 طریقه: درې آیتونه جلا جلا، بیا سره وصل", reps: "تکرار", chain: "ځنځیر", schedule: "راتلونکې بیاکتنه", today: "نن", tomorrow: "سبا", days: "ورځې", ayah: "آیت", loading: "بارېږي…",
+  },
+  ask: {
+    title: "پوښتنه", placeholder: "د یوه آیت د معنا یا په قرآن کې د یوې موضوع په اړه وپوښتئ…", ask: "پوښتنه", sources: "سرچینې", retrieval: "اړوند آیتونه او تفسیر (بې ژبني ماډل)", model: "د ماډل ځواب د ټکي په ټکي نقلونو سره", tafsir: "تفسیر", study: "مطالعه",
+    report: "راپور", reported: "مننه، راپور ثبت شو", pending: "د علماوو د کتنې په تمه", intro: "ځوابونه یوازې د سرچینو له آیتونو او تفسیرونو جوړېږي؛ آیتونه ټکي په ټکي نقل کېږي او هېڅکله نه بدلېږي. فتوا نشته.",
+    examples: ["د آیت الکرسي معنا څه ده؟", "قرآن د صبر په اړه څه وایي؟", "د غار د اصحابو کیسه"], nokey: "د لیکل شویو ځوابونو لپاره په سرور کې ANTHROPIC_API_KEY تنظیم کړئ؛ اوس مهال سرچینې مستقیم ښودل کېږي.", today: "د ورځې آیت", open: "آیت پرانیزئ",
+  },
+  azan: {
+    title: "اذان او د لمانځه وختونه", prayers: { fajr: "سهار", sunrise: "لمر ختل", dhuhr: "ماسپښین", asr: "مازدیګر", maghrib: "ماښام", isha: "ماسخوتن" }, nextPrayer: "راتلونکی لمونځ", inTime: "وروسته", now: "اوس", location: "ځای", useMyLocation: "زما ځای وکاروئ",
+    locating: "ستاسو ځای موندل کېږي…", locationDenied: "ځای ته اجازه ورنکړل شوه. پر ځای یې خپل ښار وټاکئ.", pickCity: "ښار وټاکئ", country: "هېواد", city: "ښار", method: "د محاسبې طریقه", methodAuto: "د هېواد له مخې اتومات", muezzin: "د اذان غږ", preview: "اذان وغږوئ",
+    stop: "ودرول", notifications: "د اذان خبرتیاوې", notificationsHelp: "د هر لمانځه په وخت ستاسو د ټاکل شوي غږ سره د اذان خبرتیا. له هغې د ورځې آیت پرانیستل کېږي.", enable: "خبرتیاوې فعالې کړئ", enabled: "خبرتیاوې فعالې دي", disabled: "خبرتیاوې بندې دي",
+    unsupported: "دا براوزر خبرتیاوې نه ملاتړ کوي", denied: "خبرتیاوې د براوزر په تنظیماتو کې بندې شوې", testNotification: "ازموینه ولېږئ", todayTimes: "د نن وختونه", tomorrowTimes: "سبا", playAtAzan: "د لمانځه په وخت په اپ کې اذان وغږوئ", silentPrayers: "بې غږه لمونځونه",
+    story: "د ورځې آیت", openStory: "د نن آیت پرانیزئ", settingsSaved: "خوندي شو", timezone: "وخت سیمه", hijri: "هجري نېټه", asrHanafi: "مازدیګر (حنفي)", highLat: "د لوړ عرض البلد قاعده", source: "وختونه پر وسیله ستاسو د هېواد په معیاري فلکي طریقه محاسبه کېږي؛ تل یې له خپل سیمه ییز جومات سره تایید کړئ.",
+  },
+  story: {
+    title: "د ورځې آیت", tapHint: "د دوام لپاره ټک وکړئ", reflect: "د تدبر شېبه", reflectPrompt: "دا آیت نن تاسو ته څه وایي؟", tafsir: "له تفسیره", listen: "اورېدل", openStudy: "دا آیت مطالعه کړئ", share: "شریکول", saveNote: "د یادښت په توګه خوندي کړئ", noteSaved: "یادښت خوندي شو",
+    nextAyah: "بل آیت", wallpaper: "شالید بدل کړئ", goodMorning: "سهار مو پخیر", goodEvening: "ماښام مو پخیر", forPrayer: "د لمانځه لپاره",
+  },
+};

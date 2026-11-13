@@ -1,0 +1,90 @@
+import type { PartialMessages } from "./en";
+
+export const yo: PartialMessages = {
+  common: {
+    appName: "Kuráànì àti síwájú sí i", loading: "Ń gbé wọlé…", close: "Pa", retry: "Tún gbìyànjú", next: "Tókàn", prev: "Tẹ́lẹ̀", save: "Fipamọ́", cancel: "Fagilé", remove: "Yọ kúrò", none: "Kò sí", open: "Ṣí", share: "Pín", copy: "Daakọ", copied: "Ti daakọ",
+    search: "Wá", more: "Síwájú sí i", back: "Padà", language: "Èdè", uiLanguage: "Èdè ojú-ìwé", of: "nínú", ayah: "Āyah", ayat: "āyah", surah: "Sūrah", juz: "Juz", page: "Ojú-ìwé", hizb: "Hizb", sajdah: "Sajdah", listen: "Tẹ́tí", study: "Kẹ́kọ̀ọ́",
+    bookmark: "Àmì", bookmarked: "Ti fipamọ́", notes: "Àkọsílẹ̀", family: "Ìdílé", player: "Ẹ̀rọ orin", mushaf: "Mushaf", settings: "Ètò", unavailable: "kò sí", today: "òní", tomorrow: "ọ̀la", days: "ọjọ́", minutes: "ìṣ", done: "Ti parí", start: "Bẹ̀rẹ̀", again: "Lẹ́ẹ̀kan sí i",
+    poweredBy: "Pẹ̀lú àwọn API Quran Foundation", privacy: "Àṣírí", terms: "Àwọn òfin", offline: "Kò lè dé ibi iṣẹ́ àkóónú. Ṣàyẹ̀wò ìsopọ̀ rẹ kí o sì tún gbìyànjú.", noProfile: "Kọ́kọ́ yan profáìlì ní ojú-ìwé Ìdílé",
+    on: "Tan", off: "Pa", enable: "Mú ṣiṣẹ́", disable: "Pa", chooseLanguage: "Yan èdè ojú-ìwé",
+  },
+  nav: { home: "Ilé", search: "Wá", learn: "Kọ́", hifz: "Hifz", play: "Ṣeré", ask: "Béèrè", player: "Ẹ̀rọ orin", mushaf: "Mushaf", family: "Ìdílé", azan: "Adhan", story: "Āyah ọjọ́" },
+  home: {
+    kicker: "Kuráànì Alápọ̀n-ọ́nlé", title: "Kuráànì àti síwájú sí i", sub: "Ìrírí Kuráànì kan fún gbogbo ìdílé: kíkà tí kò dáwọ́ dúró pẹ̀lú ìbámu ọ̀rọ̀, mushaf ní ìkọ̀wé àṣẹ, tafsir àti ìtumọ̀ ní gbogbo èdè, àti profáìlì fún ọmọ ẹgbẹ́ kọ̀ọ̀kan.",
+    startListening: "Bẹ̀rẹ̀ sí tẹ́tí", openMushaf: "Ṣí mushaf",
+    tiles: {
+      player: { title: "Ẹ̀rọ orin", sub: "Tẹ́tí, kà, túmọ̀ kí o sì kẹ́kọ̀ọ́ tafsir ní ojú-ìwé kan, pẹ̀lú ẹnikẹ́ni tó ń kà" },
+      mushaf: { title: "Mushaf", sub: "Ojú-ìwé dé ojú-ìwé pẹ̀lú àwọn fọ́ǹtì àṣẹ àti mushaf tajweed" },
+      family: { title: "Ìdílé", sub: "Profáìlì fún ọmọ ẹgbẹ́ kọ̀ọ̀kan, láti ọmọdé dé àgbà" },
+      search: { title: "Wá", sub: "Wá ọ̀rọ̀, āyah tàbí sūrah èyíkéyìí nínú gbogbo Kuráànì" },
+      study: { title: "Ẹ̀kọ́", sub: "Ọ̀rọ̀ dé ọ̀rọ̀, ìtumọ̀ àti tafsir mẹ́ta ní ẹ̀gbẹ́ ara wọn" },
+      learn: { title: "Kọ́", sub: "Ẹ̀kọ́ ọ̀rọ̀ bí Quranlingo pẹ̀lú XP àti ọjọ́ tẹ̀léra" },
+      hifz: { title: "Hifz", sub: "Fi pamọ́, rántí kí o sì gbé ara rẹ wọ̀n; pẹ̀lú àtúnyẹ̀wò àti àyẹ̀wò gbohùngbohùn" },
+      play: { title: "Ṣeré", sub: "Sūrah wo? Āyah tókàn? Ọ̀rọ̀ tó sọnù? Juz wo?" },
+      ask: { title: "Béèrè", sub: "Ìdáhùn láti inú āyah àti tafsir nìkan, tí a fa yọ ní pàtó, ń dúró de àyẹ̀wò àwọn onímọ̀" },
+      azan: { title: "Adhan", sub: "Àkókò ìrun fún ìlú rẹ, adhan ní ohùn tí o yàn, ìránnilétí fún ìrun kọ̀ọ̀kan" },
+      story: { title: "Āyah ọjọ́", sub: "Āyah kan lójoojúmọ́ ní kíkún ojú-ìwé, pẹ̀lú ìtumọ̀ rẹ̀ àti àkókò láti ronú" },
+      kahf: { title: "Sūrah Al-Kahf", sub: "A ń kà á ní ọjọ́ Jimọ́" },
+    },
+  },
+  player: {
+    kicker: "Kuráànì Alápọ̀n-ọ́nlé", title: "Kuráànì Alápọ̀n-ọ́nlé", surahs: "Àwọn sūrah", reciter: "Olùkà", translation: "Ìtumọ̀", tafsir: "Tafsir", settings: "Ètò", stations: "Rédíò", play: "Mú ṣiṣẹ́", pause: "Dáwọ́ dúró", nextAyah: "Āyah tókàn", prevAyah: "Āyah tẹ́lẹ̀",
+    nextSurah: "Sūrah tókàn", restart: "Láti ìbẹ̀rẹ̀", retry: "Tún gbìyànjú", close: "Pa", none: "Ọ̀rọ̀ Lárúbáwá nìkan", textSize: "Ìwọ̀n ọ̀rọ̀", autoAdvance: "Lọ sí sūrah tókàn fúnra rẹ̀", motion: "Yíyí fúnra rẹ̀ àti ìṣípòpadà", small: "Kékeré", medium: "Àárín", large: "Ńlá",
+    ayah: "Āyah", of: "nínú", basmala: "Basmala", basmalaNote: "Basmala kì í ṣe āyah sūrah yìí, nítorí náà kò sí tafsir níbí.", loading: "Ń gbé wọlé…", offline: "Kò lè dé ibi iṣẹ́ àkóónú. Ṣàyẹ̀wò ìsopọ̀ rẹ kí o sì tún gbìyànjú. Àwọn ètò rẹ wà ní ìpamọ́.",
+    unavailable: "kò sí", listenWith: "Tẹ́tí pẹ̀lú", riwayah: "Riwayah", allLanguages: "Gbogbo èdè", search: "Wá sūrah tàbí olùkà…", ended: "Sūrah ti parí", playingStation: "Ń dún báyìí", gapless: "Kíkà tí kò dáwọ́ dúró pẹ̀lú ìbámu ọ̀rọ̀", perAyah: "Kíkà āyah dé āyah",
+    repeat: "Tún ṣe", repeatOff: "Pa", repeatAyah: "Tún āyah kọ̀ọ̀kan ṣe", repeatRange: "Tún ìbìtí ṣe", repeatSurah: "Tún sūrah ṣe", times: "ìgbà", from: "Láti āyah", to: "Dé āyah", pauseBetween: "Ìdádúró lẹ́yìn āyah kọ̀ọ̀kan (ìṣẹ́jú-àáyá)", speed: "Eré", sleep: "Aago oorun",
+    off: "Pa", minutes: "ìṣ", wordByWord: "Tẹ ọ̀rọ̀ fún ìtumọ̀ rẹ̀", styleMurattal: "Murattal", styleMujawwad: "Mujawwad", styleMuallim: "Mu'allim", gaplessOnly: "aláìdáwọ́dúró", ayahOnly: "āyah dé āyah", both: "aláìdáwọ́dúró + āyah dé āyah", noSync: "Sūrah kíkún · kò tíì bá mu",
+    noSyncShort: "sūrah kíkún · ìbámu ọ̀rọ̀ fúnra rẹ̀", share: "Pín", copied: "Ti daakọ ìjápọ̀", remaining: "tó kù", wallpaper: "Ẹ̀yìn", autoNature: "Ìṣẹ̀dá, ń yípadà pẹ̀lú sūrah", autoArt: "Iṣẹ́ ọnà Islam, ń yípadà pẹ̀lú sūrah", autoLive: "Alààyè, ń yípadà pẹ̀lú sūrah", plainBg: "Kò sí ẹ̀yìn",
+    fixedBg: "Ẹ̀yìn tí kò yí", internetBg: "Fọ́tò ayélujára (Pexels)", internetOff: "Fi kọ́kọ́rọ́ Pexels kún ètò láti fi fọ́tò ayélujára hàn", focusView: "Ojú-ìwé kan", listView: "Àtòjọ", language: "Èdè ojú-ìwé", wbwLanguage: "Èdè ìtumọ̀ ọ̀rọ̀", tafsirPick: "Yan tafsir", nextUp: "Tókàn",
+    credit: "Fọ́tò", bookmark: "Àmì", bookmarked: "Ti fipamọ́", notes: "Àkọsílẹ̀ mi", noteHint: "Kọ ìrònú tàbí àkọsílẹ̀ rẹ lórí āyah yìí…", saveNote: "Fi àkọsílẹ̀ pamọ́", deleteNote: "Paarẹ́", family: "Ìdílé", noProfile: "Yan profáìlì ní ojú-ìwé Ìdílé láti fi àmì àti àkọsílẹ̀ pamọ́",
+    library: "Tí a fipamọ́", repeatAyahShort: "Tún ṣe",
+  },
+  mushaf: { title: "Mushaf", surah: "Sūrah", juz: "Juz", player: "Ẹ̀rọ orin", family: "Ìdílé", tryAgain: "Tún gbìyànjú", listenFromHere: "Tẹ́tí láti ibí", bookmark: "Àmì", bookmarked: "Ti fipamọ́", tafsir: "Tafsir", prev: "Tẹ́lẹ̀", next: "Tókàn", page: "Ojú-ìwé", of: "nínú", layout: "Ìṣètò" },
+  family: {
+    title: "Ìdílé", sub: "Àkáǹtì òbí kan, profáìlì kan fún ọmọ ẹgbẹ́ ìdílé kọ̀ọ̀kan láti ọmọdé dé àgbà. Profáìlì kọ̀ọ̀kan ní fọ́ǹtì, ìwọ̀n ọ̀rọ̀, àmì, àkọsílẹ̀ àti ìlọsíwájú tirẹ̀.",
+    add: "Fi ọmọ ẹgbẹ́ kún", name: "Orúkọ", role: "Ipa", gender: "Akọ/abo", age: "Ẹgbẹ́ ọjọ́ orí", avatar: "Àwòrán", save: "Fipamọ́", cancel: "Fagilé", remove: "Yọ profáìlì kúrò",
+    roles: { parent: "Òbí", adult: "Àgbà", child: "Ọmọdé", senior: "Arúgbó", teacher: "Olùkọ́" }, genders: { male: "Ọkùnrin", female: "Obìnrin", unspecified: "A kò sọ" },
+    active: "Profáìlì tó ń ṣiṣẹ́", bookmarks: "Àwọn àmì", notes: "Àkọsílẹ̀", streak: "Ọjọ́ tẹ̀léra", minutes: "Ìṣẹ́jú òní", continue: "Tẹ̀síwájú kíkà", none: "Kò tíì sí nǹkan", open: "Ṣí", mushaf: "Mushaf", player: "Ẹ̀rọ orin",
+    noProfiles: "Bẹ̀rẹ̀ nípa fífi ọmọ ẹgbẹ́ ìdílé àkọ́kọ́ kún.", edit: "Ṣàtúnṣe", femaleNote: "Àwọn obìnrin olùkà máa ń hàn fún profáìlì obìnrin nìkan.", signin: "Wọlé pẹ̀lú àkáǹtì Quran Foundation ti òbí láti mú àmì àti àkọsílẹ̀ bá Quran.com mu", delete: "Paarẹ́",
+  },
+  search: {
+    title: "Wá", placeholder: "Wá nínú Kuráànì: ọ̀rọ̀, āyah, sūrah, tàbí 2:255", go: "Wá", none: "Kò sí àbájáde", nav: "Lọ sí", verses: "Āyah", more: "Síwájú sí i", results: "àbájáde", exact: "Ìbámu pípé", study: "Kẹ́kọ̀ọ́", play: "Tẹ́tí", source: "Orísun",
+    tip: "Gbìyànjú: àánú · Al-Kahf · 36:1 · sùúrù", quick: "Kíákíá", advanced: "Onípele gíga", hint: "Ọ̀rọ̀, gbólóhùn, tàbí kọ́kọ́rọ́ āyah bí 2:255",
+  },
+  study: {
+    title: "Ẹ̀kọ́", words: "Ọ̀rọ̀ dé ọ̀rọ̀", translations: "Ìtumọ̀", tafsir: "Tafsir", compare: "Fi tafsir wé ara wọn", hadith: "Hadith tó jẹmọ́", answers: "Ìbéèrè àti ìdáhùn", reflections: "Ìrònú", info: "Nípa sūrah", prev: "Tẹ́lẹ̀", next: "Tókàn", play: "Tẹ́tí", bookmark: "Àmì",
+    bookmarked: "Ti fipamọ́", share: "Pín", copy: "Daakọ", copied: "Ti daakọ", juz: "Juz", page: "Ojú-ìwé", hizb: "Hizb", sajdah: "Sajdah", none: "Kò sí", prodOnly: "Yóò wà nígbà tí àkáǹtì iṣẹ́ Quran Foundation bá ṣiṣẹ́", loading: "Ń gbé wọlé…", searchWord: "Wá ọ̀rọ̀ yìí",
+    listenWord: "Tẹ́tí sí ọ̀rọ̀ náà", noProfile: "Kọ́kọ́ yan profáìlì ní ojú-ìwé Ìdílé", occurrences: "Àwọn ibi tó ti hàn", pick: "Yan tafsir kan", surah: "Sūrah", ayah: "Āyah", of: "nínú",
+  },
+  learn: {
+    title: "Kọ́", pick: "Yan sūrah láti bẹ̀rẹ̀", start: "Bẹ̀rẹ̀ ẹ̀kọ́", xp: "XP", level: "Ìpele", streak: "ọjọ́ tẹ̀léra", check: "Ṣàyẹ̀wò", next: "Tókàn", correct: "Ó tọ̀!", wrong: "Kò tọ̀ bẹ́ẹ̀. Ìdáhùn:", done: "Kú iṣẹ́! Ẹ̀kọ́ ti parí", earned: "O jèrè", again: "Ẹ̀kọ́ tuntun",
+    meaning: "Kí ni ọ̀rọ̀ yìí túmọ̀ sí?", word: "Ọ̀rọ̀ wo ló túmọ̀ sí:", hidden: "Parí āyah pẹ̀lú ọ̀rọ̀ tó sọnù", order: "Tò àwọn ọ̀rọ̀ āyah lẹ́sẹẹsẹ", reset: "Tún tò", loading: "Ń múra ẹ̀kọ́…", noProfile: "Yan profáìlì ní ojú-ìwé Ìdílé láti fi ìlọsíwájú rẹ pamọ́",
+    lessonsDone: "ẹ̀kọ́ tí a parí", juz30: "Juz Amma", all: "Gbogbo sūrah", listen: "Tẹ́tí", skip: "Fò", short: "Sūrah kúkúrú", stage: "Ìpele", ayatInSurah: "āyah nínú sūrah yìí",
+  },
+  play: {
+    title: "Ṣeré", pick: "Yan eré", scope: "Ààyè", all: "Gbogbo Kuráànì", juz30: "Juz Amma", short: "Sūrah kúkúrú", start: "Bẹ̀rẹ̀", loading: "Ń múra…", score: "Àmì", time: "Àkókò", next: "Tókàn", result: "Àbájáde", again: "Tún ṣeré", home: "Àwọn eré", best: "Àmì tó dára jù",
+    correct: "tó tọ̀", noProfile: "Yan profáìlì ní ojú-ìwé Ìdílé láti fi àmì rẹ pamọ́", study: "Kẹ́kọ̀ọ́ āyah", nextIs: "Āyah tókàn ni", wrong: "Kò tọ̀. Ìdáhùn:", done: "Ìyípo ti parí", of: "nínú", leaderboard: "Pátákó ìdílé", nextQuestion: "Āyah wo ló tẹ̀lé e?", juz: "Juz",
+    games: { "guess-surah": { title: "Sūrah wo?", sub: "Kà āyah, yan sūrah rẹ̀" }, "next-ayah": { title: "Āyah tókàn", sub: "Āyah wo ló tẹ̀lé e?" }, "missing-word": { title: "Ọ̀rọ̀ tó sọnù", sub: "Parí āyah pẹ̀lú ọ̀rọ̀ tó tọ̀" }, "which-juz": { title: "Juz wo?", sub: "Ṣe àṣefẹ́ juz" } },
+  },
+  hifz: {
+    title: "Hifz", pick: "Yan sūrah àti ìbìtí āyah", from: "Láti", to: "Dé", start: "Bẹ̀rẹ̀ àtúnyẹ̀wò", reveal: "Fi hàn", hide: "Fi pamọ́", grade: "Báwo ni ìrántí rẹ ṣe rí?", forgot: "Mo gbàgbé", hard: "Ó ṣòro", good: "Ó dára", easy: "Ó rọrùn", due: "tó yẹ lónìí", cards: "káàdì",
+    listen: "Tẹ́tí", mic: "Àyẹ̀wò gbohùngbohùn", micStop: "Dúró", micUnsupported: "Aṣàwákiri yìí kò ní ìdámọ̀ ọ̀rọ̀ (gbìyànjú Chrome)", accuracy: "Ìpéye", heard: "Tí a gbọ́", next: "Tókàn", done: "Ìyípo òní ti parí", again: "Ìyípo mìíràn", noProfile: "A ń fi ìlọsíwájú pamọ́ sí ẹ̀rọ yìí",
+    methods: "Àwọn ọ̀nà hifz", method6446: "Ọ̀nà 6446: tún āyah kọ̀ọ̀kan ṣe ní ìgbà 20 nínú ẹ̀ka 4", method3x3: "Ọ̀nà 3×3: āyah mẹ́ta lọ́tọ̀ọ̀tọ̀, lẹ́yìn náà papọ̀", reps: "àtúnṣe", chain: "ẹ̀wọ̀n", schedule: "Àtúnyẹ̀wò tókàn", today: "òní", tomorrow: "ọ̀la", days: "ọjọ́", ayah: "āyah", loading: "Ń gbé wọlé…",
+  },
+  ask: {
+    title: "Béèrè", placeholder: "Béèrè nípa ìtumọ̀ āyah tàbí kókó kan nínú Kuráànì…", ask: "Béèrè", sources: "Àwọn orísun", retrieval: "Āyah àti tafsir tó jẹmọ́ (láìsí àwòṣe èdè)", model: "Ìdáhùn àwòṣe pẹ̀lú ìfayọ pàtó", tafsir: "Tafsir", study: "Kẹ́kọ̀ọ́", report: "Jábọ̀",
+    reported: "Ẹ ṣeun, a ti kọ ìjábọ̀ náà sílẹ̀", pending: "ń dúró de àyẹ̀wò àwọn onímọ̀", intro: "A ń kọ́ ìdáhùn láti inú āyah àti tafsir nínú àwọn orísun nìkan; a ń fa āyah yọ ní pàtó, a kì í yí wọn padà láé. Kò sí fatwa.",
+    examples: ["Kí ni Āyat al-Kursi túmọ̀ sí?", "Kí ni Kuráànì sọ nípa sùúrù?", "Ìtàn àwọn ènìyàn ihò"], nokey: "Ṣètò ANTHROPIC_API_KEY lórí olupin láti mú ìdáhùn tí a kọ ṣiṣẹ́; fún báyìí a ń fi àwọn orísun hàn tààrà.", today: "Āyah ọjọ́", open: "Ṣí āyah",
+  },
+  azan: {
+    title: "Adhan àti àkókò ìrun", prayers: { fajr: "Fajr", sunrise: "Ìyọ oòrùn", dhuhr: "Dhuhr", asr: "Asr", maghrib: "Maghrib", isha: "Isha" }, nextPrayer: "Ìrun tókàn", inTime: "ní", now: "báyìí", location: "Ibi", useMyLocation: "Lo ibi tí mo wà",
+    locating: "Ń wá ibi tí o wà…", locationDenied: "A kò gba ibi láyè. Yan ìlú rẹ dípò.", pickCity: "Yan ìlú", country: "Orílẹ̀-èdè", city: "Ìlú", method: "Ọ̀nà ìṣirò", methodAuto: "Fúnra rẹ̀ fún orílẹ̀-èdè", muezzin: "Ohùn adhan", preview: "Mú adhan ṣiṣẹ́", stop: "Dúró",
+    notifications: "Ìfitónilétí adhan", notificationsHelp: "Ìfitónilétí pẹ̀lú adhan ní àkókò ìrun kọ̀ọ̀kan, ní ohùn tí o yàn. Āyah ọjọ́ máa ṣí láti ibẹ̀.", enable: "Tan ìfitónilétí", enabled: "Ìfitónilétí ti tan", disabled: "Ìfitónilétí ti pa",
+    unsupported: "Aṣàwákiri yìí kò ṣe àtìlẹ́yìn ìfitónilétí", denied: "A ti dí ìfitónilétí lọ́wọ́ nínú ètò aṣàwákiri", testNotification: "Fi ìdánwò ránṣẹ́", todayTimes: "Àkókò òní", tomorrowTimes: "Ọ̀la", playAtAzan: "Mú adhan ṣiṣẹ́ nínú ohun èlò ní àkókò ìrun",
+    silentPrayers: "Ìrun aláìdún", story: "Āyah ọjọ́", openStory: "Ṣí āyah òní", settingsSaved: "Ti fipamọ́", timezone: "Agbègbè àkókò", hijri: "Ọjọ́ Hijri", asrHanafi: "Asr (Hanafi)", highLat: "Òfin latitude gíga", source: "A ń ṣírò àkókò lórí ẹ̀rọ pẹ̀lú ọ̀nà ìjìnlẹ̀ sánmà orílẹ̀-èdè rẹ; máa fi mọ́ṣáláṣí àdúgbò rẹ ṣe ìdánilójú nígbà gbogbo.",
+  },
+  story: {
+    title: "Āyah ọjọ́", tapHint: "Tẹ láti tẹ̀síwájú", reflect: "Àkókò láti ronú", reflectPrompt: "Kí ni āyah yìí ń sọ fún ọ lónìí?", tafsir: "Láti inú tafsir", listen: "Tẹ́tí", openStudy: "Kẹ́kọ̀ọ́ āyah yìí", share: "Pín", saveNote: "Fipamọ́ gẹ́gẹ́ bí àkọsílẹ̀", noteSaved: "Ti fi àkọsílẹ̀ pamọ́",
+    nextAyah: "Āyah mìíràn", wallpaper: "Yí ẹ̀yìn padà", goodMorning: "Ẹ káàárọ̀", goodEvening: "Ẹ káalẹ́", forPrayer: "Fún ìrun",
+  },
+};

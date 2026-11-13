@@ -1,0 +1,91 @@
+import type { PartialMessages } from "./en";
+
+export const sv: PartialMessages = {
+  common: {
+    appName: "Koranen och mer", loading: "Laddar…", close: "Stäng", retry: "Försök igen", next: "Nästa", prev: "Föregående", save: "Spara", cancel: "Avbryt", remove: "Ta bort", none: "Ingen", open: "Öppna", share: "Dela", copy: "Kopiera", copied: "Kopierat",
+    search: "Sök", more: "Mer", back: "Tillbaka", language: "Språk", uiLanguage: "Gränssnittsspråk", of: "av", ayah: "Vers", ayat: "verser", surah: "Sura", juz: "Juz", page: "Sida", hizb: "Hizb", sajdah: "Sajda", listen: "Lyssna", study: "Studera",
+    bookmark: "Bokmärke", bookmarked: "Sparat", notes: "Anteckningar", family: "Familj", player: "Spelare", mushaf: "Mushaf", settings: "Inställningar", unavailable: "inte tillgängligt", today: "idag", tomorrow: "imorgon", days: "dagar", minutes: "min",
+    done: "Klart", start: "Starta", again: "Igen", poweredBy: "Drivs av Quran Foundations API:er", privacy: "Integritet", terms: "Villkor", offline: "Kunde inte nå innehållstjänsten. Kontrollera anslutningen och försök igen.", noProfile: "Välj först en profil på Familjesidan",
+    on: "På", off: "Av", enable: "Aktivera", disable: "Inaktivera", chooseLanguage: "Välj gränssnittsspråk",
+  },
+  nav: { home: "Hem", search: "Sök", learn: "Lär", hifz: "Memorera", play: "Spela", ask: "Fråga", player: "Spelare", mushaf: "Mushaf", family: "Familj", azan: "Adhan", story: "Dagens vers" },
+  home: {
+    kicker: "Den ädla Koranen", title: "Koranen och mer", sub: "En Koranupplevelse för hela familjen: sömlös recitation med ordsynkronisering, mushafen i den officiella skriften, tafsir och översättningar på alla språk och en profil för varje medlem.",
+    startListening: "Börja lyssna", openMushaf: "Öppna mushafen",
+    tiles: {
+      player: { title: "Spelare", sub: "Lyssna, läs, översätt och studera tafsir på en skärm, med valfri recitatör" },
+      mushaf: { title: "Mushaf", sub: "Sida för sida med de officiella typsnitten och tajwid-mushafen" },
+      family: { title: "Familj", sub: "En profil för varje medlem, från barn till mor- och farföräldrar" },
+      search: { title: "Sök", sub: "Hitta vilket ord, vers eller sura som helst i hela Koranen" },
+      study: { title: "Studier", sub: "Ord för ord, översättningar och upp till tre tafsirer sida vid sida" },
+      learn: { title: "Lär", sub: "Ordförrådslektioner i Quranlingo-stil med XP och svit" },
+      hifz: { title: "Memorera", sub: "Dölj, minns och bedöm dig själv, med utspridd repetition och mikrofonkontroll" },
+      play: { title: "Spela", sub: "Vilken sura? Nästa vers? Saknat ord? Vilken juz?" },
+      ask: { title: "Fråga", sub: "Svar endast från verser och tafsir, ordagrant citerade, i väntan på granskning av lärda" },
+      azan: { title: "Adhan", sub: "Bönetider för din stad, adhan med rösten du väljer, en påminnelse vid varje bön" },
+      story: { title: "Dagens vers", sub: "En vers om dagen i helskärm, med dess innebörd och en stund för eftertanke" },
+      kahf: { title: "Sura Al-Kahf", sub: "Läses på fredagar" },
+    },
+  },
+  player: {
+    kicker: "Den ädla Koranen", title: "Den ädla Koranen", surahs: "Suror", reciter: "Recitatör", translation: "Översättning", tafsir: "Tafsir", settings: "Inställningar", stations: "Radio", play: "Spela", pause: "Paus", nextAyah: "Nästa vers", prevAyah: "Föregående vers",
+    nextSurah: "Nästa sura", restart: "Från början", retry: "Försök igen", close: "Stäng", none: "Endast arabisk text", textSize: "Textstorlek", autoAdvance: "Gå automatiskt till nästa sura", motion: "Automatisk rullning och rörelse", small: "Liten", medium: "Medel",
+    large: "Stor", ayah: "Vers", of: "av", basmala: "Basmala", basmalaNote: "Basmala är inte en vers i denna sura, så det finns ingen tafsir här.", loading: "Laddar…", offline: "Kunde inte nå innehållstjänsten. Kontrollera anslutningen och försök igen. Dina inställningar är sparade.",
+    unavailable: "inte tillgängligt", listenWith: "Lyssna med", riwayah: "Riwaya", allLanguages: "Alla språk", search: "Sök sura eller recitatör…", ended: "Sura avslutad", playingStation: "Spelas nu", gapless: "Sömlös recitation med ordsynkronisering", perAyah: "Recitation vers för vers",
+    repeat: "Upprepa", repeatOff: "Av", repeatAyah: "Upprepa varje vers", repeatRange: "Upprepa ett intervall", repeatSurah: "Upprepa suran", times: "gånger", from: "Från vers", to: "Till vers", pauseBetween: "Paus efter varje vers (sekunder)", speed: "Hastighet", sleep: "Sovtimer",
+    off: "Av", minutes: "min", wordByWord: "Tryck på ett ord för dess betydelse", styleMurattal: "Murattal", styleMujawwad: "Mujawwad", styleMuallim: "Mu'allim", gaplessOnly: "sömlös", ayahOnly: "vers för vers", both: "sömlös + vers för vers", noSync: "Hel sura · ännu inte synkroniserad",
+    noSyncShort: "hel sura · automatisk ordsynkronisering", share: "Dela", copied: "Länk kopierad", remaining: "kvar", wallpaper: "Bakgrund", autoNature: "Natur, ändras med suran", autoArt: "Islamisk konst, ändras med suran", autoLive: "Levande, ändras med suran", plainBg: "Ingen bakgrund",
+    fixedBg: "Fast bakgrund", internetBg: "Internetfoton (Pexels)", internetOff: "Lägg till en Pexels-nyckel i inställningarna för att visa internetfoton", focusView: "En skärm", listView: "Lista", language: "Gränssnittsspråk", wbwLanguage: "Språk för ordbetydelser", tafsirPick: "Välj tafsir",
+    nextUp: "Nästa", credit: "Foto", bookmark: "Bokmärke", bookmarked: "Sparat", notes: "Mina anteckningar", noteHint: "Skriv din reflektion eller anteckning om denna vers…", saveNote: "Spara anteckning", deleteNote: "Radera", family: "Familj",
+    noProfile: "Välj en profil på Familjesidan för att spara bokmärken och anteckningar", library: "Sparat", repeatAyahShort: "Upprepa",
+  },
+  mushaf: { title: "Mushaf", surah: "Sura", juz: "Juz", player: "Spelare", family: "Familj", tryAgain: "Försök igen", listenFromHere: "Lyssna härifrån", bookmark: "Bokmärke", bookmarked: "Sparat", tafsir: "Tafsir", prev: "Föregående", next: "Nästa", page: "Sida", of: "av", layout: "Layout" },
+  family: {
+    title: "Familj", sub: "Ett föräldrakonto, en profil per familjemedlem från barn till mor- och farföräldrar. Varje profil behåller sitt typsnitt, textstorlek, bokmärken, anteckningar och framsteg.",
+    add: "Lägg till medlem", name: "Namn", role: "Roll", gender: "Kön", age: "Åldersgrupp", avatar: "Avatar", save: "Spara", cancel: "Avbryt", remove: "Ta bort profil",
+    roles: { parent: "Förälder", adult: "Vuxen", child: "Barn", senior: "Senior", teacher: "Lärare" }, genders: { male: "Man", female: "Kvinna", unspecified: "Ej angivet" },
+    active: "Aktiv profil", bookmarks: "Bokmärken", notes: "Anteckningar", streak: "Dagar i rad", minutes: "Minuter idag", continue: "Fortsätt läsa", none: "Inget ännu", open: "Öppna", mushaf: "Mushaf", player: "Spelare",
+    noProfiles: "Börja med att lägga till den första familjemedlemmen.", edit: "Redigera", femaleNote: "Kvinnliga recitatörer visas endast för kvinnliga profiler.", signin: "Logga in med förälderns Quran Foundation-konto för att synkronisera bokmärken och anteckningar med Quran.com", delete: "Radera",
+  },
+  search: {
+    title: "Sök", placeholder: "Sök i Koranen: ett ord, en vers, en sura eller 2:255", go: "Sök", none: "Inga resultat", nav: "Gå till", verses: "Verser", more: "Mer", results: "resultat", exact: "Exakt matchning", study: "Studera", play: "Lyssna", source: "Källa",
+    tip: "Prova: barmhärtighet · Al-Kahf · 36:1 · tålamod", quick: "Snabb", advanced: "Avancerad", hint: "Ett ord, en fras eller en versnyckel som 2:255",
+  },
+  study: {
+    title: "Studier", words: "Ord för ord", translations: "Översättningar", tafsir: "Tafsir", compare: "Jämför tafsirer", hadith: "Relaterade hadither", answers: "Frågor och svar", reflections: "Reflektioner", info: "Om suran", prev: "Föregående", next: "Nästa", play: "Lyssna",
+    bookmark: "Bokmärke", bookmarked: "Sparat", share: "Dela", copy: "Kopiera", copied: "Kopierat", juz: "Juz", page: "Sida", hizb: "Hizb", sajdah: "Sajda", none: "Ingen", prodOnly: "Tillgängligt när Quran Foundations produktionskonto aktiverats", loading: "Laddar…",
+    searchWord: "Sök detta ord", listenWord: "Lyssna på ordet", noProfile: "Välj först en profil på Familjesidan", occurrences: "Förekomster", pick: "Välj en tafsir", surah: "Sura", ayah: "Vers", of: "av",
+  },
+  learn: {
+    title: "Lär", pick: "Välj en sura för att börja", start: "Starta lektion", xp: "XP", level: "Nivå", streak: "dagar i rad", check: "Kontrollera", next: "Nästa", correct: "Rätt!", wrong: "Inte riktigt. Svaret:", done: "Bra jobbat! Lektionen är klar", earned: "Du fick",
+    again: "Ny lektion", meaning: "Vad betyder detta ord?", word: "Vilket ord betyder:", hidden: "Komplettera versen med det saknade ordet", order: "Ordna versens ord i rätt följd", reset: "Återställ", loading: "Förbereder lektionen…", noProfile: "Välj en profil på Familjesidan för att spara framsteg",
+    lessonsDone: "lektioner klara", juz30: "Juz Amma", all: "Alla suror", listen: "Lyssna", skip: "Hoppa över", short: "Korta suror", stage: "Steg", ayatInSurah: "verser i denna sura",
+  },
+  play: {
+    title: "Spela", pick: "Välj ett spel", scope: "Omfång", all: "Hela Koranen", juz30: "Juz Amma", short: "Korta suror", start: "Starta", loading: "Förbereder…", score: "Poäng", time: "Tid", next: "Nästa", result: "Resultat", again: "Spela igen", home: "Spel", best: "Bästa resultat",
+    correct: "rätt", noProfile: "Välj en profil på Familjesidan för att spara poäng", study: "Studera versen", nextIs: "Nästa vers är", wrong: "Fel. Svaret:", done: "Omgången är slut", of: "av", leaderboard: "Familjetavla", nextQuestion: "Vilken vers kommer härnäst?", juz: "Juz",
+    games: { "guess-surah": { title: "Vilken sura?", sub: "Läs versen och välj dess sura" }, "next-ayah": { title: "Nästa vers", sub: "Vilken vers kommer härnäst?" }, "missing-word": { title: "Saknat ord", sub: "Komplettera versen med rätt ord" }, "which-juz": { title: "Vilken juz?", sub: "Gissa juz" } },
+  },
+  hifz: {
+    title: "Memorera", pick: "Välj en sura och ett versintervall", from: "Från", to: "Till", start: "Starta repetition", reveal: "Visa", hide: "Dölj", grade: "Hur gick det att minnas?", forgot: "Glömde", hard: "Svårt", good: "Bra", easy: "Lätt", due: "förfaller idag", cards: "kort",
+    listen: "Lyssna", mic: "Mikrofonkontroll", micStop: "Stopp", micUnsupported: "Denna webbläsare saknar taligenkänning (prova Chrome)", accuracy: "Noggrannhet", heard: "Hört", next: "Nästa", done: "Dagens omgång är klar", again: "En omgång till",
+    noProfile: "Framstegen sparas på denna enhet", methods: "Memoreringsmetoder", method6446: "Metod 6446: upprepa varje vers 20 gånger i 4 set", method3x3: "Metod 3×3: tre verser var för sig, sedan i följd", reps: "rep.", chain: "kedja", schedule: "Nästa repetition",
+    today: "idag", tomorrow: "imorgon", days: "dagar", ayah: "vers", loading: "Laddar…",
+  },
+  ask: {
+    title: "Fråga", placeholder: "Fråga om innebörden av en vers eller ett ämne i Koranen…", ask: "Fråga", sources: "Källor", retrieval: "Relaterade verser och tafsir (utan språkmodell)", model: "Modellsvar med ordagranna citat", tafsir: "Tafsir", study: "Studera", report: "Rapportera",
+    reported: "Tack, rapporten är registrerad", pending: "väntar på granskning av lärda", intro: "Svaren byggs endast på verserna och tafsiren i källorna; verserna citeras ordagrant och ändras aldrig. Inga fatwor.",
+    examples: ["Vad betyder Tronversen?", "Vad säger Koranen om tålamod?", "Berättelsen om folket i grottan"], nokey: "Ange ANTHROPIC_API_KEY på servern för att aktivera sammansatta svar; tills vidare visas källorna direkt.", today: "Dagens vers", open: "Öppna versen",
+  },
+  azan: {
+    title: "Adhan och bönetider", prayers: { fajr: "Fajr", sunrise: "Soluppgång", dhuhr: "Dhuhr", asr: "Asr", maghrib: "Maghrib", isha: "Isha" }, nextPrayer: "Nästa bön", inTime: "om", now: "nu", location: "Plats", useMyLocation: "Använd min plats", locating: "Hittar din plats…",
+    locationDenied: "Platsen tilläts inte. Välj din stad istället.", pickCity: "Välj stad", country: "Land", city: "Stad", method: "Beräkningsmetod", methodAuto: "Automatiskt efter land", muezzin: "Adhan-röst", preview: "Spela adhan", stop: "Stopp", notifications: "Adhan-aviseringar",
+    notificationsHelp: "En avisering med adhan vid varje bönetid, med rösten du valt. Dagens vers öppnas därifrån.", enable: "Slå på aviseringar", enabled: "Aviseringar är på", disabled: "Aviseringar är av", unsupported: "Denna webbläsare stöder inte aviseringar",
+    denied: "Aviseringar har blockerats i webbläsarens inställningar", testNotification: "Skicka ett test", todayTimes: "Dagens bönetider", tomorrowTimes: "Imorgon", playAtAzan: "Spela adhan i appen vid bönetiden", silentPrayers: "Tysta böner", story: "Dagens vers",
+    openStory: "Öppna dagens vers", settingsSaved: "Sparat", timezone: "Tidszon", hijri: "Hijri-datum", asrHanafi: "Asr (hanafi)", highLat: "Regel för höga breddgrader", source: "Tiderna beräknas på enheten med ditt lands astronomiska standardmetod; bekräfta alltid med din lokala moské.",
+  },
+  story: {
+    title: "Dagens vers", tapHint: "Tryck för att fortsätta", reflect: "En stund för eftertanke", reflectPrompt: "Vad säger denna vers dig idag?", tafsir: "Ur tafsiren", listen: "Lyssna", openStudy: "Studera denna vers", share: "Dela", saveNote: "Spara som anteckning",
+    noteSaved: "Anteckning sparad", nextAyah: "En annan vers", wallpaper: "Byt bakgrund", goodMorning: "God morgon", goodEvening: "God kväll", forPrayer: "Inför",
+  },
+};
