@@ -74,6 +74,13 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
   const [tafsirChoice, setTafsirChoice] = useState<string | null>(null);
   const [wbwLocale, setWbwLocale] = useState<string | null>(null);
   const [panel, setPanel] = useState<SidePanel>(null);
+  /* Deep links such as /player?surah=2&ayah=255&panel=tafsir open that side panel on load. */
+  useEffect(() => {
+    try {
+      const p = new URLSearchParams(window.location.search).get("panel");
+      if (p === "tafsir" || p === "translation" || p === "reciter" || p === "surahs" || p === "settings" || p === "notes" || p === "wallpaper") setPanel(p as SidePanel);
+    } catch { /* no window */ }
+  }, []);
   const togglePanel = (p: Exclude<SidePanel, null>) => setPanel((cur) => (cur === p ? null : p));
   const ar = locale === "ar";
   const t = m.player;
