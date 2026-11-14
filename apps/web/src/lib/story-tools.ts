@@ -100,25 +100,32 @@ export const renderStoryImage = async (input: RenderInput): Promise<Blob> => {
   const grad = ctx.createLinearGradient(0, 0, 0, H); grad.addColorStop(0, light ? "rgba(0,0,0,0.45)" : "rgba(255,255,255,0.45)"); grad.addColorStop(0.3, "rgba(0,0,0,0)"); grad.addColorStop(0.7, "rgba(0,0,0,0)"); grad.addColorStop(1, light ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.6)"); ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
   const ink = light ? "#ffffff" : "#15201b"; const muted = light ? "rgba(255,255,255,0.85)" : "rgba(21,32,27,0.8)";
   const family = STORY_FONTS[input.font].family;
-  const arSize = Math.round(64 * input.size);
+  let arSize = Math.round(64 * input.size);
   try { await document.fonts.load(`500 ${arSize}px ${family}`); await document.fonts.load(`400 34px "Plus Jakarta Sans"`); } catch { /* fallback faces */ }
   // kicker
   ctx.textAlign = "center"; ctx.textBaseline = "alphabetic"; ctx.direction = "ltr";
   ctx.fillStyle = muted; ctx.font = `600 30px "Plus Jakarta Sans", system-ui, sans-serif`;
   ctx.fillText(`${input.surahName.toUpperCase()}  ·  ${input.reference}`, W / 2, 230);
-  // arabic block
-  ctx.direction = "rtl"; ctx.font = `500 ${arSize}px ${family}`; ctx.fillStyle = ink;
-  const arLines = wrap(ctx, input.arabic, 900); const arLH = arSize * 1.85;
-  ctx.direction = "ltr"; ctx.font = `400 34px "Plus Jakarta Sans", system-ui, sans-serif`;
-  let trLines = input.translation ? wrap(ctx, input.translation, 880) : []; if (trLines.length > 9) trLines = [...trLines.slice(0, 8), `${trLines[8]}…`];
-  const trLH = 50; const gap = trLines.length ? 56 : 0;
-  const total = arLines.length * arLH + gap + trLines.length * trLH;
-  let y = Math.max(360, (H - total) / 2 - 40);
+  // Arabic + translation block, shrunk until it fits between the kicker and the footer (long ayat such as 2:282).
+  const TOP = 320, BOTTOM = 1660, trLH = 50;
+  let arLines: string[] = [], trLines: string[] = [], arLH = 0, gap = 0, total = Infinity, trSize = 34;
+  for (let attempt = 0; attempt < 12 && total > BOTTOM - TOP; attempt++) {
+    ctx.direction = "rtl"; ctx.font = `500 ${arSize}px ${family}`;
+    arLines = wrap(ctx, input.arabic, 920); arLH = arSize * 1.8;
+    ctx.direction = "ltr"; ctx.font = `400 ${trSize}px "Plus Jakarta Sans", system-ui, sans-serif`;
+    trLines = input.translation ? wrap(ctx, input.translation, 900) : [];
+    const maxTr = Math.max(3, Math.floor((BOTTOM - TOP - arLines.length * arLH - 56) / trLH));
+    if (trLines.length > maxTr) trLines = [...trLines.slice(0, Math.max(0, maxTr - 1)), `${trLines[Math.max(0, maxTr - 1)] ?? ""}…`];
+    gap = trLines.length ? 56 : 0;
+    total = arLines.length * arLH + gap + trLines.length * trLH;
+    if (total > BOTTOM - TOP) { arSize = Math.max(30, Math.round(arSize * 0.9)); if (trSize > 28) trSize -= 2; if (arSize <= 30 && trLines.length <= 3) break; }
+  }
+  let y = Math.max(TOP, TOP + (BOTTOM - TOP - total) / 2);
   ctx.direction = "rtl"; ctx.font = `500 ${arSize}px ${family}`; ctx.fillStyle = ink;
   ctx.shadowColor = light ? "rgba(0,0,0,0.35)" : "rgba(255,255,255,0.5)"; ctx.shadowBlur = 24;
   for (const l of arLines) { y += arLH; ctx.fillText(l, W / 2, y - arLH * 0.3); }
   ctx.shadowBlur = 0;
-  ctx.direction = "ltr"; ctx.font = `400 34px "Plus Jakarta Sans", system-ui, sans-serif`; ctx.fillStyle = muted;
+  ctx.direction = "ltr"; ctx.font = `400 ${trSize}px "Plus Jakarta Sans", system-ui, sans-serif`; ctx.fillStyle = muted;
   y += gap;
   for (const l of trLines) { y += trLH; ctx.fillText(l, W / 2, y); }
   // footer brand: mark + names
