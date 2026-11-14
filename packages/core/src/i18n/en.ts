@@ -131,6 +131,9 @@ export const en = {
     title: "Ayah of the day", tapHint: "Tap to continue", reflect: "A moment to reflect", reflectPrompt: "How does this ayah speak to you today?", tafsir: "From the tafsir",
     listen: "Listen", openStudy: "Study this ayah", share: "Share", saveNote: "Save as a note", noteSaved: "Note saved", nextAyah: "Another ayah", wallpaper: "Change wallpaper",
     goodMorning: "Good morning", goodEvening: "Good evening", forPrayer: "For",
+    customise: "Customise", font: "Arabic font", size: "Text size", background: "Background", nature: "Nature", solid: "Colour", photo: "My photo", upload: "Choose a photo", dim: "Dim", textColor: "Text colour", auto: "Auto", light: "Light", dark: "Dark",
+    voice: "Voice", reciter: "Reciter", playAyah: "Play this ayah", effect: "Effect", effectNone: "Plain", effectReverb: "Mosque reverb", effectEcho: "Echo", effectSlow: "Slow", effectsWebOnly: "Sound effects are available in the web app", reset: "Reset",
+    shareTitle: "Share the ayah", shareImage: "Share as image", downloadImage: "Download image", copyLink: "Copy link", shareText: "Ayah of the day from Quran and More", preparing: "Preparing the image…", shareUnsupported: "Sharing files is not supported here; download the image instead",
   },
   settings: {
     title: "Settings", appearance: "Appearance", theme: "Theme", themeHelp: "Four looks, each with light and dark. The choice is saved on this device.",

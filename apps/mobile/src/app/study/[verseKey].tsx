@@ -6,6 +6,8 @@ import { Pressable, Share, View } from "react-native";
 
 import { useFamily } from "@/lib/family";
 import { fetchStudy, fetchTafsirText, type StudyBundle } from "@/lib/study-api";
+import { languageNameForLocale } from "@qam/core";
+
 import { useI18n } from "@/lib/i18n";
 import { Arabic, Body, Card, Chip, ErrorBox, H2, Kicker, Loading, Muted, Pill, Row, Screen, StudyNav, usePalette } from "@/lib/ui";
 
@@ -20,6 +22,7 @@ export default function StudyScreen() {
   const [bundle, setBundle] = useState<StudyBundle | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [tafsirId, setTafsirId] = useState<number | null>(null);
+  const [tafsirLang, setTafsirLang] = useState<string>(languageNameForLocale(locale));
   const [tafsir, setTafsir] = useState<{ name: string; text: string } | null | "loading">(null);
   const [selectedWord, setSelectedWord] = useState<number | null>(null);
   const player = useAudioPlayer(null);
@@ -89,7 +92,8 @@ export default function StudyScreen() {
 
       <Card>
         <Kicker>{T.tafsir}</Kicker>
-        <Row>{bundle.tafsirs.filter((t) => t.language === (isAr ? "arabic" : "english") || bundle.defaultTafsirs.includes(t.id)).slice(0, 8).map((t) => (
+        <Row>{["all", ...new Set(bundle.tafsirs.map((t) => t.language.toLowerCase()))].map((lg) => <Chip key={lg} label={lg === "all" ? m.player.allLanguages : lg} active={tafsirLang === lg} onPress={() => setTafsirLang(lg)} />)}</Row>
+        <Row>{bundle.tafsirs.filter((t) => tafsirLang === "all" || t.language.toLowerCase() === tafsirLang).map((t) => (
           <Chip key={t.id} label={t.name} active={t.id === activeTafsir} onPress={() => { setTafsirId(t.id); AsyncStorage.setItem(TAFSIR_KEY, String(t.id)).catch(() => undefined); }} />
         ))}</Row>
         {tafsir === "loading" ? <Loading /> : tafsir ? (<><H2>{tafsir.name}</H2><Body style={{ writingDirection: /[؀-ۿ]/.test(tafsir.text) ? "rtl" : "ltr", textAlign: /[؀-ۿ]/.test(tafsir.text) ? "right" : "left" }}>{tafsir.text.replace(/<[^>]+>/g, "").trim()}</Body></>) : <Muted>{T.pick}</Muted>}

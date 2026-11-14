@@ -58,6 +58,7 @@ export default function StudyPage({ verseKey }: { verseKey: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [picked, b, verseKey]);
 
+  const [tafsirLangFilter, setTafsirLangFilter] = useState<string>("all");
   const tafsirsByLang = useMemo(() => { const m = new Map<string, Bundle["tafsirs"]>(); for (const x of b?.tafsirs ?? []) m.set(x.language, [...(m.get(x.language) ?? []), x]); return m; }, [b]);
   const say = (m: string) => { setToast(m); window.setTimeout(() => setToast(null), 2000); };
   const share = async () => {
@@ -119,10 +120,14 @@ export default function StudyPage({ verseKey }: { verseKey: string }) {
             <div className={styles.row} style={{ justifyContent: "space-between" }}>
               <div className={styles.kicker}>{t.compare}</div>
               <div className={styles.row}>
+                <select className={styles.select} value={tafsirLangFilter} onChange={(e) => setTafsirLangFilter(e.target.value)} aria-label={m.player.allLanguages}>
+                  <option value="all">{m.player.allLanguages}</option>
+                  {[...tafsirsByLang.keys()].map((lang) => <option key={lang} value={lang}>{lang}</option>)}
+                </select>
                 {[0, 1, 2].map((slot) => (
                   <select key={slot} className={styles.select} value={picked[slot] ?? ""} onChange={(e) => { const id = Number(e.target.value); setPicked((p) => { const n = p.slice(); if (!id) n.splice(slot, 1); else n[slot] = id; return [...new Set(n)].slice(0, 3); }); }}>
                     <option value="">{slot === 0 ? t.tafsir : "—"}</option>
-                    {[...tafsirsByLang.entries()].map(([lang, list]) => <optgroup key={lang} label={lang}>{list.map((x) => <option key={x.id} value={x.id}>{x.name}{x.author ? ` · ${x.author}` : ""}</option>)}</optgroup>)}
+                    {[...tafsirsByLang.entries()].filter(([lang]) => tafsirLangFilter === "all" || lang === tafsirLangFilter).map(([lang, list]) => <optgroup key={lang} label={lang}>{list.map((x) => <option key={x.id} value={x.id}>{x.name}{x.author ? ` · ${x.author}` : ""}</option>)}</optgroup>)}
                   </select>
                 ))}
               </div>

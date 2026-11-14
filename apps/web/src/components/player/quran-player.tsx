@@ -329,6 +329,11 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
   const RTL_LANGS = ["arabic", "urdu", "persian", "farsi", "kurdish", "sindhi", "pashto", "uighur", "uyghur"];
   const tafsirId = tafsirChoice ?? (tafsirs.find((x) => x.language.toLowerCase().startsWith(LOCALES.find((l) => l.code === locale)?.name.toLowerCase() ?? "english"))?.id.toString() ?? DEFAULT_TAFSIR[locale] ?? DEFAULT_TAFSIR.en);
   const tafsirLang = tafsirs.find((x) => String(x.id) === tafsirId)?.language.toLowerCase() ?? (ar ? "arabic" : "english");
+  /* Tafsir books filtered by language; defaults to the interface language when it has tafsir, else all. */
+  const tafsirLangs = useMemo(() => [...new Set(tafsirs.map((x) => x.language.toLowerCase()))].sort(), [tafsirs]);
+  const uiLangName = (LOCALES.find((l) => l.code === locale)?.name ?? "english").toLowerCase();
+  const [tafsirLangFilter, setTafsirLangFilter] = useState<string>("all");
+  useEffect(() => { if (tafsirLangs.includes(uiLangName)) setTafsirLangFilter(uiLangName); }, [tafsirLangs, uiLangName]);
   const tafsirDir: "rtl" | "ltr" = RTL_LANGS.some((l) => tafsirLang.startsWith(l)) ? "rtl" : "ltr";
   /* wallpaper per surah (+ internet results when enabled) */
   useEffect(() => {
@@ -481,11 +486,14 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
                   ))}
                 </>)}
 
-                {tab === "tafsir" && tafsirs.length > 0 && (
+                {tab === "tafsir" && tafsirs.length > 0 && (<>
+                  <div className={styles.chips} role="group" aria-label={t.allLanguages}>
+                    {["all", ...tafsirLangs].map((lg) => <button key={lg} type="button" className={`${styles.chip} ${tafsirLangFilter === lg ? styles.chipActive : ""}`} onClick={() => setTafsirLangFilter(lg)}>{lg === "all" ? t.allLanguages : lg}</button>)}
+                  </div>
                   <select className={styles.search} value={tafsirId} onChange={(e) => { setTafsirChoice(e.target.value); dispatch({ type: "tafsir", key: "", text: null }); }} aria-label={t.tafsirPick}>
-                    {tafsirs.map((x) => <option key={x.id} value={String(x.id)}>{x.name}{x.author ? ` · ${x.author}` : ""} ({x.language})</option>)}
+                    {(tafsirLangFilter === "all" ? tafsirs : tafsirs.filter((x) => x.language.toLowerCase() === tafsirLangFilter)).map((x) => <option key={x.id} value={String(x.id)}>{x.name}{x.author ? ` · ${x.author}` : ""} ({x.language})</option>)}
                   </select>
-                )}
+                </>)}
                 {tab === "tafsir" && (!segment?.ayah ? <p className={styles.rowSub}>{t.basmalaNote}</p>
                   : state.tafsirLoading ? (state.tafsir?.text ? <div className={styles.tafsirStale} aria-busy="true"><p className={styles.arabic} lang="ar" translate="no" style={{ fontSize: "1.3em" }}>{segment.arabic}</p><div className={styles.tafsirText} dir={tafsirDir} lang={tafsirDir === "rtl" && tafsirLang.startsWith("arabic") ? "ar" : undefined}>{state.tafsir.text}</div></div> : <p className={styles.rowSub}>{t.loading}</p>)
                   : state.tafsir?.key === segment.key && state.tafsir.text ? (<>

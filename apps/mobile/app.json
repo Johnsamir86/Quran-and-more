@@ -134,7 +134,14 @@
         }
       ],
       "expo-secure-store",
-      "expo-apple-authentication"
+      "expo-apple-authentication",
+      "expo-sharing",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Quran and More uses a photo you choose only as the background of your ayah story. Nothing is uploaded."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

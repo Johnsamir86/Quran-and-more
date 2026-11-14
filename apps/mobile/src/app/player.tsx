@@ -8,8 +8,7 @@ import { ActivityIndicator, BackHandler, FlatList, ImageBackground, Pressable, S
 import {
   NO_TRANSLATION, PLAYBACK_RATES, isBookmarked, notesFor, PLAYER_STORAGE_KEYS, STATIONS, TEXT_SIZE_SCALE, currentSegment, decideAtSegmentEnd, initialPlayerState,
   locateInAyah, locateInChapter, nextSurahNumber, playerReducer, WALLPAPERS, WALLPAPER_STORAGE_KEY, wallpaperById, wallpaperForSurah,
-  type PlayerPanel, type Wallpaper, type WallpaperMode, type PlayerReciter, type PlayerState, type PlayerSurah, type PlayerTranslation, type PlayerWord, type RepeatMode, type Station, type TextSize,
-} from "@qam/core";
+  type PlayerPanel, type Wallpaper, type WallpaperMode, type PlayerReciter, type PlayerState, type PlayerSurah, type PlayerTranslation, type PlayerWord, type RepeatMode, type Station, type TextSize, languageNameForLocale } from "@qam/core";
 
 import { useFamily, useProgressTicker } from "@/lib/family";
 import { useI18n } from "@/lib/i18n";
@@ -49,6 +48,9 @@ export default function PlayerScreen() {
   const [fixedWallpaper, setFixedWallpaper] = useState<string>("n-mountain-lake");
   const [tafsirs, setTafsirs] = useState<TafsirResource[]>([]);
   const [tafsirChoice, setTafsirChoice] = useState<string | null>(null);
+  const tafsirLangs = useMemo(() => [...new Set(tafsirs.map((x) => x.language.toLowerCase()))].sort(), [tafsirs]);
+  const [tafsirLang, setTafsirLang] = useState<string>("all");
+  useEffect(() => { const want = languageNameForLocale(locale); if (tafsirLangs.includes(want)) setTafsirLang(want); }, [tafsirLangs, locale]);
   /* The side panel splits the screen with the player (right column in landscape, bottom half in portrait); never an overlay. */
   const [panel, setPanel] = useState<SidePanel>(null);
   const togglePanel = (p: Exclude<SidePanel, null>) => setPanel((cur) => (cur === p ? null : p));
@@ -413,13 +415,16 @@ export default function PlayerScreen() {
               <Row c={c} active={state.translation.id === "none"} title={T.none} onPress={() => dispatch({ type: "translation", translation: NO_TRANSLATION })} />
               {translations.map((tr) => <Row key={tr.id} c={c} active={state.translation.id === tr.id} title={tr.label} sub={tr.languageName} onPress={() => dispatch({ type: "translation", translation: tr })} />)}
             </>)}
-            {panel === "tafsir" && tafsirs.length ? (
+            {panel === "tafsir" && tafsirs.length ? (<>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6, paddingBottom: 6 }}>
+                {["all", ...tafsirLangs].map((lg) => <Pressable key={lg} onPress={() => setTafsirLang(lg)} style={[st.chip, { borderColor: c.line, backgroundColor: tafsirLang === lg ? c.accent : "transparent" }]}><Text style={{ color: tafsirLang === lg ? tokens.onAccent : c.ink, fontSize: 12 }}>{lg === "all" ? T.allLanguages : lg}</Text></Pressable>)}
+              </ScrollView>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
-                {tafsirs.map((tf) => { const id = String(tf.id); const on = (tafsirChoice ?? DEFAULT_TAFSIR) === id; return (
+                {(tafsirLang === "all" ? tafsirs : tafsirs.filter((tf) => tf.language.toLowerCase() === tafsirLang)).map((tf) => { const id = String(tf.id); const on = (tafsirChoice ?? DEFAULT_TAFSIR) === id; return (
                   <Pressable key={id} onPress={() => { setTafsirChoice(id); dispatch({ type: "tafsir", key: "", text: null }); }} style={[st.chip, { borderColor: c.line, backgroundColor: on ? c.accent : "transparent" }]}><Text style={{ color: on ? "#fff" : c.ink, fontSize: 12 }}>{tf.name} · {tf.language}</Text></Pressable>
                 ); })}
               </ScrollView>
-            ) : null}
+            </>) : null}
             {panel === "tafsir" && (!segment?.ayah ? <Text style={{ color: c.muted }}>{T.basmalaNote}</Text>
               : state.tafsirLoading ? <ActivityIndicator color={c.accent} />
               : state.tafsir?.key === segment.key && state.tafsir.text ? (<>

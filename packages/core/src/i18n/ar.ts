@@ -129,6 +129,9 @@ export const ar: PartialMessages = {
     title: "آية اليوم", tapHint: "اضغط للمتابعة", reflect: "لحظة تدبّر", reflectPrompt: "كيف تخاطبك هذه الآية اليوم؟", tafsir: "من التفسير",
     listen: "استمع", openStudy: "ادرس هذه الآية", share: "مشاركة", saveNote: "حفظ كملاحظة", noteSaved: "حُفظت الملاحظة", nextAyah: "آية أخرى", wallpaper: "تغيير الخلفية",
     goodMorning: "صباح الخير", goodEvening: "مساء الخير", forPrayer: "لصلاة",
+    customise: "تخصيص", font: "الخط العربي", size: "حجم النص", background: "الخلفية", nature: "طبيعة", solid: "لون", photo: "صورتي", upload: "اختيار صورة", dim: "تعتيم", textColor: "لون النص", auto: "تلقائي", light: "فاتح", dark: "داكن",
+    voice: "الصوت", reciter: "القارئ", playAyah: "تشغيل هذه الآية", effect: "مؤثر", effectNone: "بدون", effectReverb: "صدى المسجد", effectEcho: "صدى", effectSlow: "بطيء", effectsWebOnly: "المؤثرات الصوتية متاحة في نسخة الويب", reset: "إعادة الضبط",
+    shareTitle: "مشاركة الآية", shareImage: "مشاركة كصورة", downloadImage: "تنزيل الصورة", copyLink: "نسخ الرابط", shareText: "آية اليوم من القرآن وأكثر", preparing: "جارٍ تجهيز الصورة…", shareUnsupported: "مشاركة الملفات غير مدعومة هنا؛ نزّل الصورة بدلًا من ذلك",
   },
   settings: {
     title: "الإعدادات", appearance: "المظهر", theme: "السمة", themeHelp: "أربع سمات، لكلٍّ منها وضع فاتح وداكن. يُحفظ الاختيار على هذا الجهاز.",
