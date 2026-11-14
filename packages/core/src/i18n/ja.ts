@@ -1,0 +1,91 @@
+import type { PartialMessages } from "./en";
+
+export const ja: PartialMessages = {
+  common: {
+    appName: "クルアーンとその先へ", loading: "読み込み中…", close: "閉じる", retry: "再試行", next: "次へ", prev: "前へ", save: "保存", cancel: "キャンセル", remove: "削除", none: "なし", open: "開く", share: "共有", copy: "コピー",
+    copied: "コピーしました", search: "検索", more: "もっと", back: "戻る", language: "言語", uiLanguage: "表示言語", of: "/", ayah: "節", ayat: "節", surah: "章", juz: "ジュズ", page: "ページ", hizb: "ヒズブ", sajdah: "サジダ",
+    listen: "聴く", study: "学ぶ", bookmark: "ブックマーク", bookmarked: "保存済み", notes: "メモ", family: "家族", player: "プレーヤー", mushaf: "ムスハフ", settings: "設定", unavailable: "利用できません", today: "今日", tomorrow: "明日",
+    days: "日", minutes: "分", done: "完了", start: "開始", again: "もう一度", poweredBy: "Quran Foundation API を使用", privacy: "プライバシー", terms: "利用規約", offline: "コンテンツサービスに接続できません。通信状況を確認して再試行してください。",
+    noProfile: "まず家族ページでプロフィールを選んでください", on: "オン", off: "オフ", enable: "有効にする", disable: "無効にする", chooseLanguage: "表示言語を選択",
+  },
+  nav: { home: "ホーム", search: "検索", learn: "学習", hifz: "暗記", play: "ゲーム", ask: "質問", player: "プレーヤー", mushaf: "ムスハフ", family: "家族", azan: "アザーン", story: "今日の一節" },
+  home: {
+    kicker: "聖クルアーン", title: "クルアーンとその先へ", sub: "家族みんなのためのクルアーン体験：単語同期の途切れない朗誦、公式書体のムスハフ、あらゆる言語のタフスィールと翻訳、そして一人ひとりのプロフィール。",
+    startListening: "聴き始める", openMushaf: "ムスハフを開く",
+    tiles: {
+      player: { title: "プレーヤー", sub: "一画面で聴く・読む・訳す・タフスィールを学ぶ。朗誦者は自由に選択" },
+      mushaf: { title: "ムスハフ", sub: "公式フォントとタジュウィード版でページごとに" },
+      family: { title: "家族", sub: "子どもから祖父母まで、一人ひとりにプロフィール" },
+      search: { title: "検索", sub: "クルアーン全体から単語・節・章を探す" },
+      study: { title: "学習", sub: "単語ごとの意味、翻訳、最大3つのタフスィールを並べて比較" },
+      learn: { title: "学習", sub: "XPと連続記録つきの Quranlingo 風語彙レッスン" },
+      hifz: { title: "暗記", sub: "隠して、思い出して、自己評価。間隔反復とマイク確認つき" },
+      play: { title: "ゲーム", sub: "どの章？次の節？欠けた単語？どのジュズ？" },
+      ask: { title: "質問", sub: "節とタフスィールのみからの回答。原文を逐語引用、学者の確認待ち" },
+      azan: { title: "アザーン", sub: "お住まいの都市の礼拝時刻、お好みの声でアザーン、礼拝ごとに通知" },
+      story: { title: "今日の一節", sub: "毎日一節を全画面で、意味とともに静かに味わうひととき" },
+      kahf: { title: "洞窟章", sub: "金曜日に読まれます" },
+    },
+  },
+  player: {
+    kicker: "聖クルアーン", title: "聖クルアーン", surahs: "章", reciter: "朗誦者", translation: "翻訳", tafsir: "タフスィール", settings: "設定", stations: "ラジオ", play: "再生", pause: "一時停止", nextAyah: "次の節", prevAyah: "前の節", nextSurah: "次の章",
+    restart: "最初から", retry: "再試行", close: "閉じる", none: "アラビア語本文のみ", textSize: "文字サイズ", autoAdvance: "自動で次の章へ", motion: "自動スクロールとアニメーション", small: "小", medium: "中", large: "大", ayah: "節", of: "/", basmala: "バスマラ",
+    basmalaNote: "バスマラはこの章の節ではないため、ここにタフスィールはありません。", loading: "読み込み中…", offline: "コンテンツサービスに接続できません。通信状況を確認して再試行してください。設定は保存されています。", unavailable: "利用できません",
+    listenWith: "朗誦", riwayah: "リワーヤ", allLanguages: "すべての言語", search: "章または朗誦者を検索…", ended: "章を読了", playingStation: "再生中", gapless: "単語同期の途切れない朗誦", perAyah: "節ごとの朗誦", repeat: "リピート", repeatOff: "オフ",
+    repeatAyah: "各節をリピート", repeatRange: "範囲をリピート", repeatSurah: "章をリピート", times: "回", from: "開始節", to: "終了節", pauseBetween: "各節の後の間（秒）", speed: "速度", sleep: "スリープタイマー", off: "オフ", minutes: "分",
+    wordByWord: "単語をタップして意味を表示", styleMurattal: "ムラッタル", styleMujawwad: "ムジャッワド", styleMuallim: "ムアッリム", gaplessOnly: "連続", ayahOnly: "節ごと", both: "連続 + 節ごと", noSync: "全章 · 未同期", noSyncShort: "全章 · 自動単語同期",
+    share: "共有", copied: "リンクをコピーしました", remaining: "残り", wallpaper: "背景", autoNature: "自然（章ごとに変化）", autoArt: "イスラム美術（章ごとに変化）", autoLive: "ライブ（章ごとに変化）", plainBg: "背景なし", fixedBg: "固定背景",
+    internetBg: "インターネット写真 (Pexels)", internetOff: "インターネット写真を表示するには設定で Pexels キーを追加してください", focusView: "一画面", listView: "リスト", language: "表示言語", wbwLanguage: "単語の意味の言語", tafsirPick: "タフスィールを選択",
+    nextUp: "次", credit: "写真", bookmark: "ブックマーク", bookmarked: "保存済み", notes: "マイメモ", noteHint: "この節についての気づきやメモを書く…", saveNote: "メモを保存", deleteNote: "削除", family: "家族", noProfile: "ブックマークとメモを保存するには家族ページでプロフィールを選んでください",
+    library: "保存済み", repeatAyahShort: "リピート",
+  },
+  mushaf: { title: "ムスハフ", surah: "章", juz: "ジュズ", player: "プレーヤー", family: "家族", tryAgain: "再試行", listenFromHere: "ここから聴く", bookmark: "ブックマーク", bookmarked: "保存済み", tafsir: "タフスィール", prev: "前のページ", next: "次のページ", page: "ページ", of: "/", layout: "レイアウト" },
+  family: {
+    title: "家族", sub: "保護者アカウント一つに、子どもから祖父母まで家族一人ひとりのプロフィール。各プロフィールはフォント、文字サイズ、ブックマーク、メモ、進捗を個別に保持します。",
+    add: "メンバーを追加", name: "名前", role: "役割", gender: "性別", age: "年齢層", avatar: "アバター", save: "保存", cancel: "キャンセル", remove: "プロフィールを削除",
+    roles: { parent: "保護者", adult: "大人", child: "子ども", senior: "シニア", teacher: "先生" }, genders: { male: "男性", female: "女性", unspecified: "未指定" },
+    active: "現在のプロフィール", bookmarks: "ブックマーク", notes: "メモ", streak: "連続日数", minutes: "今日の分数", continue: "続きを読む", none: "まだありません", open: "開く", mushaf: "ムスハフ", player: "プレーヤー",
+    noProfiles: "まず最初の家族メンバーを追加してください。", edit: "編集", femaleNote: "女性朗誦者は女性プロフィールにのみ表示されます。", signin: "保護者の Quran Foundation アカウントでサインインして、ブックマークとメモを Quran.com と同期", delete: "削除",
+  },
+  search: {
+    title: "検索", placeholder: "クルアーンを検索：単語、節、章、または 2:255", go: "検索", none: "結果なし", nav: "移動", verses: "節", more: "もっと", results: "件", exact: "完全一致", study: "学ぶ", play: "聴く", source: "ソース",
+    tip: "例：慈悲 · 洞窟章 · 36:1 · 忍耐", quick: "クイック", advanced: "詳細", hint: "単語、フレーズ、または 2:255 のような節番号",
+  },
+  study: {
+    title: "学習", words: "単語ごと", translations: "翻訳", tafsir: "タフスィール", compare: "タフスィールを比較", hadith: "関連ハディース", answers: "質問と回答", reflections: "省察", info: "この章について", prev: "前へ", next: "次へ", play: "聴く",
+    bookmark: "ブックマーク", bookmarked: "保存済み", share: "共有", copy: "コピー", copied: "コピーしました", juz: "ジュズ", page: "ページ", hizb: "ヒズブ", sajdah: "サジダ", none: "なし", prodOnly: "Quran Foundation の本番アカウント有効化後に利用可能",
+    loading: "読み込み中…", searchWord: "この単語を検索", listenWord: "単語を聴く", noProfile: "まず家族ページでプロフィールを選んでください", occurrences: "出現箇所", pick: "タフスィールを選択", surah: "章", ayah: "節", of: "/",
+  },
+  learn: {
+    title: "学習", pick: "章を選んで開始", start: "レッスン開始", xp: "XP", level: "レベル", streak: "日連続", check: "確認", next: "次へ", correct: "正解！", wrong: "惜しい。正解は：", done: "よくできました！レッスン完了", earned: "獲得", again: "新しいレッスン",
+    meaning: "この単語の意味は？", word: "次の意味の単語は：", hidden: "欠けている単語で節を完成させる", order: "節の単語を正しい順に並べる", reset: "リセット", loading: "レッスンを準備中…", noProfile: "進捗を保存するには家族ページでプロフィールを選んでください",
+    lessonsDone: "レッスン完了", juz30: "ジュズ・アンマ", all: "すべての章", listen: "聴く", skip: "スキップ", short: "短い章", stage: "ステージ", ayatInSurah: "節（この章）",
+  },
+  play: {
+    title: "ゲーム", pick: "ゲームを選択", scope: "範囲", all: "クルアーン全体", juz30: "ジュズ・アンマ", short: "短い章", start: "開始", loading: "準備中…", score: "スコア", time: "時間", next: "次へ", result: "結果", again: "もう一度", home: "ゲーム",
+    best: "ベストスコア", correct: "正解", noProfile: "スコアを保存するには家族ページでプロフィールを選んでください", study: "この節を学ぶ", nextIs: "次の節は", wrong: "不正解。正解は：", done: "ラウンド終了", of: "/", leaderboard: "家族ボード", nextQuestion: "次の節はどれ？", juz: "ジュズ",
+    games: { "guess-surah": { title: "どの章？", sub: "節を読んで章を当てる" }, "next-ayah": { title: "次の節", sub: "次の節はどれ？" }, "missing-word": { title: "欠けた単語", sub: "正しい単語で節を完成させる" }, "which-juz": { title: "どのジュズ？", sub: "ジュズを当てる" } },
+  },
+  hifz: {
+    title: "暗記", pick: "章と節の範囲を選択", from: "開始", to: "終了", start: "復習を開始", reveal: "表示", hide: "隠す", grade: "思い出せましたか？", forgot: "忘れた", hard: "難しい", good: "良い", easy: "簡単", due: "今日が期限", cards: "カード",
+    listen: "聴く", mic: "マイク確認", micStop: "停止", micUnsupported: "このブラウザには音声認識がありません（Chrome をお試しください）", accuracy: "正確さ", heard: "認識結果", next: "次へ", done: "今日のラウンド完了", again: "もう一ラウンド",
+    noProfile: "進捗はこの端末に保存されます", methods: "暗記法", method6446: "6446法：各節を4セット計20回繰り返す", method3x3: "3×3法：3節を個別に、その後つなげて", reps: "回", chain: "連結", schedule: "次の復習", today: "今日", tomorrow: "明日", days: "日", ayah: "節", loading: "読み込み中…",
+  },
+  ask: {
+    title: "質問", placeholder: "節の意味やクルアーンのテーマについて質問…", ask: "質問する", sources: "出典", retrieval: "関連する節とタフスィール（言語モデル不使用）", model: "逐語引用つきのモデル回答", tafsir: "タフスィール", study: "学ぶ", report: "報告",
+    reported: "ありがとうございます。報告を記録しました", pending: "学者の確認待ち", intro: "回答は出典の節とタフスィールのみから作られます。節は逐語引用され、決して改変されません。ファトワーは出しません。",
+    examples: ["玉座の節の意味は？", "クルアーンは忍耐について何と言っていますか？", "洞窟の人々の物語"], nokey: "サーバーで ANTHROPIC_API_KEY を設定すると文章回答が有効になります。現在は出典を直接表示しています。", today: "今日の一節", open: "節を開く",
+  },
+  azan: {
+    title: "アザーンと礼拝時刻", prayers: { fajr: "ファジュル", sunrise: "日の出", dhuhr: "ズフル", asr: "アスル", maghrib: "マグリブ", isha: "イシャー" }, nextPrayer: "次の礼拝", inTime: "あと", now: "今", location: "場所", useMyLocation: "現在地を使う",
+    locating: "位置情報を取得中…", locationDenied: "位置情報が許可されませんでした。都市を選んでください。", pickCity: "都市を選択", country: "国", city: "都市", method: "計算方法", methodAuto: "国に応じて自動", muezzin: "アザーンの声", preview: "アザーンを再生",
+    stop: "停止", notifications: "アザーン通知", notificationsHelp: "各礼拝時刻に、選んだ声のアザーンつき通知が届きます。通知から今日の一節が開きます。", enable: "通知をオンにする", enabled: "通知はオンです", disabled: "通知はオフです",
+    unsupported: "このブラウザは通知に対応していません", denied: "ブラウザ設定で通知がブロックされています", testNotification: "テスト送信", todayTimes: "今日の礼拝時刻", tomorrowTimes: "明日", playAtAzan: "礼拝時刻にアプリ内でアザーンを再生",
+    silentPrayers: "音なしの礼拝", story: "今日の一節", openStory: "今日の一節を開く", settingsSaved: "保存しました", timezone: "タイムゾーン", hijri: "ヒジュラ暦", asrHanafi: "アスル（ハナフィー）", highLat: "高緯度ルール",
+    source: "時刻はお住まいの国の標準的な天文計算法で端末上で計算されます。必ず地元のモスクで確認してください。",
+  },
+  story: {
+    title: "今日の一節", tapHint: "タップして続ける", reflect: "省察のひととき", reflectPrompt: "この節は今日のあなたに何を語りかけますか？", tafsir: "タフスィールより", listen: "聴く", openStudy: "この節を学ぶ", share: "共有", saveNote: "メモとして保存",
+    noteSaved: "メモを保存しました", nextAyah: "別の節", wallpaper: "背景を変更", goodMorning: "おはようございます", goodEvening: "こんばんは", forPrayer: "礼拝：",
+  },
+};

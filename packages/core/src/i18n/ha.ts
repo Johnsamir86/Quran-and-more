@@ -1,0 +1,91 @@
+import type { PartialMessages } from "./en";
+
+export const ha: PartialMessages = {
+  common: {
+    appName: "Alkur'ani da ƙari", loading: "Ana lodawa…", close: "Rufe", retry: "Sake gwadawa", next: "Na gaba", prev: "Na baya", save: "Ajiye", cancel: "Soke", remove: "Cire", none: "Babu", open: "Buɗe", share: "Raba", copy: "Kwafi", copied: "An kwafa",
+    search: "Nema", more: "Ƙari", back: "Koma", language: "Harshe", uiLanguage: "Harshen manhaja", of: "cikin", ayah: "Aya", ayat: "ayoyi", surah: "Sura", juz: "Juzu'i", page: "Shafi", hizb: "Hizbi", sajdah: "Sujada", listen: "Saurara", study: "Karanta",
+    bookmark: "Alama", bookmarked: "An ajiye", notes: "Bayanai", family: "Iyali", player: "Mai kunnawa", mushaf: "Mus'hafi", settings: "Saituna", unavailable: "ba a samu ba", today: "yau", tomorrow: "gobe", days: "kwanaki", minutes: "min", done: "An gama",
+    start: "Fara", again: "Sake", poweredBy: "Da API na Quran Foundation", privacy: "Sirri", terms: "Sharuɗɗa", offline: "Ba a iya isa ga sabis ɗin abun ciki ba. Duba haɗinka ka sake gwadawa.", noProfile: "Da farko zaɓi bayanin martaba a shafin Iyali",
+    on: "A kunne", off: "A kashe", enable: "Kunna", disable: "Kashe", chooseLanguage: "Zaɓi harshen manhaja",
+  },
+  nav: { home: "Gida", search: "Nema", learn: "Koyo", hifz: "Haddace", play: "Wasa", ask: "Tambaya", player: "Mai kunnawa", mushaf: "Mus'hafi", family: "Iyali", azan: "Kiran salla", story: "Ayar yau" },
+  home: {
+    kicker: "Alkur'ani Mai Girma", title: "Alkur'ani da ƙari", sub: "Ƙwarewar Alkur'ani ɗaya ga dukkan iyali: karatu mara tsayawa tare da daidaita kalmomi, mus'hafi da rubutun hukuma, tafsiri da fassarori a kowane harshe, da bayanin martaba ga kowa.",
+    startListening: "Fara sauraro", openMushaf: "Buɗe mus'hafi",
+    tiles: {
+      player: { title: "Mai kunnawa", sub: "Saurara, karanta, fassara ka karanci tafsiri a allo ɗaya, da kowane makaranci" },
+      mushaf: { title: "Mus'hafi", sub: "Shafi bayan shafi da rubutun hukuma da mus'hafin tajwidi" },
+      family: { title: "Iyali", sub: "Bayanin martaba ga kowane ɗan iyali, daga yaro zuwa kaka" },
+      search: { title: "Nema", sub: "Nemo kowace kalma, aya ko sura a dukkan Alkur'ani" },
+      study: { title: "Karatu", sub: "Kalma bayan kalma, fassarori da tafsirai har uku gefe da gefe" },
+      learn: { title: "Koyo", sub: "Darussan kalmomi irin na Quranlingo da XP da jerin kwanaki" },
+      hifz: { title: "Haddace", sub: "Ɓoye, tuna ka auna kanka; da maimaitawa mai tazara da gwajin makirufo" },
+      play: { title: "Wasa", sub: "Wace sura? Aya ta gaba? Kalmar da ta ɓace? Wane juzu'i?" },
+      ask: { title: "Tambaya", sub: "Amsoshi daga ayoyi da tafsiri kawai, an ambata kalma da kalma, ana jiran dubawar malamai" },
+      azan: { title: "Kiran salla", sub: "Lokutan salla na garinka, kiran salla da muryar da ka zaɓa, tunatarwa a kowace salla" },
+      story: { title: "Ayar yau", sub: "Aya ɗaya kowace rana a cikakken allo, da ma'anarta da ɗan lokacin tunani" },
+      kahf: { title: "Suratul Kahfi", sub: "Ana karanta ta ranar Juma'a" },
+    },
+  },
+  player: {
+    kicker: "Alkur'ani Mai Girma", title: "Alkur'ani Mai Girma", surahs: "Surori", reciter: "Makaranci", translation: "Fassara", tafsir: "Tafsiri", settings: "Saituna", stations: "Rediyo", play: "Kunna", pause: "Dakata", nextAyah: "Aya ta gaba", prevAyah: "Aya ta baya",
+    nextSurah: "Sura ta gaba", restart: "Daga farko", retry: "Sake gwadawa", close: "Rufe", none: "Rubutun Larabci kawai", textSize: "Girman rubutu", autoAdvance: "Ci gaba zuwa sura ta gaba ta atomatik", motion: "Gungurawa ta atomatik da motsi", small: "Ƙarami",
+    medium: "Matsakaici", large: "Babba", ayah: "Aya", of: "cikin", basmala: "Basmala", basmalaNote: "Basmala ba aya ce ta wannan sura ba, don haka babu tafsiri a nan.", loading: "Ana lodawa…",
+    offline: "Ba a iya isa ga sabis ɗin abun ciki ba. Duba haɗinka ka sake gwadawa. An ajiye saitunanka.", unavailable: "ba a samu ba", listenWith: "Saurara da", riwayah: "Riwaya", allLanguages: "Duk harsuna", search: "Nemi sura ko makaranci…", ended: "An kammala sura",
+    playingStation: "Yanzu ana kunnawa", gapless: "Karatu mara tsayawa tare da daidaita kalmomi", perAyah: "Karatu aya bayan aya", repeat: "Maimaita", repeatOff: "A kashe", repeatAyah: "Maimaita kowace aya", repeatRange: "Maimaita tsaka", repeatSurah: "Maimaita sura",
+    times: "sau", from: "Daga aya", to: "Zuwa aya", pauseBetween: "Dakata bayan kowace aya (daƙiƙa)", speed: "Sauri", sleep: "Lokacin barci", off: "A kashe", minutes: "min", wordByWord: "Taɓa kalma don ma'anarta", styleMurattal: "Murattal", styleMujawwad: "Mujawwad",
+    styleMuallim: "Mu'allim", gaplessOnly: "mara tsayawa", ayahOnly: "aya bayan aya", both: "mara tsayawa + aya bayan aya", noSync: "Cikakkiyar sura · ba a daidaita ba tukuna", noSyncShort: "cikakkiyar sura · daidaita kalmomi ta atomatik", share: "Raba", copied: "An kwafi hanyar haɗi",
+    remaining: "saura", wallpaper: "Bango", autoNature: "Yanayi, yana canzawa da sura", autoArt: "Fasahar Musulunci, tana canzawa da sura", autoLive: "Mai rai, yana canzawa da sura", plainBg: "Babu bango", fixedBg: "Bango tsayayye", internetBg: "Hotunan intanet (Pexels)",
+    internetOff: "Ƙara maɓallin Pexels a saituna don nuna hotunan intanet", focusView: "Allo ɗaya", listView: "Jeri", language: "Harshen manhaja", wbwLanguage: "Harshen ma'anar kalmomi", tafsirPick: "Zaɓi tafsiri", nextUp: "Na gaba", credit: "Hoto", bookmark: "Alama",
+    bookmarked: "An ajiye", notes: "Bayanaina", noteHint: "Rubuta tunaninka ko bayaninka kan wannan aya…", saveNote: "Ajiye bayani", deleteNote: "Goge", family: "Iyali", noProfile: "Zaɓi bayanin martaba a shafin Iyali don ajiye alamomi da bayanai", library: "Waɗanda aka ajiye", repeatAyahShort: "Maimaita",
+  },
+  mushaf: { title: "Mus'hafi", surah: "Sura", juz: "Juzu'i", player: "Mai kunnawa", family: "Iyali", tryAgain: "Sake gwadawa", listenFromHere: "Saurara daga nan", bookmark: "Alama", bookmarked: "An ajiye", tafsir: "Tafsiri", prev: "Na baya", next: "Na gaba", page: "Shafi", of: "cikin", layout: "Tsari" },
+  family: {
+    title: "Iyali", sub: "Asusun iyaye ɗaya, bayanin martaba ɗaya ga kowane ɗan iyali daga yaro zuwa kaka. Kowane bayanin martaba yana da nasa rubutu, girman rubutu, alamomi, bayanai da ci gaba.",
+    add: "Ƙara ɗan iyali", name: "Suna", role: "Matsayi", gender: "Jinsi", age: "Rukunin shekaru", avatar: "Hoton wakilci", save: "Ajiye", cancel: "Soke", remove: "Cire bayanin martaba",
+    roles: { parent: "Iyaye", adult: "Babba", child: "Yaro", senior: "Tsoho", teacher: "Malami" }, genders: { male: "Namiji", female: "Mace", unspecified: "Ba a bayyana ba" },
+    active: "Bayanin martaba mai aiki", bookmarks: "Alamomi", notes: "Bayanai", streak: "Kwanaki a jere", minutes: "Mintuna yau", continue: "Ci gaba da karatu", none: "Babu tukuna", open: "Buɗe", mushaf: "Mus'hafi", player: "Mai kunnawa",
+    noProfiles: "Fara da ƙara ɗan iyali na farko.", edit: "Gyara", femaleNote: "Ana nuna mata makaranta ga bayanan martaba na mata kawai.", signin: "Shiga da asusun Quran Foundation na iyaye don daidaita alamomi da bayanai da Quran.com", delete: "Goge",
+  },
+  search: {
+    title: "Nema", placeholder: "Nema a Alkur'ani: kalma, aya, sura, ko 2:255", go: "Nema", none: "Babu sakamako", nav: "Je zuwa", verses: "Ayoyi", more: "Ƙari", results: "sakamako", exact: "Daidai kawai", study: "Karanta", play: "Saurara", source: "Tushe",
+    tip: "Gwada: rahama · Al-Kahfi · 36:1 · haƙuri", quick: "Mai sauri", advanced: "Mai zurfi", hint: "Kalma, jimla, ko maɓallin aya kamar 2:255",
+  },
+  study: {
+    title: "Karatu", words: "Kalma bayan kalma", translations: "Fassarori", tafsir: "Tafsiri", compare: "Kwatanta tafsirai", hadith: "Hadisai masu alaƙa", answers: "Tambayoyi da amsoshi", reflections: "Tunani", info: "Game da sura", prev: "Na baya", next: "Na gaba", play: "Saurara",
+    bookmark: "Alama", bookmarked: "An ajiye", share: "Raba", copy: "Kwafi", copied: "An kwafa", juz: "Juzu'i", page: "Shafi", hizb: "Hizbi", sajdah: "Sujada", none: "Babu", prodOnly: "Za a samu bayan an kunna asusun samarwa na Quran Foundation", loading: "Ana lodawa…",
+    searchWord: "Nemi wannan kalma", listenWord: "Saurari kalmar", noProfile: "Da farko zaɓi bayanin martaba a shafin Iyali", occurrences: "Wuraren da ta bayyana", pick: "Zaɓi tafsiri", surah: "Sura", ayah: "Aya", of: "cikin",
+  },
+  learn: {
+    title: "Koyo", pick: "Zaɓi sura don farawa", start: "Fara darasi", xp: "XP", level: "Mataki", streak: "kwanaki a jere", check: "Duba", next: "Na gaba", correct: "Daidai!", wrong: "Ba haka ba. Amsar:", done: "Madalla! An kammala darasi", earned: "Ka samu",
+    again: "Sabon darasi", meaning: "Me wannan kalma ke nufi?", word: "Wace kalma ke nufin:", hidden: "Cika ayar da kalmar da ta ɓace", order: "Jera kalmomin ayar", reset: "Sake saita", loading: "Ana shirya darasi…", noProfile: "Zaɓi bayanin martaba a shafin Iyali don ajiye ci gabanka",
+    lessonsDone: "darussa da aka kammala", juz30: "Juzu'in Amma", all: "Duk surori", listen: "Saurara", skip: "Tsallake", short: "Gajerun surori", stage: "Mataki", ayatInSurah: "ayoyi a wannan sura",
+  },
+  play: {
+    title: "Wasa", pick: "Zaɓi wasa", scope: "Iyaka", all: "Dukkan Alkur'ani", juz30: "Juzu'in Amma", short: "Gajerun surori", start: "Fara", loading: "Ana shiryawa…", score: "Maki", time: "Lokaci", next: "Na gaba", result: "Sakamako", again: "Sake wasa", home: "Wasanni",
+    best: "Mafi kyawun maki", correct: "daidai", noProfile: "Zaɓi bayanin martaba a shafin Iyali don ajiye makinka", study: "Karanci ayar", nextIs: "Aya ta gaba ita ce", wrong: "Kuskure. Amsar:", done: "Zagaye ya ƙare", of: "cikin", leaderboard: "Allon iyali",
+    nextQuestion: "Wace aya ce ta gaba?", juz: "Juzu'i",
+    games: { "guess-surah": { title: "Wace sura?", sub: "Karanta ayar, zaɓi surarta" }, "next-ayah": { title: "Aya ta gaba", sub: "Wace aya ce ta gaba?" }, "missing-word": { title: "Kalmar da ta ɓace", sub: "Cika ayar da kalmar da ta dace" }, "which-juz": { title: "Wane juzu'i?", sub: "Yi hasashen juzu'in" } },
+  },
+  hifz: {
+    title: "Haddace", pick: "Zaɓi sura da tsakanin ayoyi", from: "Daga", to: "Zuwa", start: "Fara bita", reveal: "Nuna", hide: "Ɓoye", grade: "Yaya tunawarka ta kasance?", forgot: "Na manta", hard: "Mai wuya", good: "Mai kyau", easy: "Mai sauƙi", due: "na yau", cards: "katunan",
+    listen: "Saurara", mic: "Gwajin makirufo", micStop: "Tsaya", micUnsupported: "Wannan burauza ba ta da gane murya (gwada Chrome)", accuracy: "Daidaito", heard: "An ji", next: "Na gaba", done: "Zagayen yau ya ƙare", again: "Wani zagaye", noProfile: "Ana ajiye ci gaba a wannan na'ura",
+    methods: "Hanyoyin haddace", method6446: "Hanyar 6446: maimaita kowace aya sau 20 a rukuni 4", method3x3: "Hanyar 3×3: ayoyi uku daban, sannan a haɗa", reps: "maimaitawa", chain: "sarƙa", schedule: "Bita ta gaba", today: "yau", tomorrow: "gobe", days: "kwanaki", ayah: "aya", loading: "Ana lodawa…",
+  },
+  ask: {
+    title: "Tambaya", placeholder: "Tambaya game da ma'anar aya ko batu a cikin Alkur'ani…", ask: "Tambaya", sources: "Tushe", retrieval: "Ayoyi da tafsiri masu alaƙa (ba tare da samfurin harshe ba)", model: "Amsar samfuri da ambato kalma da kalma", tafsir: "Tafsiri", study: "Karanta",
+    report: "Kai rahoto", reported: "Na gode, an rubuta rahoton", pending: "ana jiran dubawar malamai", intro: "Ana gina amsoshi daga ayoyi da tafsiri na tushe kawai; ana ambaton ayoyi kalma da kalma ba a canza su. Babu fatawa.",
+    examples: ["Mene ne ma'anar Ayatul Kursiyyi?", "Me Alkur'ani ya ce game da haƙuri?", "Labarin ma'abota kogo"], nokey: "Saita ANTHROPIC_API_KEY a sabar don kunna amsoshin da aka rubuta; a yanzu ana nuna tushe kai tsaye.", today: "Ayar yau", open: "Buɗe aya",
+  },
+  azan: {
+    title: "Kiran salla da lokutan salla", prayers: { fajr: "Asuba", sunrise: "Fitowar rana", dhuhr: "Azahar", asr: "La'asar", maghrib: "Magariba", isha: "Isha'i" }, nextPrayer: "Salla ta gaba", inTime: "cikin", now: "yanzu", location: "Wuri", useMyLocation: "Yi amfani da wurina",
+    locating: "Ana nemo wurinka…", locationDenied: "Ba a ba da izinin wuri ba. Zaɓi garinka a maimakon haka.", pickCity: "Zaɓi gari", country: "Ƙasa", city: "Gari", method: "Hanyar lissafi", methodAuto: "Ta atomatik bisa ƙasa", muezzin: "Muryar kiran salla", preview: "Kunna kiran salla",
+    stop: "Tsaya", notifications: "Sanarwar kiran salla", notificationsHelp: "Sanarwa da kiran salla a kowane lokacin salla, da muryar da ka zaɓa. Ayar yau tana buɗewa daga gare ta.", enable: "Kunna sanarwa", enabled: "Sanarwa a kunne take", disabled: "Sanarwa a kashe take",
+    unsupported: "Wannan burauza ba ta goyon bayan sanarwa", denied: "An toshe sanarwa a saitunan burauza", testNotification: "Aika gwaji", todayTimes: "Lokutan yau", tomorrowTimes: "Gobe", playAtAzan: "Kunna kiran salla a manhaja lokacin salla", silentPrayers: "Salloli marasa sauti",
+    story: "Ayar yau", openStory: "Buɗe ayar yau", settingsSaved: "An ajiye", timezone: "Yankin lokaci", hijri: "Kwanan watan Hijira", asrHanafi: "La'asar (Hanafi)", highLat: "Ƙa'idar latitude mai tsayi", source: "Ana lissafa lokuta a na'urar da daidaitaccen hanyar falaki ta ƙasarka; koyaushe ka tabbatar da masallacinku.",
+  },
+  story: {
+    title: "Ayar yau", tapHint: "Taɓa don ci gaba", reflect: "Ɗan lokacin tunani", reflectPrompt: "Me wannan aya take gaya maka yau?", tafsir: "Daga tafsiri", listen: "Saurara", openStudy: "Karanci wannan aya", share: "Raba", saveNote: "Ajiye a matsayin bayani",
+    noteSaved: "An ajiye bayani", nextAyah: "Wata aya", wallpaper: "Canza bango", goodMorning: "Barka da safiya", goodEvening: "Barka da yamma", forPrayer: "Don sallar",
+  },
+};

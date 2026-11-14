@@ -1,0 +1,33 @@
+.root { position: fixed; inset: 0; background: #0b1228 center/cover no-repeat; color: var(--onAccent, #fff); display: grid; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; font-family: var(--font-plus-jakarta, system-ui, sans-serif); user-select: none; }
+.root::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0.15) 60%, rgba(0,0,0,0.7) 100%); pointer-events: none; }
+.light { color: #15201b; }
+.light::before { background: linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.15) 30%, rgba(255,255,255,0.15) 60%, rgba(255,255,255,0.75) 100%); }
+.top { position: relative; z-index: 2; padding: max(14px, env(safe-area-inset-top)) 16px 0; display: grid; gap: 10px; }
+.bars { display: flex; gap: 5px; }
+.bar { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.35); overflow: hidden; }
+.light .bar { background: rgba(0,0,0,0.2); }
+.barFill { display: block; height: 100%; background: currentColor; width: 0; transition: width 0.25s; }
+.barDone .barFill { width: 100%; }
+.barActive .barFill { width: 100%; }
+.head { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 0.85rem; }
+.close { background: rgba(0,0,0,0.3); color: var(--onAccent, #fff); border: 0; border-radius: 999px; width: 36px; height: 36px; font-size: 1.1rem; cursor: pointer; display: grid; place-items: center; text-decoration: none; }
+.stage { position: relative; z-index: 1; display: grid; place-items: center; padding: 16px 22px; min-height: 0; overflow: auto; }
+.slide { max-width: 760px; width: 100%; display: grid; gap: 16px; text-align: center; animation: fade 0.35s ease; }
+@keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.kicker { font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.85; }
+.arabic { font-family: var(--font-noto-arabic, "Noto Naskh Arabic", serif); font-size: clamp(1.7rem, 4.4vw, 3rem); line-height: 1.9; direction: rtl; text-shadow: 0 2px 18px rgba(0,0,0,0.35); }
+.light .arabic { text-shadow: 0 2px 18px rgba(255,255,255,0.5); }
+.text { font-size: clamp(1.05rem, 2.2vw, 1.45rem); line-height: 1.65; text-shadow: 0 1px 10px rgba(0,0,0,0.4); }
+.light .text { text-shadow: none; }
+.tafsir { font-size: clamp(0.95rem, 1.8vw, 1.15rem); line-height: 1.7; max-height: 50vh; overflow: auto; padding: 14px 16px; border-radius: 16px; background: rgba(0,0,0,0.35); backdrop-filter: blur(6px); text-align: start; }
+.light .tafsir { background: rgba(255,255,255,0.55); }
+.textarea { width: 100%; min-height: 110px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.4); background: rgba(0,0,0,0.3); color: inherit; padding: 12px 14px; font: inherit; resize: vertical; }
+.light .textarea { background: rgba(255,255,255,0.6); border-color: rgba(0,0,0,0.2); }
+.nav { position: absolute; inset: 0; z-index: 0; display: grid; grid-template-columns: 1fr 1fr; }
+.nav button { background: none; border: 0; cursor: pointer; }
+.actions { position: relative; z-index: 2; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 0 16px max(16px, env(safe-area-inset-bottom)); }
+.chip { background: rgba(0,0,0,0.35); color: var(--onAccent, #fff); border: 1px solid rgba(255,255,255,0.3); border-radius: 999px; padding: 9px 14px; font: inherit; font-size: 0.9rem; cursor: pointer; text-decoration: none; backdrop-filter: blur(6px); }
+.light .chip { background: rgba(255,255,255,0.6); color: #15201b; border-color: rgba(0,0,0,0.2); }
+.chip:hover { border-color: var(--onAccent, #fff); }
+.hint { font-size: 0.78rem; opacity: 0.75; text-align: center; width: 100%; }
+.azanBanner { position: relative; z-index: 2; margin: 0 16px; padding: 10px 14px; border-radius: 14px; background: rgba(29,158,117,0.85); color: var(--onAccent, #fff); display: flex; align-items: center; justify-content: space-between; gap: 10px; }

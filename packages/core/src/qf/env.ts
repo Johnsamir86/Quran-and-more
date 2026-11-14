@@ -22,6 +22,7 @@ export const QF_AUDIO_CDN = {
 
 export const absoluteAudioUrl = (relativeOrAbsolute: string, kind: "verse" | "word" = "verse"): string => {
   if (/^https?:\/\//.test(relativeOrAbsolute)) return relativeOrAbsolute;
+  if (relativeOrAbsolute.startsWith("//")) return `https:${relativeOrAbsolute}`;
   const base = kind === "word" ? QF_AUDIO_CDN.wordByWord : QF_AUDIO_CDN.verses;
   return base + relativeOrAbsolute.replace(/^\//, "");
 };

@@ -2,7 +2,8 @@ import type { NextRequest } from "next/server";
 
 import { absoluteAudioUrl } from "@qam/core";
 
-import { getContentClient, publicError, publicJson } from "@/lib/public-api";
+import { contentGet } from "@/lib/content";
+import { publicError, publicJson } from "@/lib/public-api";
 
 export const dynamic = "force-dynamic";
 
@@ -26,16 +27,16 @@ export async function GET(request: NextRequest, context: { params: Promise<{ cha
   const perPage = Math.min(300, Math.max(1, Number.parseInt(sp.get("perPage") ?? "50", 10) || 50));
 
   try {
-    const client = await getContentClient();
-    const raw = (await client.content.v4.verses.byChapter(String(id) as never, {
+    const raw = await contentGet(`verses/by_chapter/${id}`, {
       page,
-      perPage,
+      per_page: perPage,
       words,
       translations: translations.length ? translations : undefined,
       audio: Number.isInteger(reciter) ? reciter : undefined,
-      fields: { textUthmani: true, textIndopak: true, textUthmaniTajweed: true },
-      wordFields: { textUthmani: true, translation: true, transliteration: true },
-    })) as unknown;
+      fields: "text_uthmani,text_indopak,text_uthmani_tajweed",
+      word_fields: "text_uthmani",
+      translation_fields: "resource_id",
+    });
     const verses = (Array.isArray(raw) ? raw : (raw as { verses?: VerseLike[] }).verses ?? []) as VerseLike[];
     return publicJson({
       chapterId: id,

@@ -4,6 +4,8 @@ import { SearchMode } from "@quranjs/api";
 import { createPublicClient } from "@quranjs/api/public";
 import { createServerClient } from "@quranjs/api/server";
 
+import { getQfServerClient } from "@qam/core/server";
+
 import { getConfig } from "@/lib/env";
 import type { StoredSession } from "@/lib/session/store";
 
@@ -159,8 +161,10 @@ export const createClients = async (session: StoredSession) => {
   const config = getConfig();
   const runtimeSdk = await loadRuntimeSplitSdk();
 
+  // User login and User APIs may live on a separate OAuth2 client from the
+  // content (client-credentials) client. Content reads go through contentClient.
   const sharedConfig = {
-    clientId: config.clientId,
+    clientId: config.userClientId,
     // Clients created after the content-scope split are never granted the
     // umbrella `content` scope; the SDK must request per-operation scopes.
     contentScopeMode: config.contentScopeMode,
@@ -177,8 +181,10 @@ export const createClients = async (session: StoredSession) => {
     }),
     serverClient: runtimeSdk.createServerClient({
       ...sharedConfig,
-      clientSecret: config.clientSecret,
+      clientSecret: config.userClientSecret,
     }),
+    /** App-level content client (CLIENT_ID / CLIENT_SECRET, granular content scopes). */
+    contentClient: getQfServerClient(),
   };
 };
 

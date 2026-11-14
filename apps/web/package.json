@@ -20,17 +20,20 @@
     "@netlify/blobs": "^11.1.9",
     "@qam/core": "*",
     "@quranjs/api": "^3.17.2",
+    "@supabase/supabase-js": "^2.119.0",
     "next": "^15.5.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "redis": "^4.7.0",
-    "swr": "^2.2.5"
+    "swr": "^2.2.5",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@testing-library/react": "^16.1.0",
     "@types/node": "^20",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "@types/web-push": "^3.6.4",
     "eslint": "^8.57.1",
     "eslint-config-next": "^15.5.2",
     "jsdom": "^25.0.1",

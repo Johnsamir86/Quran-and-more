@@ -74,6 +74,9 @@ export interface RuntimeConfig {
   clientId: string;
   clientSecret: string;
   contentScopeMode: "legacy" | "granular";
+  /** OAuth2 client used for user login (PKCE) and User APIs. Defaults to the content client. */
+  userClientId: string;
+  userClientSecret: string;
   defaultReaderChapter: string;
   isProduction: boolean;
   oauth2BaseUrl: string;
@@ -110,6 +113,8 @@ export const getConfig = (): RuntimeConfig => {
     clientSecret: getRequired("CLIENT_SECRET"),
     contentScopeMode:
       getOptional("CONTENT_SCOPE_MODE") === "legacy" ? "legacy" : "granular",
+    userClientId: getOptional("USER_CLIENT_ID") ?? getRequired("CLIENT_ID"),
+    userClientSecret: getOptional("USER_CLIENT_SECRET") ?? getRequired("CLIENT_SECRET"),
     defaultReaderChapter: String(
       toPositiveInt(getOptional("DEFAULT_READER_CHAPTER"), 1),
     ),

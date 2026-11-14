@@ -3,27 +3,93 @@
     "name": "Quran and More",
     "slug": "quran-and-more",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "quranandmore",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon",
       "bundleIdentifier": "foundation.quranandmore.app",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "audio"
+        ],
+        "NSMotionUsageDescription": "Quran and More does not track motion; this entry exists only because the location library declares it.",
+        "CFBundleLocalizations": [
+          "en",
+          "ar",
+          "ur",
+          "fr",
+          "es",
+          "de",
+          "tr",
+          "id",
+          "ms",
+          "fa",
+          "ru",
+          "bn",
+          "hi",
+          "pt",
+          "it",
+          "nl",
+          "zh",
+          "ja",
+          "ko",
+          "sw",
+          "sq",
+          "bs",
+          "uk",
+          "pl",
+          "uz",
+          "az",
+          "kk",
+          "ps",
+          "ku",
+          "so",
+          "ha",
+          "tl",
+          "th",
+          "vi",
+          "he",
+          "ro",
+          "bg",
+          "cs",
+          "sv",
+          "no",
+          "fi",
+          "ta",
+          "ml",
+          "te",
+          "kn",
+          "mr",
+          "gu",
+          "ne",
+          "si",
+          "am",
+          "yo"
+        ]
+      },
+      "buildNumber": "6",
+      "requireFullScreen": false,
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "usesAppleSignIn": true
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#14805f",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "foundation.quranandmore.app"
+      "package": "foundation.quranandmore.app",
+      "versionCode": 6
     },
     "web": {
-      "output": "static",
+      "output": "single",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
@@ -31,18 +97,52 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#14805f",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "imageWidth": 160,
+          "dark": {
+            "backgroundColor": "#0d1512"
+          }
         }
-      ]
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Quran and More uses the microphone only when you start the memorisation check, to compare your recitation with the ayah on the device. Nothing is uploaded."
+        }
+      ],
+      "expo-font",
+      [
+        "expo-notifications",
+        {
+          "sounds": [
+            "./assets/sounds/azan.wav",
+            "./assets/sounds/chime.wav"
+          ],
+          "color": "#1d9e75",
+          "icon": "./assets/images/android-icon-monochrome.png"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Quran and More uses your location only to compute prayer times for your city. It never leaves the device.",
+          "locationAlwaysAndWhenInUsePermission": false,
+          "locationAlwaysPermission": false,
+          "isIosBackgroundLocationEnabled": false,
+          "isAndroidBackgroundLocationEnabled": false
+        }
+      ],
+      "expo-secure-store",
+      "expo-apple-authentication"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
     },
     "extra": {
-      "apiBaseUrl": "http://localhost:3000"
-    }
+      "apiBaseUrl": "https://quran-and-more.netlify.app"
+    },
+    "primaryColor": "#14805f"
   }
 }

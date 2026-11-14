@@ -1,0 +1,20 @@
+.times { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+.time { border: 1px solid var(--line, rgba(0,0,0,0.1)); border-radius: 16px; padding: 12px 14px; display: grid; gap: 4px; background: var(--card, rgba(255,255,255,0.6)); position: relative; }
+.timeNext { border-color: var(--accent, var(--accent)); box-shadow: 0 0 0 2px var(--accentSoft) inset; }
+.timePast { opacity: 0.55; }
+.timeName { font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.75; }
+.timeValue { font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.timeToggle { position: absolute; top: 8px; inset-inline-end: 10px; font-size: 1rem; background: none; border: 0; cursor: pointer; }
+.hero { display: grid; gap: 6px; padding: 20px; border-radius: 22px; color: var(--onAccent, #fff); background: linear-gradient(135deg, #0f5a4a, var(--accent) 60%, #78c9a9); }
+.heroBig { font-size: clamp(2rem, 6vw, 3.2rem); font-weight: 800; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.heroSub { opacity: 0.9; }
+.suggest { display: grid; gap: 4px; margin-top: 6px; }
+.suggestItem { text-align: start; border: 1px solid var(--line, rgba(0,0,0,0.1)); background: var(--card, #fff); border-radius: 12px; padding: 8px 12px; cursor: pointer; font: inherit; }
+.suggestItem:hover { border-color: var(--accent, var(--accent)); }
+.formRow { display: grid; gap: 6px; }
+.formRow label { font-size: 0.82rem; opacity: 0.8; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.switch { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.switch input { width: 20px; height: 20px; accent-color: var(--accent, var(--accent)); }
+.status { font-size: 0.9rem; padding: 8px 12px; border-radius: 10px; background: var(--accentSoft); }
+.statusBad { background: rgba(185,28,28,0.12); }

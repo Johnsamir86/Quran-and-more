@@ -1,0 +1,90 @@
+import type { PartialMessages } from "./en";
+
+export const vi: PartialMessages = {
+  common: {
+    appName: "Kinh Qur'an và hơn thế", loading: "Đang tải…", close: "Đóng", retry: "Thử lại", next: "Tiếp", prev: "Trước", save: "Lưu", cancel: "Hủy", remove: "Xóa", none: "Không có", open: "Mở", share: "Chia sẻ", copy: "Sao chép", copied: "Đã sao chép",
+    search: "Tìm kiếm", more: "Thêm", back: "Quay lại", language: "Ngôn ngữ", uiLanguage: "Ngôn ngữ giao diện", of: "trên", ayah: "Câu", ayat: "câu", surah: "Chương", juz: "Juz", page: "Trang", hizb: "Hizb", sajdah: "Sajdah", listen: "Nghe", study: "Học",
+    bookmark: "Đánh dấu", bookmarked: "Đã lưu", notes: "Ghi chú", family: "Gia đình", player: "Trình phát", mushaf: "Mushaf", settings: "Cài đặt", unavailable: "không có sẵn", today: "hôm nay", tomorrow: "ngày mai", days: "ngày", minutes: "phút", done: "Xong",
+    start: "Bắt đầu", again: "Lại", poweredBy: "Được cung cấp bởi API của Quran Foundation", privacy: "Quyền riêng tư", terms: "Điều khoản", offline: "Không thể kết nối dịch vụ nội dung. Kiểm tra kết nối và thử lại.", noProfile: "Hãy chọn hồ sơ ở trang Gia đình trước",
+    on: "Bật", off: "Tắt", enable: "Bật", disable: "Tắt", chooseLanguage: "Chọn ngôn ngữ giao diện",
+  },
+  nav: { home: "Trang chủ", search: "Tìm kiếm", learn: "Học", hifz: "Thuộc lòng", play: "Chơi", ask: "Hỏi", player: "Trình phát", mushaf: "Mushaf", family: "Gia đình", azan: "Azan", story: "Câu kinh mỗi ngày" },
+  home: {
+    kicker: "Thiên Kinh Qur'an", title: "Kinh Qur'an và hơn thế", sub: "Một trải nghiệm Qur'an cho cả gia đình: xướng đọc liền mạch với đồng bộ từng từ, mushaf bằng chữ viết chính thức, tafsir và bản dịch mọi ngôn ngữ, và hồ sơ cho từng thành viên.",
+    startListening: "Bắt đầu nghe", openMushaf: "Mở mushaf",
+    tiles: {
+      player: { title: "Trình phát", sub: "Nghe, đọc, dịch và học tafsir trên một màn hình, với bất kỳ người xướng đọc nào" },
+      mushaf: { title: "Mushaf", sub: "Từng trang với phông chữ chính thức và mushaf tajweed" },
+      family: { title: "Gia đình", sub: "Hồ sơ cho mỗi thành viên, từ trẻ em đến ông bà" },
+      search: { title: "Tìm kiếm", sub: "Tìm bất kỳ từ, câu hay chương nào trong toàn bộ Qur'an" },
+      study: { title: "Học", sub: "Từng từ, bản dịch và tối đa ba tafsir đặt cạnh nhau" },
+      learn: { title: "Học", sub: "Bài học từ vựng kiểu Quranlingo với XP và chuỗi ngày" },
+      hifz: { title: "Thuộc lòng", sub: "Ẩn, nhớ lại và tự chấm điểm, với ôn tập giãn cách và kiểm tra bằng micro" },
+      play: { title: "Chơi", sub: "Chương nào? Câu tiếp theo? Từ bị thiếu? Juz nào?" },
+      ask: { title: "Hỏi", sub: "Câu trả lời chỉ từ các câu kinh và tafsir, trích nguyên văn, đang chờ học giả xét duyệt" },
+      azan: { title: "Azan", sub: "Giờ lễ nguyện cho thành phố của bạn, azan với giọng bạn chọn, nhắc nhở mỗi lần lễ" },
+      story: { title: "Câu kinh mỗi ngày", sub: "Mỗi ngày một câu kinh toàn màn hình, cùng ý nghĩa và một khoảnh khắc suy ngẫm" },
+      kahf: { title: "Chương Al-Kahf", sub: "Đọc vào thứ Sáu" },
+    },
+  },
+  player: {
+    kicker: "Thiên Kinh Qur'an", title: "Thiên Kinh Qur'an", surahs: "Các chương", reciter: "Người xướng đọc", translation: "Bản dịch", tafsir: "Tafsir", settings: "Cài đặt", stations: "Radio", play: "Phát", pause: "Tạm dừng", nextAyah: "Câu tiếp", prevAyah: "Câu trước",
+    nextSurah: "Chương tiếp", restart: "Từ đầu", retry: "Thử lại", close: "Đóng", none: "Chỉ văn bản Ả Rập", textSize: "Cỡ chữ", autoAdvance: "Tự động sang chương tiếp theo", motion: "Tự động cuộn và chuyển động", small: "Nhỏ", medium: "Vừa", large: "Lớn",
+    ayah: "Câu", of: "trên", basmala: "Basmala", basmalaNote: "Basmala không phải là một câu của chương này, nên không có tafsir ở đây.", loading: "Đang tải…", offline: "Không thể kết nối dịch vụ nội dung. Kiểm tra kết nối và thử lại. Cài đặt của bạn đã được lưu.",
+    unavailable: "không có sẵn", listenWith: "Nghe với", riwayah: "Riwayah", allLanguages: "Tất cả ngôn ngữ", search: "Tìm chương hoặc người xướng đọc…", ended: "Đã hoàn thành chương", playingStation: "Đang phát", gapless: "Xướng đọc liền mạch với đồng bộ từng từ",
+    perAyah: "Xướng đọc từng câu", repeat: "Lặp lại", repeatOff: "Tắt", repeatAyah: "Lặp lại mỗi câu", repeatRange: "Lặp lại một đoạn", repeatSurah: "Lặp lại chương", times: "lần", from: "Từ câu", to: "Đến câu", pauseBetween: "Nghỉ sau mỗi câu (giây)", speed: "Tốc độ",
+    sleep: "Hẹn giờ tắt", off: "Tắt", minutes: "phút", wordByWord: "Chạm vào một từ để xem nghĩa", styleMurattal: "Murattal", styleMujawwad: "Mujawwad", styleMuallim: "Mu'allim", gaplessOnly: "liền mạch", ayahOnly: "từng câu", both: "liền mạch + từng câu",
+    noSync: "Trọn chương · chưa đồng bộ", noSyncShort: "trọn chương · đồng bộ từ tự động", share: "Chia sẻ", copied: "Đã sao chép liên kết", remaining: "còn lại", wallpaper: "Hình nền", autoNature: "Thiên nhiên, đổi theo chương", autoArt: "Nghệ thuật Hồi giáo, đổi theo chương",
+    autoLive: "Động, đổi theo chương", plainBg: "Không hình nền", fixedBg: "Hình nền cố định", internetBg: "Ảnh từ Internet (Pexels)", internetOff: "Thêm khóa Pexels trong cài đặt để hiển thị ảnh từ Internet", focusView: "Một màn hình", listView: "Danh sách",
+    language: "Ngôn ngữ giao diện", wbwLanguage: "Ngôn ngữ nghĩa từ", tafsirPick: "Chọn tafsir", nextUp: "Tiếp theo", credit: "Ảnh", bookmark: "Đánh dấu", bookmarked: "Đã lưu", notes: "Ghi chú của tôi", noteHint: "Viết suy ngẫm hoặc ghi chú của bạn về câu này…",
+    saveNote: "Lưu ghi chú", deleteNote: "Xóa", family: "Gia đình", noProfile: "Chọn hồ sơ ở trang Gia đình để lưu đánh dấu và ghi chú", library: "Đã lưu", repeatAyahShort: "Lặp",
+  },
+  mushaf: { title: "Mushaf", surah: "Chương", juz: "Juz", player: "Trình phát", family: "Gia đình", tryAgain: "Thử lại", listenFromHere: "Nghe từ đây", bookmark: "Đánh dấu", bookmarked: "Đã lưu", tafsir: "Tafsir", prev: "Trước", next: "Tiếp", page: "Trang", of: "trên", layout: "Bố cục" },
+  family: {
+    title: "Gia đình", sub: "Một tài khoản phụ huynh, một hồ sơ cho mỗi thành viên từ trẻ em đến ông bà. Mỗi hồ sơ giữ phông chữ, cỡ chữ, đánh dấu, ghi chú và tiến độ riêng.",
+    add: "Thêm thành viên", name: "Tên", role: "Vai trò", gender: "Giới tính", age: "Nhóm tuổi", avatar: "Ảnh đại diện", save: "Lưu", cancel: "Hủy", remove: "Xóa hồ sơ",
+    roles: { parent: "Phụ huynh", adult: "Người lớn", child: "Trẻ em", senior: "Người cao tuổi", teacher: "Giáo viên" }, genders: { male: "Nam", female: "Nữ", unspecified: "Không xác định" },
+    active: "Hồ sơ đang dùng", bookmarks: "Đánh dấu", notes: "Ghi chú", streak: "Ngày liên tiếp", minutes: "Phút hôm nay", continue: "Đọc tiếp", none: "Chưa có gì", open: "Mở", mushaf: "Mushaf", player: "Trình phát",
+    noProfiles: "Bắt đầu bằng cách thêm thành viên đầu tiên.", edit: "Sửa", femaleNote: "Người xướng đọc nữ chỉ hiển thị cho hồ sơ nữ.", signin: "Đăng nhập bằng tài khoản Quran Foundation của phụ huynh để đồng bộ đánh dấu và ghi chú với Quran.com", delete: "Xóa",
+  },
+  search: {
+    title: "Tìm kiếm", placeholder: "Tìm trong Qur'an: một từ, một câu, một chương hoặc 2:255", go: "Tìm", none: "Không có kết quả", nav: "Đi tới", verses: "Các câu", more: "Thêm", results: "kết quả", exact: "Khớp chính xác", study: "Học", play: "Nghe", source: "Nguồn",
+    tip: "Thử: lòng thương xót · Al-Kahf · 36:1 · kiên nhẫn", quick: "Nhanh", advanced: "Nâng cao", hint: "Một từ, một cụm từ hoặc mã câu như 2:255",
+  },
+  study: {
+    title: "Học", words: "Từng từ", translations: "Bản dịch", tafsir: "Tafsir", compare: "So sánh tafsir", hadith: "Hadith liên quan", answers: "Hỏi và đáp", reflections: "Suy ngẫm", info: "Về chương này", prev: "Trước", next: "Tiếp", play: "Nghe", bookmark: "Đánh dấu",
+    bookmarked: "Đã lưu", share: "Chia sẻ", copy: "Sao chép", copied: "Đã sao chép", juz: "Juz", page: "Trang", hizb: "Hizb", sajdah: "Sajdah", none: "Không có", prodOnly: "Có sẵn khi tài khoản sản xuất của Quran Foundation được kích hoạt", loading: "Đang tải…",
+    searchWord: "Tìm từ này", listenWord: "Nghe từ này", noProfile: "Hãy chọn hồ sơ ở trang Gia đình trước", occurrences: "Các lần xuất hiện", pick: "Chọn một tafsir", surah: "Chương", ayah: "Câu", of: "trên",
+  },
+  learn: {
+    title: "Học", pick: "Chọn một chương để bắt đầu", start: "Bắt đầu bài học", xp: "XP", level: "Cấp", streak: "ngày liên tiếp", check: "Kiểm tra", next: "Tiếp", correct: "Đúng!", wrong: "Chưa đúng. Đáp án:", done: "Giỏi lắm! Hoàn thành bài học", earned: "Bạn nhận được",
+    again: "Bài học mới", meaning: "Từ này nghĩa là gì?", word: "Từ nào có nghĩa:", hidden: "Hoàn thành câu với từ bị thiếu", order: "Sắp xếp các từ của câu", reset: "Đặt lại", loading: "Đang chuẩn bị bài học…", noProfile: "Chọn hồ sơ ở trang Gia đình để lưu tiến độ",
+    lessonsDone: "bài đã xong", juz30: "Juz Amma", all: "Tất cả các chương", listen: "Nghe", skip: "Bỏ qua", short: "Chương ngắn", stage: "Chặng", ayatInSurah: "câu trong chương này",
+  },
+  play: {
+    title: "Chơi", pick: "Chọn trò chơi", scope: "Phạm vi", all: "Toàn bộ Qur'an", juz30: "Juz Amma", short: "Chương ngắn", start: "Bắt đầu", loading: "Đang chuẩn bị…", score: "Điểm", time: "Thời gian", next: "Tiếp", result: "Kết quả", again: "Chơi lại", home: "Trò chơi",
+    best: "Điểm cao nhất", correct: "đúng", noProfile: "Chọn hồ sơ ở trang Gia đình để lưu điểm", study: "Học câu này", nextIs: "Câu tiếp theo là", wrong: "Sai. Đáp án:", done: "Hết vòng", of: "trên", leaderboard: "Bảng gia đình", nextQuestion: "Câu nào tiếp theo?", juz: "Juz",
+    games: { "guess-surah": { title: "Chương nào?", sub: "Đọc câu kinh, chọn chương của nó" }, "next-ayah": { title: "Câu tiếp theo", sub: "Câu nào tiếp theo?" }, "missing-word": { title: "Từ bị thiếu", sub: "Hoàn thành câu với từ đúng" }, "which-juz": { title: "Juz nào?", sub: "Đoán juz" } },
+  },
+  hifz: {
+    title: "Thuộc lòng", pick: "Chọn chương và khoảng câu", from: "Từ", to: "Đến", start: "Bắt đầu ôn", reveal: "Hiện", hide: "Ẩn", grade: "Bạn nhớ thế nào?", forgot: "Quên", hard: "Khó", good: "Tốt", easy: "Dễ", due: "đến hạn hôm nay", cards: "thẻ", listen: "Nghe",
+    mic: "Kiểm tra bằng micro", micStop: "Dừng", micUnsupported: "Trình duyệt này không nhận dạng giọng nói (hãy thử Chrome)", accuracy: "Độ chính xác", heard: "Đã nghe", next: "Tiếp", done: "Đã xong vòng hôm nay", again: "Vòng nữa", noProfile: "Tiến độ được lưu trên thiết bị này",
+    methods: "Phương pháp thuộc lòng", method6446: "Phương pháp 6446: lặp mỗi câu 20 lần trong 4 đợt", method3x3: "Phương pháp 3×3: ba câu riêng lẻ, rồi nối liền", reps: "lần", chain: "chuỗi", schedule: "Ôn tiếp theo", today: "hôm nay", tomorrow: "ngày mai", days: "ngày", ayah: "câu", loading: "Đang tải…",
+  },
+  ask: {
+    title: "Hỏi", placeholder: "Hỏi về ý nghĩa một câu kinh hoặc một chủ đề trong Qur'an…", ask: "Hỏi", sources: "Nguồn", retrieval: "Các câu và tafsir liên quan (không dùng mô hình ngôn ngữ)", model: "Câu trả lời của mô hình với trích dẫn nguyên văn", tafsir: "Tafsir", study: "Học",
+    report: "Báo cáo", reported: "Cảm ơn, báo cáo đã được ghi nhận", pending: "đang chờ học giả xét duyệt", intro: "Câu trả lời chỉ được xây dựng từ các câu kinh và tafsir trong nguồn; các câu kinh được trích nguyên văn và không bao giờ bị sửa đổi. Không phải fatwa.",
+    examples: ["Câu Ayat al-Kursi có nghĩa gì?", "Qur'an nói gì về sự kiên nhẫn?", "Câu chuyện về những người trong hang"], nokey: "Đặt ANTHROPIC_API_KEY trên máy chủ để bật câu trả lời được soạn; hiện tại nguồn được hiển thị trực tiếp.", today: "Câu kinh mỗi ngày", open: "Mở câu kinh",
+  },
+  azan: {
+    title: "Azan và giờ lễ nguyện", prayers: { fajr: "Fajr", sunrise: "Mặt trời mọc", dhuhr: "Dhuhr", asr: "Asr", maghrib: "Maghrib", isha: "Isha" }, nextPrayer: "Lễ nguyện tiếp theo", inTime: "còn", now: "bây giờ", location: "Vị trí", useMyLocation: "Dùng vị trí của tôi",
+    locating: "Đang xác định vị trí…", locationDenied: "Không được phép dùng vị trí. Hãy chọn thành phố của bạn.", pickCity: "Chọn thành phố", country: "Quốc gia", city: "Thành phố", method: "Phương pháp tính", methodAuto: "Tự động theo quốc gia", muezzin: "Giọng azan", preview: "Phát azan",
+    stop: "Dừng", notifications: "Thông báo azan", notificationsHelp: "Thông báo kèm azan vào mỗi giờ lễ nguyện, với giọng bạn đã chọn. Câu kinh mỗi ngày mở ra từ đó.", enable: "Bật thông báo", enabled: "Thông báo đang bật", disabled: "Thông báo đang tắt",
+    unsupported: "Trình duyệt này không hỗ trợ thông báo", denied: "Thông báo đã bị chặn trong cài đặt trình duyệt", testNotification: "Gửi thử", todayTimes: "Giờ hôm nay", tomorrowTimes: "Ngày mai", playAtAzan: "Phát azan trong ứng dụng khi đến giờ", silentPrayers: "Lễ nguyện im lặng",
+    story: "Câu kinh mỗi ngày", openStory: "Mở câu kinh hôm nay", settingsSaved: "Đã lưu", timezone: "Múi giờ", hijri: "Ngày Hijri", asrHanafi: "Asr (Hanafi)", highLat: "Quy tắc vĩ độ cao", source: "Giờ được tính trên thiết bị theo phương pháp thiên văn tiêu chuẩn của quốc gia bạn; luôn xác nhận với thánh đường địa phương.",
+  },
+  story: {
+    title: "Câu kinh mỗi ngày", tapHint: "Chạm để tiếp tục", reflect: "Một khoảnh khắc suy ngẫm", reflectPrompt: "Câu kinh này nói gì với bạn hôm nay?", tafsir: "Từ tafsir", listen: "Nghe", openStudy: "Học câu kinh này", share: "Chia sẻ", saveNote: "Lưu thành ghi chú",
+    noteSaved: "Đã lưu ghi chú", nextAyah: "Câu kinh khác", wallpaper: "Đổi hình nền", goodMorning: "Chào buổi sáng", goodEvening: "Chào buổi tối", forPrayer: "Cho lễ",
+  },
+};

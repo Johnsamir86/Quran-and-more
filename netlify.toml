@@ -8,6 +8,9 @@
   NODE_VERSION = "20"
   NPM_FLAGS = "--include=dev"
 
+[functions]
+  directory = "netlify/functions"
+
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
@@ -17,3 +20,17 @@
     Access-Control-Allow-Origin = "*"
     Access-Control-Allow-Methods = "GET, OPTIONS"
     Access-Control-Allow-Headers = "Content-Type, Authorization, X-Api-Key"
+
+# Android test build: short link to the latest APK published on the apk-builds branch.
+[[redirects]]
+  from = "/android.apk"
+  to = "https://github.com/Johnsamir86/Quran-and-more/raw/apk-builds/quran-and-more-android.apk"
+  status = 302
+  force = true
+
+# iOS Simulator build (unsigned .app from GitHub Actions): unzip and drag onto any iPhone simulator.
+[[redirects]]
+  from = "/ios-simulator.zip"
+  to = "https://github.com/Johnsamir86/Quran-and-more/raw/apk-builds/quran-and-more-ios-simulator.app.zip"
+  status = 302
+  force = true

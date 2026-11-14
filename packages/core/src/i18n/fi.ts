@@ -1,0 +1,93 @@
+import type { PartialMessages } from "./en";
+
+export const fi: PartialMessages = {
+  common: {
+    appName: "Koraani ja enemmän", loading: "Ladataan…", close: "Sulje", retry: "Yritä uudelleen", next: "Seuraava", prev: "Edellinen", save: "Tallenna", cancel: "Peruuta", remove: "Poista", none: "Ei mitään", open: "Avaa", share: "Jaa", copy: "Kopioi",
+    copied: "Kopioitu", search: "Haku", more: "Lisää", back: "Takaisin", language: "Kieli", uiLanguage: "Käyttöliittymän kieli", of: "/", ayah: "Jae", ayat: "jaetta", surah: "Suura", juz: "Juz", page: "Sivu", hizb: "Hizb", sajdah: "Sajda", listen: "Kuuntele",
+    study: "Opiskele", bookmark: "Kirjanmerkki", bookmarked: "Tallennettu", notes: "Muistiinpanot", family: "Perhe", player: "Soitin", mushaf: "Mushaf", settings: "Asetukset", unavailable: "ei saatavilla", today: "tänään", tomorrow: "huomenna", days: "päivää",
+    minutes: "min", done: "Valmis", start: "Aloita", again: "Uudelleen", poweredBy: "Quran Foundationin rajapintojen avulla", privacy: "Tietosuoja", terms: "Ehdot", offline: "Sisältöpalveluun ei saatu yhteyttä. Tarkista yhteys ja yritä uudelleen.",
+    noProfile: "Valitse ensin profiili Perhe-sivulta", on: "Päällä", off: "Pois", enable: "Ota käyttöön", disable: "Poista käytöstä", chooseLanguage: "Valitse käyttöliittymän kieli",
+  },
+  nav: { home: "Koti", search: "Haku", learn: "Opi", hifz: "Opettele ulkoa", play: "Pelaa", ask: "Kysy", player: "Soitin", mushaf: "Mushaf", family: "Perhe", azan: "Adhan", story: "Päivän jae" },
+  home: {
+    kicker: "Jalo Koraani", title: "Koraani ja enemmän", sub: "Yksi Koraani-kokemus koko perheelle: saumaton resitaatio sanakohtaisella synkronoinnilla, mushaf virallisella kirjoituksella, tafsir ja käännökset kaikilla kielillä sekä profiili jokaiselle jäsenelle.",
+    startListening: "Aloita kuuntelu", openMushaf: "Avaa mushaf",
+    tiles: {
+      player: { title: "Soitin", sub: "Kuuntele, lue, käännä ja opiskele tafsiria yhdellä näytöllä, kenen tahansa resitoijan kanssa" },
+      mushaf: { title: "Mushaf", sub: "Sivu sivulta virallisilla fonteilla ja tajwid-mushafilla" },
+      family: { title: "Perhe", sub: "Profiili jokaiselle jäsenelle lapsesta isovanhempiin" },
+      search: { title: "Haku", sub: "Löydä mikä tahansa sana, jae tai suura koko Koraanista" },
+      study: { title: "Opiskelu", sub: "Sana sanalta, käännökset ja jopa kolme tafsiria rinnakkain" },
+      learn: { title: "Opi", sub: "Quranlingo-tyylisiä sanastotunteja XP:llä ja putkilla" },
+      hifz: { title: "Opettele ulkoa", sub: "Piilota, muistele ja arvioi itsesi, hajautetulla kertauksella ja mikrofonitarkistuksella" },
+      play: { title: "Pelaa", sub: "Mikä suura? Seuraava jae? Puuttuva sana? Mikä juz?" },
+      ask: { title: "Kysy", sub: "Vastaukset vain jakeista ja tafsirista, sanatarkasti lainattuina, odottavat oppineiden tarkistusta" },
+      azan: { title: "Adhan", sub: "Rukousajat kaupungillesi, adhan valitsemallasi äänellä, muistutus jokaiseen rukoukseen" },
+      story: { title: "Päivän jae", sub: "Yksi jae päivässä koko näytöllä, merkityksineen ja hetki pohdintaan" },
+      kahf: { title: "Suura Al-Kahf", sub: "Luetaan perjantaisin" },
+    },
+  },
+  player: {
+    kicker: "Jalo Koraani", title: "Jalo Koraani", surahs: "Suurat", reciter: "Resitoija", translation: "Käännös", tafsir: "Tafsir", settings: "Asetukset", stations: "Radio", play: "Toista", pause: "Tauko", nextAyah: "Seuraava jae", prevAyah: "Edellinen jae",
+    nextSurah: "Seuraava suura", restart: "Alusta", retry: "Yritä uudelleen", close: "Sulje", none: "Vain arabiankielinen teksti", textSize: "Tekstin koko", autoAdvance: "Siirry automaattisesti seuraavaan suuraan", motion: "Automaattinen vieritys ja liike", small: "Pieni",
+    medium: "Keskikoko", large: "Suuri", ayah: "Jae", of: "/", basmala: "Basmala", basmalaNote: "Basmala ei ole tämän suuran jae, joten tässä ei ole tafsiria.", loading: "Ladataan…", offline: "Sisältöpalveluun ei saatu yhteyttä. Tarkista yhteys ja yritä uudelleen. Asetuksesi on tallennettu.",
+    unavailable: "ei saatavilla", listenWith: "Kuuntele resitoijalla", riwayah: "Riwaya", allLanguages: "Kaikki kielet", search: "Hae suuraa tai resitoijaa…", ended: "Suura valmis", playingStation: "Nyt soi", gapless: "Saumaton resitaatio sanakohtaisella synkronoinnilla",
+    perAyah: "Resitaatio jae jakeelta", repeat: "Toista", repeatOff: "Pois", repeatAyah: "Toista jokainen jae", repeatRange: "Toista alue", repeatSurah: "Toista suura", times: "kertaa", from: "Jakeesta", to: "Jakeeseen", pauseBetween: "Tauko jokaisen jakeen jälkeen (sekuntia)",
+    speed: "Nopeus", sleep: "Uniajastin", off: "Pois", minutes: "min", wordByWord: "Napauta sanaa nähdäksesi merkityksen", styleMurattal: "Murattal", styleMujawwad: "Mujawwad", styleMuallim: "Mu'allim", gaplessOnly: "saumaton", ayahOnly: "jae jakeelta", both: "saumaton + jae jakeelta",
+    noSync: "Koko suura · ei vielä synkronoitu", noSyncShort: "koko suura · automaattinen sanasynkronointi", share: "Jaa", copied: "Linkki kopioitu", remaining: "jäljellä", wallpaper: "Tausta", autoNature: "Luonto, vaihtuu suuran mukaan", autoArt: "Islamilainen taide, vaihtuu suuran mukaan",
+    autoLive: "Elävä, vaihtuu suuran mukaan", plainBg: "Ei taustaa", fixedBg: "Kiinteä tausta", internetBg: "Internet-kuvat (Pexels)", internetOff: "Lisää Pexels-avain asetuksiin näyttääksesi internet-kuvia", focusView: "Yksi näyttö", listView: "Lista", language: "Käyttöliittymän kieli",
+    wbwLanguage: "Sanojen merkitysten kieli", tafsirPick: "Valitse tafsir", nextUp: "Seuraava", credit: "Kuva", bookmark: "Kirjanmerkki", bookmarked: "Tallennettu", notes: "Omat muistiinpanot", noteHint: "Kirjoita pohdintasi tai muistiinpanosi tästä jakeesta…", saveNote: "Tallenna muistiinpano",
+    deleteNote: "Poista", family: "Perhe", noProfile: "Valitse profiili Perhe-sivulta tallentaaksesi kirjanmerkit ja muistiinpanot", library: "Tallennetut", repeatAyahShort: "Toista",
+  },
+  mushaf: { title: "Mushaf", surah: "Suura", juz: "Juz", player: "Soitin", family: "Perhe", tryAgain: "Yritä uudelleen", listenFromHere: "Kuuntele tästä", bookmark: "Kirjanmerkki", bookmarked: "Tallennettu", tafsir: "Tafsir", prev: "Edellinen", next: "Seuraava", page: "Sivu", of: "/", layout: "Asettelu" },
+  family: {
+    title: "Perhe", sub: "Yksi vanhemman tili, yksi profiili jokaiselle perheenjäsenelle lapsesta isovanhempiin. Jokaisella profiililla on oma fontti, tekstikoko, kirjanmerkit, muistiinpanot ja edistyminen.",
+    add: "Lisää jäsen", name: "Nimi", role: "Rooli", gender: "Sukupuoli", age: "Ikäryhmä", avatar: "Avatar", save: "Tallenna", cancel: "Peruuta", remove: "Poista profiili",
+    roles: { parent: "Vanhempi", adult: "Aikuinen", child: "Lapsi", senior: "Seniori", teacher: "Opettaja" }, genders: { male: "Mies", female: "Nainen", unspecified: "Ei määritelty" },
+    active: "Aktiivinen profiili", bookmarks: "Kirjanmerkit", notes: "Muistiinpanot", streak: "Päivää putkeen", minutes: "Minuuttia tänään", continue: "Jatka lukemista", none: "Ei vielä mitään", open: "Avaa", mushaf: "Mushaf", player: "Soitin",
+    noProfiles: "Aloita lisäämällä ensimmäinen perheenjäsen.", edit: "Muokkaa", femaleNote: "Naisresitoijat näytetään vain naisprofiileille.", signin: "Kirjaudu vanhemman Quran Foundation -tilillä synkronoidaksesi kirjanmerkit ja muistiinpanot Quran.comin kanssa", delete: "Poista",
+  },
+  search: {
+    title: "Haku", placeholder: "Hae Koraanista: sana, jae, suura tai 2:255", go: "Hae", none: "Ei tuloksia", nav: "Siirry", verses: "Jakeet", more: "Lisää", results: "tulosta", exact: "Tarkka osuma", study: "Opiskele", play: "Kuuntele", source: "Lähde",
+    tip: "Kokeile: armo · Al-Kahf · 36:1 · kärsivällisyys", quick: "Pika", advanced: "Laajennettu", hint: "Sana, lause tai jaeavain kuten 2:255",
+  },
+  study: {
+    title: "Opiskelu", words: "Sana sanalta", translations: "Käännökset", tafsir: "Tafsir", compare: "Vertaa tafsireja", hadith: "Aiheeseen liittyvät hadithit", answers: "Kysymyksiä ja vastauksia", reflections: "Pohdintoja", info: "Suurasta", prev: "Edellinen", next: "Seuraava",
+    play: "Kuuntele", bookmark: "Kirjanmerkki", bookmarked: "Tallennettu", share: "Jaa", copy: "Kopioi", copied: "Kopioitu", juz: "Juz", page: "Sivu", hizb: "Hizb", sajdah: "Sajda", none: "Ei mitään", prodOnly: "Saatavilla, kun Quran Foundationin tuotantotili on aktivoitu",
+    loading: "Ladataan…", searchWord: "Hae tätä sanaa", listenWord: "Kuuntele sana", noProfile: "Valitse ensin profiili Perhe-sivulta", occurrences: "Esiintymät", pick: "Valitse tafsir", surah: "Suura", ayah: "Jae", of: "/",
+  },
+  learn: {
+    title: "Opi", pick: "Valitse suura aloittaaksesi", start: "Aloita oppitunti", xp: "XP", level: "Taso", streak: "päivää putkeen", check: "Tarkista", next: "Seuraava", correct: "Oikein!", wrong: "Ei aivan. Vastaus:", done: "Hienoa! Oppitunti suoritettu", earned: "Ansaitsit",
+    again: "Uusi oppitunti", meaning: "Mitä tämä sana tarkoittaa?", word: "Mikä sana tarkoittaa:", hidden: "Täydennä jae puuttuvalla sanalla", order: "Järjestä jakeen sanat", reset: "Nollaa", loading: "Valmistellaan oppituntia…", noProfile: "Valitse profiili Perhe-sivulta tallentaaksesi edistymisen",
+    lessonsDone: "oppituntia suoritettu", juz30: "Juz Amma", all: "Kaikki suurat", listen: "Kuuntele", skip: "Ohita", short: "Lyhyet suurat", stage: "Vaihe", ayatInSurah: "jaetta tässä suurassa",
+  },
+  play: {
+    title: "Pelaa", pick: "Valitse peli", scope: "Laajuus", all: "Koko Koraani", juz30: "Juz Amma", short: "Lyhyet suurat", start: "Aloita", loading: "Valmistellaan…", score: "Pisteet", time: "Aika", next: "Seuraava", result: "Tulos", again: "Pelaa uudelleen", home: "Pelit",
+    best: "Parhaat tulokset", correct: "oikein", noProfile: "Valitse profiili Perhe-sivulta tallentaaksesi pisteet", study: "Opiskele jaetta", nextIs: "Seuraava jae on", wrong: "Väärin. Vastaus:", done: "Kierros päättyi", of: "/", leaderboard: "Perheen tulostaulu",
+    nextQuestion: "Mikä jae tulee seuraavaksi?", juz: "Juz",
+    games: { "guess-surah": { title: "Mikä suura?", sub: "Lue jae ja valitse sen suura" }, "next-ayah": { title: "Seuraava jae", sub: "Mikä jae tulee seuraavaksi?" }, "missing-word": { title: "Puuttuva sana", sub: "Täydennä jae oikealla sanalla" }, "which-juz": { title: "Mikä juz?", sub: "Arvaa juz" } },
+  },
+  hifz: {
+    title: "Opettele ulkoa", pick: "Valitse suura ja jaealue", from: "Alkaen", to: "Asti", start: "Aloita kertaus", reveal: "Näytä", hide: "Piilota", grade: "Miten muistaminen sujui?", forgot: "Unohdin", hard: "Vaikea", good: "Hyvä", easy: "Helppo", due: "tänään", cards: "korttia",
+    listen: "Kuuntele", mic: "Mikrofonitarkistus", micStop: "Pysäytä", micUnsupported: "Tässä selaimessa ei ole puheentunnistusta (kokeile Chromea)", accuracy: "Tarkkuus", heard: "Kuultu", next: "Seuraava", done: "Tämän päivän kierros on valmis", again: "Uusi kierros",
+    noProfile: "Edistyminen tallennetaan tälle laitteelle", methods: "Ulkoa opettelun menetelmät", method6446: "Menetelmä 6446: toista jokainen jae 20 kertaa 4 sarjassa", method3x3: "Menetelmä 3×3: kolme jaetta erikseen, sitten ketjutettuna", reps: "toistoa", chain: "ketju",
+    schedule: "Seuraava kertaus", today: "tänään", tomorrow: "huomenna", days: "päivää", ayah: "jae", loading: "Ladataan…",
+  },
+  ask: {
+    title: "Kysy", placeholder: "Kysy jakeen merkityksestä tai Koraanin aiheesta…", ask: "Kysy", sources: "Lähteet", retrieval: "Aiheeseen liittyvät jakeet ja tafsir (ilman kielimallia)", model: "Mallin vastaus sanatarkoin lainauksin", tafsir: "Tafsir", study: "Opiskele",
+    report: "Ilmoita", reported: "Kiitos, ilmoitus on kirjattu", pending: "odottaa oppineiden tarkistusta", intro: "Vastaukset rakennetaan vain lähteiden jakeista ja tafsirista; jakeet lainataan sanatarkasti eikä niitä koskaan muuteta. Ei fatwoja.",
+    examples: ["Mitä Valtaistuinjae tarkoittaa?", "Mitä Koraani sanoo kärsivällisyydestä?", "Luolan asukkaiden tarina"], nokey: "Aseta ANTHROPIC_API_KEY palvelimelle ottaaksesi käyttöön laaditut vastaukset; toistaiseksi lähteet näytetään suoraan.", today: "Päivän jae", open: "Avaa jae",
+  },
+  azan: {
+    title: "Adhan ja rukousajat", prayers: { fajr: "Fajr", sunrise: "Auringonnousu", dhuhr: "Dhuhr", asr: "Asr", maghrib: "Maghrib", isha: "Isha" }, nextPrayer: "Seuraava rukous", inTime: "kuluttua", now: "nyt", location: "Sijainti", useMyLocation: "Käytä sijaintiani",
+    locating: "Etsitään sijaintiasi…", locationDenied: "Sijaintia ei sallittu. Valitse kaupunkisi.", pickCity: "Valitse kaupunki", country: "Maa", city: "Kaupunki", method: "Laskentatapa", methodAuto: "Automaattinen maan mukaan", muezzin: "Adhanin ääni", preview: "Toista adhan",
+    stop: "Pysäytä", notifications: "Adhan-ilmoitukset", notificationsHelp: "Ilmoitus adhanin kanssa jokaisena rukousaikana valitsemallasi äänellä. Päivän jae avautuu siitä.", enable: "Ota ilmoitukset käyttöön", enabled: "Ilmoitukset ovat päällä", disabled: "Ilmoitukset ovat pois",
+    unsupported: "Tämä selain ei tue ilmoituksia", denied: "Ilmoitukset on estetty selaimen asetuksissa", testNotification: "Lähetä testi", todayTimes: "Tämän päivän ajat", tomorrowTimes: "Huomenna", playAtAzan: "Toista adhan sovelluksessa rukousaikaan",
+    silentPrayers: "Äänettömät rukoukset", story: "Päivän jae", openStory: "Avaa päivän jae", settingsSaved: "Tallennettu", timezone: "Aikavyöhyke", hijri: "Hijri-päivämäärä", asrHanafi: "Asr (hanafi)", highLat: "Korkeiden leveysasteiden sääntö",
+    source: "Ajat lasketaan laitteella maasi tavanomaisella tähtitieteellisellä menetelmällä; varmista aina paikallisesta moskeijasta.",
+  },
+  story: {
+    title: "Päivän jae", tapHint: "Napauta jatkaaksesi", reflect: "Hetki pohdintaan", reflectPrompt: "Mitä tämä jae sanoo sinulle tänään?", tafsir: "Tafsirista", listen: "Kuuntele", openStudy: "Opiskele tätä jaetta", share: "Jaa", saveNote: "Tallenna muistiinpanona",
+    noteSaved: "Muistiinpano tallennettu", nextAyah: "Toinen jae", wallpaper: "Vaihda tausta", goodMorning: "Hyvää huomenta", goodEvening: "Hyvää iltaa", forPrayer: "Rukoukseen",
+  },
+};

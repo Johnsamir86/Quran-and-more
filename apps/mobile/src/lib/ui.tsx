@@ -1,0 +1,235 @@
+import { Link } from "expo-router";
+import { useState, type ReactNode } from "react";
+import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, type PressableProps, type StyleProp, type TextStyle, type ViewStyle } from "react-native";
+
+import { LOCALES, THEMES, THEME_IDS, hasUiDictionary, type ThemeTokens } from "@qam/core";
+
+import { useI18n } from "@/lib/i18n";
+import { useTheme } from "@/lib/theme";
+
+/** Shared look for the study screens (search, study, learn, play, hifz, ask) — mirrors apps/web study.module.css. */
+export { useI18n };
+export const todayIso = () => new Date().toISOString().slice(0, 10);
+
+/** Palette = the active theme's tokens (see packages/core/theme.ts); `dark` tells screens which scheme is on. */
+export type Palette = ThemeTokens & { dark: boolean; radius: { sm: number; md: number; lg: number; pill: number } };
+export const usePalette = (): Palette => {
+  const { tokens, scheme, theme } = useTheme();
+  return { ...tokens, dark: scheme === "dark", radius: theme.radius };
+};
+
+/** System Arabic font (Noto Naskh on Android, Geeza on iOS); the Mushaf screen loads QCF fonts separately. */
+export const ARABIC_FONT = {} as const;
+
+/**
+ * Size classes without device checks: the layout follows the window, so the same
+ * screens work on an iPhone SE, an iPhone 18 Pro Max, the outer and inner
+ * displays of iPhone Duo (466 and 669 points wide), iPad split view and tablets.
+ *  - compact: < 600 pt (every phone in portrait, Duo outer display)
+ *  - regular: ≥ 600 pt (Duo inner display, iPad, phones in landscape on big screens)
+ */
+export const useLayout = () => {
+  const { width, height } = useWindowDimensions();
+  const regular = width >= 600;
+  return { width, height, regular, landscape: width > height, columns: width >= 900 ? 3 : regular ? 2 : 1, maxContentWidth: regular ? 840 : undefined };
+};
+
+export function Screen({ children, scroll = true }: { children: ReactNode; scroll?: boolean }) {
+  const c = usePalette();
+  const { maxContentWidth } = useLayout();
+  const content = maxContentWidth ? { width: "100%" as const, maxWidth: maxContentWidth, alignSelf: "center" as const } : null;
+  if (!scroll) return <View style={[styles.screen, { backgroundColor: c.bg }]}><View style={[{ flex: 1 }, content]}>{children}</View></View>;
+  return <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.screenContent, content]} keyboardShouldPersistTaps="handled">{children}</ScrollView>;
+}
+
+export function Card({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
+  const c = usePalette();
+  return <View style={[styles.card, { backgroundColor: c.card, borderColor: c.line }, style]}>{children}</View>;
+}
+
+export function Kicker({ children }: { children: ReactNode }) { const c = usePalette(); return <Text style={[styles.kicker, { color: c.muted }]}>{children}</Text>; }
+export function H1({ children }: { children: ReactNode }) { const c = usePalette(); return <Text style={[styles.h1, { color: c.ink }]}>{children}</Text>; }
+export function H2({ children }: { children: ReactNode }) { const c = usePalette(); return <Text style={[styles.h2, { color: c.ink }]}>{children}</Text>; }
+export function Muted({ children, style }: { children: ReactNode; style?: StyleProp<TextStyle> }) { const c = usePalette(); return <Text style={[styles.muted, { color: c.muted }, style]}>{children}</Text>; }
+export function Body({ children, style }: { children: ReactNode; style?: StyleProp<TextStyle> }) { const c = usePalette(); return <Text style={[styles.body, { color: c.ink }, style]}>{children}</Text>; }
+export function Arabic({ children, size = 26, center = false, style }: { children: ReactNode; size?: number; center?: boolean; style?: StyleProp<TextStyle> }) {
+  const c = usePalette();
+  return <Text style={[styles.arabic, { color: c.ink, fontSize: size, lineHeight: size * 1.9, textAlign: center ? "center" : "right" }, style]}>{children}</Text>;
+}
+
+export function Row({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) { return <View style={[styles.row, style]}>{children}</View>; }
+
+export function Pill({ children }: { children: ReactNode }) {
+  const c = usePalette();
+  return <View style={[styles.pill, { backgroundColor: c.accentSoft }]}><Text style={{ color: c.accent, fontWeight: "600", fontSize: 12 }}>{children}</Text></View>;
+}
+
+export function Chip({ label, active, onPress, ...rest }: { label: string; active?: boolean } & Omit<PressableProps, "style" | "children">) {
+  const c = usePalette();
+  return (
+    <Pressable accessibilityRole="button" {...rest} onPress={onPress} style={[styles.chip, { borderColor: active ? c.accent : c.line, backgroundColor: active ? c.accent : c.card }]}>
+      <Text style={{ color: active ? c.onAccent : c.ink, fontSize: 13 }}>{label}</Text>
+    </Pressable>
+  );
+}
+
+export function Button({ label, onPress, ghost, disabled, style }: { label: string; onPress: () => void; ghost?: boolean; disabled?: boolean; style?: StyleProp<ViewStyle> }) {
+  const c = usePalette();
+  return (
+    <Pressable onPress={onPress} disabled={disabled} accessibilityRole="button" style={[styles.btn, { borderColor: ghost ? c.line : c.accent, backgroundColor: ghost ? "transparent" : c.accent, opacity: disabled ? 0.5 : 1 }, style]}>
+      <Text style={{ color: ghost ? c.ink : c.onAccent, fontWeight: "600" }}>{label}</Text>
+    </Pressable>
+  );
+}
+
+/** Answer option: neutral → selected → correct / wrong after checking. */
+export function Option({ label, state, onPress, arabic, disabled }: { label: string; state: "idle" | "selected" | "ok" | "bad"; onPress: () => void; arabic?: boolean; disabled?: boolean }) {
+  const c = usePalette();
+  const border = state === "ok" ? c.ok : state === "bad" ? c.bad : state === "selected" ? c.accent : c.line;
+  const bg = state === "ok" ? c.accentSoft : state === "bad" ? "rgba(185,28,28,0.12)" : state === "selected" ? c.accentSoft : c.card;
+  return (
+    <Pressable onPress={onPress} disabled={disabled} accessibilityRole="button" style={[styles.option, { borderColor: border, backgroundColor: bg }]}>
+      <Text style={[{ color: c.ink, textAlign: "center", fontSize: arabic ? 22 : 15, lineHeight: arabic ? 36 : 20 }, arabic ? ARABIC_FONT : null]}>{label}</Text>
+    </Pressable>
+  );
+}
+
+export function Progress({ value }: { value: number }) {
+  const c = usePalette();
+  return <View style={[styles.progress, { backgroundColor: c.line }]}><View style={{ width: `${Math.round(Math.max(0, Math.min(1, value)) * 100)}%`, height: "100%", backgroundColor: c.accent }} /></View>;
+}
+
+export function Loading({ label }: { label?: string }) {
+  return <View style={styles.center}><ActivityIndicator size="large" />{label ? <Muted>{label}</Muted> : null}</View>;
+}
+
+export function ErrorBox({ message }: { message: string }) { const c = usePalette(); return <Card><Text style={{ color: c.bad }}>{message}</Text></Card>; }
+
+/** Study-section navigation chips shown at the top of every study screen. */
+export function StudyNav({ current }: { current: "search" | "study" | "learn" | "play" | "hifz" | "ask" | "player" | "azan" | "story" }) {
+  const { m } = useI18n();
+  const items: { key: typeof current; href: string; icon: string }[] = [
+    { key: "player", href: "/player", icon: "▶" },
+    { key: "search", href: "/search", icon: "🔎" },
+    { key: "learn", href: "/lessons", icon: "🎓" },
+    { key: "play", href: "/play", icon: "🎮" },
+    { key: "hifz", href: "/hifz", icon: "🧠" },
+    { key: "ask", href: "/ask", icon: "💬" },
+    { key: "azan", href: "/azan", icon: "🕌" },
+  ];
+  return (
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6, paddingBottom: 4 }}>
+      {items.map((it) => (
+        <Link key={it.key} href={it.href as never} asChild>
+          <Chip label={`${it.icon} ${m.nav[it.key === "study" ? "search" : it.key]}`} active={it.key === current} />
+        </Link>
+      ))}
+      <LanguagePicker compact />
+    </ScrollView>
+  );
+}
+
+/** Interface-language picker: a chip with the current language that opens the full list (66 languages; those without their own UI text show "EN"). */
+export function LanguagePicker({ compact }: { compact?: boolean }) {
+  const { locale, m, setLocale } = useI18n();
+  const c = usePalette();
+  const [open, setOpen] = useState(false);
+  const current = LOCALES.find((l) => l.code === locale);
+  return (
+    <>
+      <Chip label={`🌐 ${compact ? (current?.code.toUpperCase() ?? "EN") : (current?.nativeName ?? "English")}`} onPress={() => setOpen(true)} accessibilityLabel={m.common.uiLanguage} />
+      <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
+        <Pressable style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.4)", justifyContent: "center", padding: 20 }} onPress={() => setOpen(false)}>
+          <View style={{ backgroundColor: c.card, borderRadius: 18, maxHeight: "80%", padding: 12, gap: 8 }} onStartShouldSetResponder={() => true}>
+            <H2>{m.common.chooseLanguage}</H2>
+            <ScrollView contentContainerStyle={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+              {LOCALES.map((l) => <Chip key={l.code} label={`${l.nativeName}${hasUiDictionary(l.code) ? "" : " · EN"}`} active={l.code === locale} onPress={() => { setLocale(l.code); setOpen(false); }} />)}
+            </ScrollView>
+            <Button label={m.common.close} ghost onPress={() => setOpen(false)} />
+          </View>
+        </Pressable>
+      </Modal>
+    </>
+  );
+}
+
+/** Theme picker: four brand looks, each a small swatch card, plus light/dark/system. */
+export function ThemePicker() {
+  const { themeId, setThemeId, schemePreference, setSchemePreference, scheme } = useTheme();
+  const { m, isAr } = useI18n();
+  const c = usePalette();
+  return (
+    <View style={{ gap: 10 }}>
+      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+        {THEME_IDS.map((id) => {
+          const t = THEMES[id][scheme];
+          const active = id === themeId;
+          return (
+            <Pressable key={id} onPress={() => setThemeId(id)} accessibilityRole="radio" accessibilityState={{ selected: active }} accessibilityLabel={THEMES[id].name.en}
+              style={{ width: "47%", flexGrow: 1, borderWidth: active ? 2 : 1, borderColor: active ? c.accent : c.line, borderRadius: 16, overflow: "hidden", backgroundColor: t.bg }}>
+              <View style={{ height: 44, backgroundColor: t.card, borderBottomWidth: 1, borderBottomColor: t.line, flexDirection: "row", alignItems: "center", paddingHorizontal: 10, gap: 6 }}>
+                <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: t.accent }} />
+                <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: t.accent2 }} />
+                <View style={{ flex: 1, height: 6, borderRadius: 3, backgroundColor: t.line }} />
+              </View>
+              <View style={{ padding: 10, gap: 2 }}>
+                <Text style={{ color: t.ink, fontWeight: "700" }}>{isAr ? THEMES[id].name.ar : THEMES[id].name.en}{active ? " ✓" : ""}</Text>
+                <Text style={{ color: t.muted, fontSize: 11 }} numberOfLines={2}>{isAr ? THEMES[id].tagline.ar : THEMES[id].tagline.en}</Text>
+              </View>
+            </Pressable>
+          );
+        })}
+      </View>
+      <Row>
+        {(["system", "light", "dark"] as const).map((p) => <Chip key={p} label={p === "system" ? m.settings.schemeSystem : p === "light" ? m.settings.schemeLight : m.settings.schemeDark} active={schemePreference === p} onPress={() => setSchemePreference(p)} />)}
+      </Row>
+    </View>
+  );
+}
+
+/** "Review pending" badge opening the content-and-sources sheet (honest: no scholarly review yet). */
+export function SourcesBadge({ compact }: { compact?: boolean }) {
+  const { m } = useI18n();
+  const c = usePalette();
+  const [open, setOpen] = useState(false);
+  const rows = [["quranText", "quranTextSrc"], ["audio", "audioSrc"], ["translations", "translationsSrc"], ["prayer", "prayerSrc"], ["azan", "azanSrc"]] as const;
+  return (
+    <>
+      <Pressable onPress={() => setOpen(true)} accessibilityRole="button" style={{ flexDirection: "row", alignItems: "center", gap: 6, borderWidth: 1, borderColor: c.line, backgroundColor: c.card, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5 }}>
+        <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: c.warn }} />
+        <Text style={{ color: c.muted, fontSize: 12 }}>{compact ? m.sources.reviewPending : `${m.sources.title} · ${m.sources.reviewPending}`}</Text>
+      </Pressable>
+      <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
+        <Pressable style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" }} onPress={() => setOpen(false)}>
+          <View style={{ backgroundColor: c.card, borderTopLeftRadius: c.radius.lg, borderTopRightRadius: c.radius.lg, padding: 18, gap: 10, maxHeight: "85%" }} onStartShouldSetResponder={() => true}>
+            <Row style={{ justifyContent: "space-between" }}><H2>{m.sources.title}</H2><Pill>{m.sources.reviewPending}</Pill></Row>
+            <ScrollView contentContainerStyle={{ gap: 10 }}>
+              <Muted>{m.sources.reviewPendingHelp}</Muted>
+              {rows.map(([k, v]) => <View key={k}><Body style={{ fontWeight: "700" }}>{m.sources[k]}</Body><Muted>{m.sources[v]}</Muted></View>)}
+            </ScrollView>
+            <Button label={m.common.close} ghost onPress={() => setOpen(false)} />
+          </View>
+        </Pressable>
+      </Modal>
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  screen: { flex: 1 },
+  screenContent: { padding: 14, gap: 14, paddingBottom: 60 },
+  card: { borderWidth: 1, borderRadius: 18, padding: 16, gap: 10 },
+  kicker: { fontSize: 11, letterSpacing: 1, textTransform: "uppercase" },
+  h1: { fontSize: 22, fontWeight: "700" },
+  h2: { fontSize: 16, fontWeight: "600" },
+  muted: { fontSize: 13, lineHeight: 19 },
+  body: { fontSize: 15, lineHeight: 23 },
+  arabic: { writingDirection: "rtl" },
+  row: { flexDirection: "row", flexWrap: "wrap", gap: 8, alignItems: "center" },
+  pill: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999 },
+  chip: { borderWidth: 1, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 7 },
+  btn: { borderWidth: 1, borderRadius: 999, paddingHorizontal: 18, paddingVertical: 11, alignItems: "center" },
+  option: { borderWidth: 1, borderRadius: 14, padding: 12, minWidth: "46%", flexGrow: 1 },
+  progress: { height: 8, borderRadius: 4, overflow: "hidden" },
+  center: { padding: 32, alignItems: "center", gap: 10 },
+});

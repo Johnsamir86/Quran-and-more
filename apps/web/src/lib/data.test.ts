@@ -23,6 +23,7 @@ vi.mock("@/lib/env", () => ({
 
 vi.mock("@/lib/sdk", () => ({
   createClients: async () => ({
+    contentClient: sdkMocks.serverClient,
     serverClient: sdkMocks.serverClient,
   }),
   getSearchModeQuick: () => "quick",

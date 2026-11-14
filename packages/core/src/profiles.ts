@@ -36,17 +36,8 @@ export interface Profile {
   settings: ProfileSettings;
 }
 
-export const MUSHAF_LAYOUTS = [
-  { id: "madani_15", label: "Madani 15 lines", mushafId: 1, lines: 15, script: "uthmani", font: "code_v1" },
-  { id: "madani_16", label: "Madani 16 lines", mushafId: 2, lines: 16, script: "uthmani", font: "code_v2" },
-  { id: "indopak_15", label: "IndoPak 15 lines", mushafId: 3, lines: 15, script: "indopak", font: "indopak" },
-  { id: "indopak_16", label: "IndoPak 16 lines", mushafId: 4, lines: 16, script: "indopak", font: "indopak" },
-  { id: "tajweed", label: "Tajweed (colour coded)", mushafId: 11, lines: 15, script: "uthmani_tajweed", font: "tajweed_v4" },
-  { id: "kfgqpc_hafs", label: "KFGQPC Hafs", mushafId: 6, lines: 15, script: "uthmani", font: "qpc_hafs" },
-  { id: "uthmani_text", label: "Plain Uthmani text (flow)", mushafId: 2, lines: 0, script: "uthmani", font: "text" },
-] as const;
-
-export type MushafLayoutId = (typeof MUSHAF_LAYOUTS)[number]["id"];
+/** Layout id from MUSHAF_LAYOUTS in ./mushaf (e.g. "madani_v2", "indopak_15", "tajweed"). */
+export type MushafLayoutId = string;
 
 export const ageBandToUiMode = (band: AgeBand): UiMode => {
   switch (band) {
@@ -68,7 +59,7 @@ export const defaultSettingsFor = (
   return {
     locale,
     uiMode,
-    mushafLayout: uiMode === "kids" ? "uthmani_text" : "madani_15",
+    mushafLayout: uiMode === "kids" ? "kfgqpc_hafs" : "madani_v2",
     translationIds: [],
     tafsirIds: [],
     reciterId: 7, // Mishari Rashid al-`Afasy
@@ -83,7 +74,7 @@ export const defaultSettingsFor = (
  * female profiles only. Male reciters are shown to everyone.
  */
 export interface ReciterLike {
-  id: number;
+  id: number | string;
   gender: Gender;
 }
 
