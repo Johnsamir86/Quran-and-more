@@ -27,3 +27,10 @@
   to = "https://github.com/Johnsamir86/Quran-and-more/raw/apk-builds/quran-and-more-android.apk"
   status = 302
   force = true
+
+# iOS Simulator build (unsigned .app from GitHub Actions): unzip and drag onto any iPhone simulator.
+[[redirects]]
+  from = "/ios-simulator.zip"
+  to = "https://github.com/Johnsamir86/Quran-and-more/raw/apk-builds/quran-and-more-ios-simulator.app.zip"
+  status = 302
+  force = true

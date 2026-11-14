@@ -33,6 +33,7 @@ docs/           Architecture and roadmap.
 - `/family` profiles for every family member with bookmarks, notes and progress
 
 Android test build: https://quran-and-more.netlify.app/android.apk (arm64; latest APK is kept on the `apk-builds` branch)
+iOS Simulator build: https://quran-and-more.netlify.app/ios-simulator.zip (unsigned .app from CI; unzip and drop onto a simulator)
 - `/search` Quran Foundation Search API (surah, juz, page and ayah navigation
   plus verbatim verse results in 70 languages)
 - `/study/2:255` one ayah in depth: word by word with occurrence search,
