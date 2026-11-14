@@ -1,7 +1,7 @@
 # Word-level forced alignment for archive reciters
 
 Produces `apps/web/data/timings/<reciter>/<surah>.json` (verse and word timestamps) for reciters whose
-recordings have no official timings (Ahmed al-Ajmi, Maher al-Muaiqly, Raad al-Kurdi).
+recordings have no official timings (Ahmed al-Ajmi, Maher al-Muaiqly, Raad al-Kurdi, Mahmoud Ali al-Banna).
 
 - `fetch_text.py` downloads the per-surah word tables (Uthmani + Imlaei simple) from the v4 API.
 - `align.py` aligns one full-surah mp3: ffmpeg decode -> torchaudio MMS_FA CTC emissions in 30 s windows ->
@@ -29,6 +29,17 @@ All 342 files (114 surahs x 3 reciters) are in `apps/web/data/timings` (6.6 MB).
 | Maher al-Muaiqly (`x-muaiqly`) | 32.5 h | 77,703 | 1.6% | 26 |
 | Raad al-Kurdi (`x-kurdi`) | 33.2 h | 77,713 | 4.2% | 13 |
 | Total | 92.1 h | 233,274 | 3.0% | 53 of 1,823 pieces in 25 files |
+
+Added 2026-11-14 (same version, run in the background alongside app builds):
+
+| Reciter | Audio | Words | Low-confidence words | Fallback pieces |
+|---|---|---|---|---|
+| Mahmoud Ali al-Banna murattal (`x-banna`) | 27.0 h | 77,477 | 4.0% | 14 of 492 pieces |
+| Mahmoud Ali al-Banna mujawwad (`x-banna-mujawwad`) | 68 of 114 surahs so far (9.8 h) | 11,158 | 34.5% | 5 of 76 pieces |
+
+The mujawwad recordings are slow, melismatic and heavily reverberant, so a third of the words score
+low even though the Viterbi path is complete; expect the highlight to drift inside long drawn-out
+syllables there. The murattal set is as good as the other three archive reciters.
 
 A low-confidence word still gets a position (the Viterbi path is complete); it means the acoustic
 score for that word was weak, usually reverb, a long pause inside the word or a reciter's repetition.
