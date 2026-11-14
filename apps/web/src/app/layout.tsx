@@ -8,6 +8,7 @@ import {
 import { starterConfig } from "../../starter.config";
 import { FamilyProvider } from "@/components/family/family-provider";
 import ShellGate from "@/components/shell-gate";
+import ThemeProvider from "@/components/theme-provider";
 import "./globals.css";
 
 const bodyFont = Plus_Jakarta_Sans({
@@ -39,11 +40,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${bodyFont.variable} ${arabicFont.variable} ${monoFont.variable}`}
       >
         <FamilyProvider>
+          <ThemeProvider />
           <ShellGate />
           {children}
         </FamilyProvider>

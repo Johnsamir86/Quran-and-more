@@ -14,7 +14,7 @@ export const en = {
     offline: "Could not reach the content service. Check your connection and try again.", noProfile: "Choose a profile on the Family page first",
     on: "On", off: "Off", enable: "Enable", disable: "Disable", chooseLanguage: "Choose the interface language",
   },
-  nav: { home: "Home", search: "Search", learn: "Learn", hifz: "Memorise", play: "Play", ask: "Ask", player: "Player", mushaf: "Mushaf", family: "Family", azan: "Azan", story: "Ayah of the day" },
+  nav: { home: "Home", search: "Search", learn: "Learn", hifz: "Memorise", play: "Play", ask: "Ask", player: "Player", mushaf: "Mushaf", family: "Family", azan: "Azan", story: "Ayah of the day", quran: "Quran", me: "Me", study: "Study" },
   home: {
     kicker: "The Noble Quran", title: "Quran and More", sub: "One Quran experience for the whole family: gapless recitation with word sync, the mushaf in the official script, tafsir and translations in every language, and a profile for every member.",
     startListening: "Start listening", openMushaf: "Open the mushaf",
@@ -131,6 +131,23 @@ export const en = {
     title: "Ayah of the day", tapHint: "Tap to continue", reflect: "A moment to reflect", reflectPrompt: "How does this ayah speak to you today?", tafsir: "From the tafsir",
     listen: "Listen", openStudy: "Study this ayah", share: "Share", saveNote: "Save as a note", noteSaved: "Note saved", nextAyah: "Another ayah", wallpaper: "Change wallpaper",
     goodMorning: "Good morning", goodEvening: "Good evening", forPrayer: "For",
+  },
+  settings: {
+    title: "Settings", appearance: "Appearance", theme: "Theme", themeHelp: "Four looks, each with light and dark. The choice is saved on this device.",
+    schemeSystem: "Follow system", schemeLight: "Light", schemeDark: "Dark", language: "Language", notifications: "Notifications",
+    notifAzan: "Azan at prayer times", notifDaily: "Ayah of the day", notifDailyTime: "Time for the ayah of the day", notifHifz: "Memorisation review due", notifFamily: "Family activity", notifStreak: "Streak reminders",
+    notifSound: "Sound", notifSoundChime: "Soft chime", notifSoundSilent: "Silent", notifTest: "Send a test notification",
+    account: "Account", signIn: "Sign in", signOut: "Sign out", signedInAs: "Signed in as", signInHelp: "Sign in to keep the family profiles, bookmarks, notes and progress across devices.",
+    signInApple: "Continue with Apple", signInGoogle: "Continue with Google", signInEmail: "Continue with email", signInQuran: "Continue with Quran.com", emailPlaceholder: "you@example.com", magicLinkSent: "Check your inbox for the sign-in link",
+    signInUnavailable: "Accounts are not enabled on this build yet", guest: "Guest (this device only)",
+    purchases: "Purchases", offlineAudio: "Offline Audio", offlineAudioSub: "Download any surah for offline listening and unlock every archive reciter.", monthly: "Monthly", yearly: "Yearly", subscribe: "Subscribe", restore: "Restore purchases", subscribed: "Active", notSubscribed: "Not subscribed", manage: "Manage subscription", trial: "7-day free trial",
+    about: "About", version: "Version", privacy: "Privacy policy", terms: "Terms", sources: "Content sources", rate: "Rate the app", share: "Share the app", support: "Support",
+    me: "Me", profile: "Profile", switchProfile: "Switch profile", editProfile: "Edit profile",
+  },
+  sources: {
+    title: "Content and sources", reviewPending: "Review pending", reviewPendingHelp: "Translations, tafsir and word meanings come from the Quran Foundation / Quran.com catalogue as published by their authors. AI answers quote ayat verbatim and never alter them. A scholarly review of this app's selections has not taken place yet; this badge will change when it has.",
+    quranText: "Quran text", quranTextSrc: "Quran Foundation content API (Uthmani script, KFGQPC fonts)", audio: "Recitations", audioSrc: "Quran Foundation audio catalogue; archive reciters from quranicaudio.com and mp3quran.net; word timings by our forced-alignment pipeline",
+    translations: "Translations and tafsir", translationsSrc: "Quran.com resources, each credited to its author", prayer: "Prayer times", prayerSrc: "Computed on the device with the standard astronomical method of your country (Aladhan method table)", azan: "Azan recordings", azanSrc: "Islamic Network (Aladhan) collection", report: "Report a problem with content",
   },
 };
 

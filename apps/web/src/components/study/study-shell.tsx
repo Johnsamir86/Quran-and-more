@@ -6,6 +6,7 @@ import { useMemo, type ReactNode } from "react";
 
 import { useFamily } from "@/components/family/family-provider";
 import LanguageSelect from "@/components/language-select";
+import ThemePicker from "@/components/theme-picker";
 import { useI18n, useUiLocale } from "@/lib/i18n";
 
 import styles from "./study.module.css";
@@ -36,7 +37,7 @@ export default function StudyShell({ title, children, actions }: { title?: strin
         <nav className={styles.nav}>
           {NAV.map((n) => <Link key={n.href} href={n.href} className={`${styles.chip} ${pathname.startsWith(n.href) ? styles.chipActive : ""}`}>{n.icon} <span>{m.nav[n.key]}</span></Link>)}
           <Link href="/family" className={styles.chip}>{family.profile ? `${(family.profile as { avatar?: string }).avatar ?? "🌙"} ${family.profile.displayName}` : `👨‍👩‍👧 ${m.nav.family}`}</Link>
-          <LanguageSelect className={styles.select} />
+          <ThemePicker compact /><LanguageSelect className={styles.select} />
           {actions}
         </nav>
       </header>

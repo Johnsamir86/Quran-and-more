@@ -3,7 +3,7 @@ import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-au
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
-import { ActivityIndicator, BackHandler, FlatList, ImageBackground, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View, useColorScheme, useWindowDimensions } from "react-native";
+import { ActivityIndicator, BackHandler, FlatList, ImageBackground, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View, useWindowDimensions } from "react-native";
 
 import {
   NO_TRANSLATION, PLAYBACK_RATES, isBookmarked, notesFor, PLAYER_STORAGE_KEYS, STATIONS, TEXT_SIZE_SCALE, currentSegment, decideAtSegmentEnd, initialPlayerState,
@@ -14,7 +14,7 @@ import {
 import { useFamily, useProgressTicker } from "@/lib/family";
 import { useI18n } from "@/lib/i18n";
 import { fetchPlayerSurah, fetchReciters, fetchSurahs, fetchTafsir, fetchTafsirs, fetchTranslations, type TafsirResource } from "@/lib/player-api";
-import { LanguagePicker } from "@/lib/ui";
+import { LanguagePicker, usePalette } from "@/lib/ui";
 
 type SidePanel = Exclude<PlayerPanel, null> | "wallpaper" | "notes" | null;
 
@@ -27,7 +27,7 @@ export default function PlayerScreen() {
   const { m, locale, isAr: ar, num: digits } = useI18n();
   const T = m.player;
   const DEFAULT_TAFSIR = ar ? "926" : "169";
-  const dark = useColorScheme() === "dark";
+  const dark = usePalette().dark;
   const c = dark ? { bg: "#0d1512", card: "#13201b", ink: "#e9efea", muted: "#9fb0a7", line: "rgba(233,239,234,0.12)", accent: "#1d9e75" } : { bg: "#f6f3ea", card: "#fffdf7", ink: "#15201b", muted: "#5d6a63", line: "rgba(21,32,27,0.1)", accent: "#1d9e75" };
 
   const [state, dispatch] = useReducer(playerReducer, undefined, () => initialPlayerState());

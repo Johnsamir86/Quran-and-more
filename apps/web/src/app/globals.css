@@ -10,11 +10,26 @@ body {
   min-height: 100vh;
 }
 
+/* Brand theme tokens (packages/core/theme.ts). ThemeProvider overrides these on <html>; defaults = Serene light. */
+:root {
+  --bg: #f6f3ea; --card: #fffdf7; --surface: #f0ece1; --ink: #15201b; --muted: #55625b; --line: rgba(21,32,27,0.12);
+  --accent: #14805f; --onAccent: #ffffff; --accentSoft: rgba(20,128,95,0.12); --accent2: #b8893a; --ok: #15805f; --warn: #a86a12; --bad: #b3261e;
+  --plate: rgba(255,253,247,0.72); --nav: rgba(255,253,247,0.92); --r-sm: 10px; --r-md: 16px; --r-lg: 22px; --r-pill: 999px;
+  --accent-soft: var(--accentSoft); --on-accent: var(--onAccent);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-scheme="light"]) {
+    --bg: #0d1512; --card: #13201b; --surface: #192a24; --ink: #e9efea; --muted: #a3b3aa; --line: rgba(233,239,234,0.14);
+    --accent: #3dba91; --onAccent: #06211a; --accentSoft: rgba(61,186,145,0.18); --accent2: #d8ad5c; --ok: #3dba91; --warn: #e0a84a; --bad: #f28b82;
+    --plate: rgba(8,14,12,0.55); --nav: rgba(13,21,18,0.92);
+  }
+}
+
 body {
   background:
-    radial-gradient(circle at 18% 14%, rgba(42, 112, 88, 0.14), transparent 30%),
-    linear-gradient(135deg, #f7f1e4 0%, #ede5d5 48%, #e5ddc9 100%);
-  color: #17231c;
+    radial-gradient(circle at 18% 14%, var(--accentSoft), transparent 30%),
+    var(--bg);
+  color: var(--ink);
   font-family: var(--font-plus-jakarta), "Avenir Next", Avenir, sans-serif;
   line-height: 1.45;
 }

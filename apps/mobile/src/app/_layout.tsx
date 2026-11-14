@@ -2,13 +2,14 @@ import * as Notifications from "expo-notifications";
 import { Stack, router } from "expo-router";
 import { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
-import { I18nManager, useColorScheme } from "react-native";
+import { I18nManager } from "react-native";
 
 import { resolveLocale, localeDir } from "@qam/core";
 
 import { FamilyProvider } from "@/lib/family";
 import { configureNotifications, refreshAzanSchedule } from "@/lib/azan";
 import { LocaleProvider, useI18n } from "@/lib/i18n";
+import { ThemeProvider, useTheme } from "@/lib/theme";
 
 const deviceLocale = resolveLocale(Intl.DateTimeFormat().resolvedOptions().locale);
 if (localeDir(deviceLocale) === "rtl" && !I18nManager.isRTL) {
@@ -31,35 +32,46 @@ function AzanBoot() {
   return null;
 }
 
-export default function RootLayout() {
-  const scheme = useColorScheme();
+function ThemedStack() {
+  const { tokens, scheme } = useTheme();
   return (
-    <LocaleProvider>
-    <AzanBoot />
-    <FamilyProvider>
+    <>
       <StatusBar style={scheme === "dark" ? "light" : "dark"} />
       <Stack
         screenOptions={{
           headerTitleAlign: "center",
-          headerStyle: { backgroundColor: scheme === "dark" ? "#0b1228" : "#ffffff" },
-          headerTintColor: scheme === "dark" ? "#e5e7eb" : "#0b1228",
+          headerStyle: { backgroundColor: tokens.card },
+          headerTintColor: tokens.ink,
+          headerShadowVisible: false,
+          contentStyle: { backgroundColor: tokens.bg },
         }}
       >
-        <Stack.Screen name="index" options={{ title: "Quran and More" }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="read/[chapterId]" options={{ title: "" }} />
         <Stack.Screen name="player" options={{ title: "" }} />
         <Stack.Screen name="mushaf" options={{ title: "" }} />
         <Stack.Screen name="family" options={{ title: "" }} />
         <Stack.Screen name="search" options={{ title: "" }} />
         <Stack.Screen name="study/[verseKey]" options={{ title: "" }} />
-        <Stack.Screen name="learn" options={{ title: "" }} />
+        <Stack.Screen name="lessons" options={{ title: "" }} />
         <Stack.Screen name="play" options={{ title: "" }} />
         <Stack.Screen name="hifz" options={{ title: "" }} />
         <Stack.Screen name="ask" options={{ title: "" }} />
-        <Stack.Screen name="azan" options={{ title: "" }} />
         <Stack.Screen name="story" options={{ title: "", headerShown: false }} />
       </Stack>
+    </>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <LocaleProvider>
+    <ThemeProvider>
+    <AzanBoot />
+    <FamilyProvider>
+      <ThemedStack />
     </FamilyProvider>
+    </ThemeProvider>
     </LocaleProvider>
   );
 }

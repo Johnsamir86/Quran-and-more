@@ -1,4 +1,4 @@
-.root { position: fixed; inset: 0; background: #0b1228 center/cover no-repeat; color: #fff; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; font-family: var(--font-plus-jakarta, system-ui, sans-serif); user-select: none; }
+.root { position: fixed; inset: 0; background: #0b1228 center/cover no-repeat; color: var(--onAccent, #fff); display: grid; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; font-family: var(--font-plus-jakarta, system-ui, sans-serif); user-select: none; }
 .root::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0.15) 60%, rgba(0,0,0,0.7) 100%); pointer-events: none; }
 .light { color: #15201b; }
 .light::before { background: linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.15) 30%, rgba(255,255,255,0.15) 60%, rgba(255,255,255,0.75) 100%); }
@@ -10,7 +10,7 @@
 .barDone .barFill { width: 100%; }
 .barActive .barFill { width: 100%; }
 .head { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 0.85rem; }
-.close { background: rgba(0,0,0,0.3); color: #fff; border: 0; border-radius: 999px; width: 36px; height: 36px; font-size: 1.1rem; cursor: pointer; display: grid; place-items: center; text-decoration: none; }
+.close { background: rgba(0,0,0,0.3); color: var(--onAccent, #fff); border: 0; border-radius: 999px; width: 36px; height: 36px; font-size: 1.1rem; cursor: pointer; display: grid; place-items: center; text-decoration: none; }
 .stage { position: relative; z-index: 1; display: grid; place-items: center; padding: 16px 22px; min-height: 0; overflow: auto; }
 .slide { max-width: 760px; width: 100%; display: grid; gap: 16px; text-align: center; animation: fade 0.35s ease; }
 @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
@@ -26,8 +26,8 @@
 .nav { position: absolute; inset: 0; z-index: 0; display: grid; grid-template-columns: 1fr 1fr; }
 .nav button { background: none; border: 0; cursor: pointer; }
 .actions { position: relative; z-index: 2; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 0 16px max(16px, env(safe-area-inset-bottom)); }
-.chip { background: rgba(0,0,0,0.35); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 999px; padding: 9px 14px; font: inherit; font-size: 0.9rem; cursor: pointer; text-decoration: none; backdrop-filter: blur(6px); }
+.chip { background: rgba(0,0,0,0.35); color: var(--onAccent, #fff); border: 1px solid rgba(255,255,255,0.3); border-radius: 999px; padding: 9px 14px; font: inherit; font-size: 0.9rem; cursor: pointer; text-decoration: none; backdrop-filter: blur(6px); }
 .light .chip { background: rgba(255,255,255,0.6); color: #15201b; border-color: rgba(0,0,0,0.2); }
-.chip:hover { border-color: #fff; }
+.chip:hover { border-color: var(--onAccent, #fff); }
 .hint { font-size: 0.78rem; opacity: 0.75; text-align: center; width: 100%; }
-.azanBanner { position: relative; z-index: 2; margin: 0 16px; padding: 10px 14px; border-radius: 14px; background: rgba(29,158,117,0.85); color: #fff; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.azanBanner { position: relative; z-index: 2; margin: 0 16px; padding: 10px 14px; border-radius: 14px; background: rgba(29,158,117,0.85); color: var(--onAccent, #fff); display: flex; align-items: center; justify-content: space-between; gap: 10px; }

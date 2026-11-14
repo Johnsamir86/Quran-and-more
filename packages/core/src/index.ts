@@ -16,3 +16,4 @@ export * from "./games";
 export * from "./i18n";
 export * from "./prayer-times";
 export * from "./azan";
+export * from "./theme";

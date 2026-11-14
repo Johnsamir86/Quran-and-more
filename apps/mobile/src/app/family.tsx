@@ -1,18 +1,18 @@
 import { Link, Stack } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View, useColorScheme } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { AVATARS, bookmarksFor, notesFor, type AgeBand, type Gender, type ProfileRole } from "@qam/core";
 
 import { useFamily } from "@/lib/family";
 import { useI18n } from "@/lib/i18n";
-import { LanguagePicker } from "@/lib/ui";
+import { LanguagePicker, usePalette } from "@/lib/ui";
 
 export default function FamilyScreen() {
   const { state, dispatch, profile } = useFamily();
   const { m, locale } = useI18n();
   const T = m.family;
-  const dark = useColorScheme() === "dark";
+  const dark = usePalette().dark;
   const c = dark ? { bg: "#0d1512", card: "#13201b", ink: "#e9efea", muted: "#9fb0a7", line: "rgba(233,239,234,0.12)", accent: "#1d9e75" } : { bg: "#f6f3ea", card: "#fffdf7", ink: "#15201b", muted: "#5d6a63", line: "rgba(21,32,27,0.1)", accent: "#1d9e75" };
   const [form, setForm] = useState<null | { id?: string; displayName: string; role: ProfileRole; gender: Gender; ageBand: AgeBand; avatar: string }>(null);
   const prog = profile ? state.progress[profile.id] : undefined;

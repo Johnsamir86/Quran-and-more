@@ -1,21 +1,21 @@
 import { Link } from "expo-router";
 import { useState, type ReactNode } from "react";
-import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View, useColorScheme, useWindowDimensions, type PressableProps, type StyleProp, type TextStyle, type ViewStyle } from "react-native";
+import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, type PressableProps, type StyleProp, type TextStyle, type ViewStyle } from "react-native";
 
-import { LOCALES, hasUiDictionary } from "@qam/core";
+import { LOCALES, THEMES, THEME_IDS, hasUiDictionary, type ThemeTokens } from "@qam/core";
 
 import { useI18n } from "@/lib/i18n";
+import { useTheme } from "@/lib/theme";
 
 /** Shared look for the study screens (search, study, learn, play, hifz, ask) — mirrors apps/web study.module.css. */
 export { useI18n };
 export const todayIso = () => new Date().toISOString().slice(0, 10);
 
-export interface Palette { bg: string; card: string; ink: string; muted: string; line: string; accent: string; ok: string; bad: string; warn: string }
+/** Palette = the active theme's tokens (see packages/core/theme.ts); `dark` tells screens which scheme is on. */
+export type Palette = ThemeTokens & { dark: boolean; radius: { sm: number; md: number; lg: number; pill: number } };
 export const usePalette = (): Palette => {
-  const dark = useColorScheme() === "dark";
-  return dark
-    ? { bg: "#0d1512", card: "#13201b", ink: "#e9efea", muted: "#9fb0a7", line: "rgba(233,239,234,0.12)", accent: "#1d9e75", ok: "#1d9e75", bad: "#ef4444", warn: "#d69e2e" }
-    : { bg: "#f6f3ea", card: "#fffdf7", ink: "#15201b", muted: "#5d6a63", line: "rgba(21,32,27,0.1)", accent: "#1d9e75", ok: "#1d9e75", bad: "#b91c1c", warn: "#b7791f" };
+  const { tokens, scheme, theme } = useTheme();
+  return { ...tokens, dark: scheme === "dark", radius: theme.radius };
 };
 
 /** System Arabic font (Noto Naskh on Android, Geeza on iOS); the Mushaf screen loads QCF fonts separately. */
@@ -61,14 +61,14 @@ export function Row({ children, style }: { children: ReactNode; style?: StylePro
 
 export function Pill({ children }: { children: ReactNode }) {
   const c = usePalette();
-  return <View style={[styles.pill, { backgroundColor: "rgba(29,158,117,0.12)" }]}><Text style={{ color: c.accent, fontWeight: "600", fontSize: 12 }}>{children}</Text></View>;
+  return <View style={[styles.pill, { backgroundColor: c.accentSoft }]}><Text style={{ color: c.accent, fontWeight: "600", fontSize: 12 }}>{children}</Text></View>;
 }
 
 export function Chip({ label, active, onPress, ...rest }: { label: string; active?: boolean } & Omit<PressableProps, "style" | "children">) {
   const c = usePalette();
   return (
     <Pressable accessibilityRole="button" {...rest} onPress={onPress} style={[styles.chip, { borderColor: active ? c.accent : c.line, backgroundColor: active ? c.accent : c.card }]}>
-      <Text style={{ color: active ? "#fff" : c.ink, fontSize: 13 }}>{label}</Text>
+      <Text style={{ color: active ? c.onAccent : c.ink, fontSize: 13 }}>{label}</Text>
     </Pressable>
   );
 }
@@ -77,7 +77,7 @@ export function Button({ label, onPress, ghost, disabled, style }: { label: stri
   const c = usePalette();
   return (
     <Pressable onPress={onPress} disabled={disabled} accessibilityRole="button" style={[styles.btn, { borderColor: ghost ? c.line : c.accent, backgroundColor: ghost ? "transparent" : c.accent, opacity: disabled ? 0.5 : 1 }, style]}>
-      <Text style={{ color: ghost ? c.ink : "#fff", fontWeight: "600" }}>{label}</Text>
+      <Text style={{ color: ghost ? c.ink : c.onAccent, fontWeight: "600" }}>{label}</Text>
     </Pressable>
   );
 }
@@ -86,7 +86,7 @@ export function Button({ label, onPress, ghost, disabled, style }: { label: stri
 export function Option({ label, state, onPress, arabic, disabled }: { label: string; state: "idle" | "selected" | "ok" | "bad"; onPress: () => void; arabic?: boolean; disabled?: boolean }) {
   const c = usePalette();
   const border = state === "ok" ? c.ok : state === "bad" ? c.bad : state === "selected" ? c.accent : c.line;
-  const bg = state === "ok" ? "rgba(29,158,117,0.15)" : state === "bad" ? "rgba(185,28,28,0.12)" : state === "selected" ? "rgba(29,158,117,0.08)" : c.card;
+  const bg = state === "ok" ? c.accentSoft : state === "bad" ? "rgba(185,28,28,0.12)" : state === "selected" ? c.accentSoft : c.card;
   return (
     <Pressable onPress={onPress} disabled={disabled} accessibilityRole="button" style={[styles.option, { borderColor: border, backgroundColor: bg }]}>
       <Text style={[{ color: c.ink, textAlign: "center", fontSize: arabic ? 22 : 15, lineHeight: arabic ? 36 : 20 }, arabic ? ARABIC_FONT : null]}>{label}</Text>
@@ -111,7 +111,7 @@ export function StudyNav({ current }: { current: "search" | "study" | "learn" | 
   const items: { key: typeof current; href: string; icon: string }[] = [
     { key: "player", href: "/player", icon: "▶" },
     { key: "search", href: "/search", icon: "🔎" },
-    { key: "learn", href: "/learn", icon: "🎓" },
+    { key: "learn", href: "/lessons", icon: "🎓" },
     { key: "play", href: "/play", icon: "🎮" },
     { key: "hifz", href: "/hifz", icon: "🧠" },
     { key: "ask", href: "/ask", icon: "💬" },
@@ -150,6 +150,40 @@ export function LanguagePicker({ compact }: { compact?: boolean }) {
         </Pressable>
       </Modal>
     </>
+  );
+}
+
+/** Theme picker: four brand looks, each a small swatch card, plus light/dark/system. */
+export function ThemePicker() {
+  const { themeId, setThemeId, schemePreference, setSchemePreference, scheme } = useTheme();
+  const { m, isAr } = useI18n();
+  const c = usePalette();
+  return (
+    <View style={{ gap: 10 }}>
+      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+        {THEME_IDS.map((id) => {
+          const t = THEMES[id][scheme];
+          const active = id === themeId;
+          return (
+            <Pressable key={id} onPress={() => setThemeId(id)} accessibilityRole="radio" accessibilityState={{ selected: active }} accessibilityLabel={THEMES[id].name.en}
+              style={{ width: "47%", flexGrow: 1, borderWidth: active ? 2 : 1, borderColor: active ? c.accent : c.line, borderRadius: 16, overflow: "hidden", backgroundColor: t.bg }}>
+              <View style={{ height: 44, backgroundColor: t.card, borderBottomWidth: 1, borderBottomColor: t.line, flexDirection: "row", alignItems: "center", paddingHorizontal: 10, gap: 6 }}>
+                <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: t.accent }} />
+                <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: t.accent2 }} />
+                <View style={{ flex: 1, height: 6, borderRadius: 3, backgroundColor: t.line }} />
+              </View>
+              <View style={{ padding: 10, gap: 2 }}>
+                <Text style={{ color: t.ink, fontWeight: "700" }}>{isAr ? THEMES[id].name.ar : THEMES[id].name.en}{active ? " ✓" : ""}</Text>
+                <Text style={{ color: t.muted, fontSize: 11 }} numberOfLines={2}>{isAr ? THEMES[id].tagline.ar : THEMES[id].tagline.en}</Text>
+              </View>
+            </Pressable>
+          );
+        })}
+      </View>
+      <Row>
+        {(["system", "light", "dark"] as const).map((p) => <Chip key={p} label={p === "system" ? m.settings.schemeSystem : p === "light" ? m.settings.schemeLight : m.settings.schemeDark} active={schemePreference === p} onPress={() => setSchemePreference(p)} />)}
+      </Row>
+    </View>
   );
 }
 

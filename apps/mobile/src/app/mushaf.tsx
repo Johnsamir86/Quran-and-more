@@ -2,12 +2,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Font from "expo-font";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View, useColorScheme, useWindowDimensions } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from "react-native";
 
 import { DEFAULT_MUSHAF_LAYOUT, MUSHAF_LAYOUTS, mushafLayoutById, type MushafPage, type MushafWord } from "@qam/core";
 
 import { API_BASE_URL } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
+import { usePalette } from "@/lib/ui";
 const loaded = new Set<string>();
 const ensureFont = async (family: string, url: string) => {
   if (loaded.has(family)) return;
@@ -25,7 +26,7 @@ export default function MushafScreen() {
   const { m, isAr: ar, num: digits, isRtl } = useI18n();
   const t = m.mushaf;
   const params = useLocalSearchParams<{ page?: string; layout?: string }>();
-  const dark = useColorScheme() === "dark";
+  const dark = usePalette().dark;
   const { width } = useWindowDimensions();
   const c = dark ? { bg: "#0d1512", paper: "#15211c", ink: "#ece9dd", muted: "#9fb0a7", line: "rgba(236,233,221,0.14)", accent: "#1d9e75" } : { bg: "#f6f3ea", paper: "#fffdf6", ink: "#15201b", muted: "#5d6a63", line: "rgba(21,32,27,0.12)", accent: "#1d9e75" };
   const [layoutId, setLayoutId] = useState(params.layout ?? DEFAULT_MUSHAF_LAYOUT);

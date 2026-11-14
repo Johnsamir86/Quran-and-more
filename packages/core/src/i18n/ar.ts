@@ -11,7 +11,7 @@ export const ar: PartialMessages = {
     offline: "تعذّر الاتصال بخدمة المحتوى. تحقق من اتصالك ثم أعد المحاولة.", noProfile: "اختر ملفًا من صفحة العائلة أولًا",
     on: "مفعّل", off: "متوقف", enable: "تفعيل", disable: "إيقاف", chooseLanguage: "اختر لغة الواجهة",
   },
-  nav: { home: "الرئيسية", search: "بحث", learn: "تعلّم", hifz: "حفظ", play: "العب", ask: "اسأل", player: "المشغّل", mushaf: "المصحف", family: "العائلة", azan: "الأذان", story: "آية اليوم" },
+  nav: { home: "الرئيسية", search: "بحث", learn: "تعلّم", hifz: "حفظ", play: "العب", ask: "اسأل", player: "المشغّل", mushaf: "المصحف", family: "العائلة", azan: "الأذان", story: "آية اليوم", quran: "القرآن", me: "أنا", study: "دراسة" },
   home: {
     kicker: "القرآن الكريم", title: "قرآن وأكثر", sub: "تجربة قرآنية كاملة للعائلة كلها: تلاوة متصلة مع تزامن الكلمات، مصحف بالخط العثماني، تفسير وترجمات بكل اللغات، وملف لكل فرد.",
     startListening: "ابدأ الاستماع", openMushaf: "افتح المصحف",
@@ -129,5 +129,22 @@ export const ar: PartialMessages = {
     title: "آية اليوم", tapHint: "اضغط للمتابعة", reflect: "لحظة تدبّر", reflectPrompt: "كيف تخاطبك هذه الآية اليوم؟", tafsir: "من التفسير",
     listen: "استمع", openStudy: "ادرس هذه الآية", share: "مشاركة", saveNote: "حفظ كملاحظة", noteSaved: "حُفظت الملاحظة", nextAyah: "آية أخرى", wallpaper: "تغيير الخلفية",
     goodMorning: "صباح الخير", goodEvening: "مساء الخير", forPrayer: "لصلاة",
+  },
+  settings: {
+    title: "الإعدادات", appearance: "المظهر", theme: "السمة", themeHelp: "أربع سمات، لكلٍّ منها وضع فاتح وداكن. يُحفظ الاختيار على هذا الجهاز.",
+    schemeSystem: "حسب النظام", schemeLight: "فاتح", schemeDark: "داكن", language: "اللغة", notifications: "الإشعارات",
+    notifAzan: "الأذان في مواقيت الصلاة", notifDaily: "آية اليوم", notifDailyTime: "وقت آية اليوم", notifHifz: "موعد مراجعة الحفظ", notifFamily: "نشاط العائلة", notifStreak: "تذكير المواظبة",
+    notifSound: "الصوت", notifSoundChime: "رنّة هادئة", notifSoundSilent: "صامت", notifTest: "إرسال إشعار تجريبي",
+    account: "الحساب", signIn: "تسجيل الدخول", signOut: "تسجيل الخروج", signedInAs: "مسجّل باسم", signInHelp: "سجّل الدخول للاحتفاظ بملفات العائلة والعلامات والملاحظات والتقدّم على كل الأجهزة.",
+    signInApple: "المتابعة عبر Apple", signInGoogle: "المتابعة عبر Google", signInEmail: "المتابعة بالبريد", signInQuran: "المتابعة عبر Quran.com", emailPlaceholder: "you@example.com", magicLinkSent: "تفقّد بريدك لرابط الدخول",
+    signInUnavailable: "الحسابات غير مفعّلة في هذه النسخة بعد", guest: "ضيف (هذا الجهاز فقط)",
+    purchases: "المشتريات", offlineAudio: "الصوت دون اتصال", offlineAudioSub: "حمّل أي سورة للاستماع دون اتصال وافتح كل قرّاء الأرشيف.", monthly: "شهري", yearly: "سنوي", subscribe: "اشترك", restore: "استعادة المشتريات", subscribed: "فعّال", notSubscribed: "غير مشترك", manage: "إدارة الاشتراك", trial: "تجربة مجانية 7 أيام",
+    about: "حول", version: "الإصدار", privacy: "سياسة الخصوصية", terms: "الشروط", sources: "مصادر المحتوى", rate: "قيّم التطبيق", share: "شارك التطبيق", support: "الدعم",
+    me: "أنا", profile: "الملف", switchProfile: "تبديل الملف", editProfile: "تعديل الملف",
+  },
+  sources: {
+    title: "المحتوى والمصادر", reviewPending: "المراجعة قيد الانتظار", reviewPendingHelp: "الترجمات والتفاسير ومعاني الكلمات من فهرس مؤسسة القرآن / Quran.com كما نشرها أصحابها. إجابات الذكاء الاصطناعي تقتبس الآيات حرفيًا ولا تغيّرها. لم تتم بعد مراجعة علمية لاختيارات هذا التطبيق؛ ستتغير هذه الشارة عند إتمامها.",
+    quranText: "نص القرآن", quranTextSrc: "واجهة محتوى مؤسسة القرآن (الرسم العثماني، خطوط مجمع الملك فهد)", audio: "التلاوات", audioSrc: "فهرس مؤسسة القرآن الصوتي؛ قرّاء الأرشيف من quranicaudio.com وmp3quran.net؛ توقيت الكلمات بمحاذاة آلية خاصة بنا",
+    translations: "الترجمات والتفاسير", translationsSrc: "موارد Quran.com منسوبة إلى مؤلفيها", prayer: "مواقيت الصلاة", prayerSrc: "تُحسب على الجهاز بالطريقة الفلكية المعتمدة في بلدك (جدول Aladhan)", azan: "تسجيلات الأذان", azanSrc: "مجموعة Islamic Network (Aladhan)", report: "الإبلاغ عن مشكلة في المحتوى",
   },
 };
