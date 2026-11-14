@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import { Stack, useLocalSearchParams } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { ActivityIndicator, BackHandler, FlatList, ImageBackground, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View, useColorScheme, useWindowDimensions } from "react-native";
 
@@ -52,6 +53,8 @@ export default function PlayerScreen() {
   panelRef.current = panel;
   const { width, height } = useWindowDimensions();
   const landscape = width > height;
+  /* With the header hidden (landscape) keep the controls clear of the Dynamic Island, notch and rounded corners. */
+  const insets = useSafeAreaInsets();
   const panelW = landscape ? Math.min(440, Math.round(width * 0.42)) : width;
   const panelH = Math.round(height * 0.46);
   useEffect(() => {
@@ -243,7 +246,7 @@ export default function PlayerScreen() {
   const panelTitle: Record<Exclude<SidePanel, null>, string> = { surahs: T.surahs, reciter: T.reciter, translation: T.translation, tafsir: T.tafsir, settings: T.settings, wallpaper: T.wallpaper, notes: `${T.notes} · ${segment?.ayah?.key ?? ""}` };
 
   return (
-    <View style={[st.root, { backgroundColor: c.bg }]}>
+    <View style={[st.root, { backgroundColor: c.bg }, landscape ? { paddingTop: insets.top, paddingLeft: insets.left, paddingRight: insets.right } : null]}>
       <Stack.Screen options={{ title: state.surah ? `${ar ? "سورة" : "Surah"} ${state.surah.arabicName}` : T.title, headerShown: !landscape }} />
       {focus ? (wallpaper.kind === "nature" && wallpaper.url
         ? <ImageBackground source={{ uri: wallpaper.url.replace("w=1920", "w=1280") }} style={StyleSheet.absoluteFill} resizeMode="cover"><View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(0,0,0,0.3)" }]} /></ImageBackground>

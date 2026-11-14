@@ -45,7 +45,12 @@ Phase 1, Core reader on every screen
 - Azan: on-device prayer times per country method, muezzin choice, in-app
   azan, push / local notifications, ayah-of-the-day story: done
 - Offline text bundle
-- Netlify deploy (web + backend), EAS builds (iOS, Android), TV targets
+- Netlify deploy (web + backend): done. Android APK from the repo: done.
+  iOS: project generated, size classes for iPhone SE → 18 Pro Max, iPhone Duo
+  (outer and inner display) and iPad, CI simulator build and unsigned archive
+  (`.github/workflows/ios.yml`), EAS profiles for TestFlight / App Store; a
+  signed store build still needs the Apple Developer team on EAS or a Mac.
+  TV targets: later
 
 Phase 2, Study
 - Tafsir compare, hadith per ayah, Answers, qira'at (production), Read in

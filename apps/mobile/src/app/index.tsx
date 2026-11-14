@@ -4,9 +4,10 @@ import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from "
 
 import { fetchChapters, type ChapterSummary } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
-import { LanguagePicker } from "@/lib/ui";
+import { LanguagePicker, useLayout } from "@/lib/ui";
 
 export default function ChapterListScreen() {
+  const layout = useLayout();
   const { m, locale } = useI18n();
   const [chapters, setChapters] = useState<ChapterSummary[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +25,7 @@ export default function ChapterListScreen() {
     <FlatList
       data={chapters}
       keyExtractor={(c) => String(c.id)}
-      contentContainerStyle={styles.list}
+      contentContainerStyle={[styles.list, layout.maxContentWidth ? { width: "100%", maxWidth: layout.maxContentWidth, alignSelf: "center" } : null]}
       ListHeaderComponent={
         <View style={{ gap: 8 }}>
           <View style={{ flexDirection: "row", justifyContent: "flex-end" }}><LanguagePicker /></View>

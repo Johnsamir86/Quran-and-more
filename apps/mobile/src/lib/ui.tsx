@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
 import { useState, type ReactNode } from "react";
-import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View, useColorScheme, type PressableProps, type StyleProp, type TextStyle, type ViewStyle } from "react-native";
+import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View, useColorScheme, useWindowDimensions, type PressableProps, type StyleProp, type TextStyle, type ViewStyle } from "react-native";
 
 import { LOCALES, hasUiDictionary } from "@qam/core";
 
@@ -21,10 +21,25 @@ export const usePalette = (): Palette => {
 /** System Arabic font (Noto Naskh on Android, Geeza on iOS); the Mushaf screen loads QCF fonts separately. */
 export const ARABIC_FONT = {} as const;
 
+/**
+ * Size classes without device checks: the layout follows the window, so the same
+ * screens work on an iPhone SE, an iPhone 18 Pro Max, the outer and inner
+ * displays of iPhone Duo (466 and 669 points wide), iPad split view and tablets.
+ *  - compact: < 600 pt (every phone in portrait, Duo outer display)
+ *  - regular: ≥ 600 pt (Duo inner display, iPad, phones in landscape on big screens)
+ */
+export const useLayout = () => {
+  const { width, height } = useWindowDimensions();
+  const regular = width >= 600;
+  return { width, height, regular, landscape: width > height, columns: width >= 900 ? 3 : regular ? 2 : 1, maxContentWidth: regular ? 840 : undefined };
+};
+
 export function Screen({ children, scroll = true }: { children: ReactNode; scroll?: boolean }) {
   const c = usePalette();
-  if (!scroll) return <View style={[styles.screen, { backgroundColor: c.bg }]}>{children}</View>;
-  return <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={styles.screenContent} keyboardShouldPersistTaps="handled">{children}</ScrollView>;
+  const { maxContentWidth } = useLayout();
+  const content = maxContentWidth ? { width: "100%" as const, maxWidth: maxContentWidth, alignSelf: "center" as const } : null;
+  if (!scroll) return <View style={[styles.screen, { backgroundColor: c.bg }]}><View style={[{ flex: 1 }, content]}>{children}</View></View>;
+  return <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={[styles.screenContent, content]} keyboardShouldPersistTaps="handled">{children}</ScrollView>;
 }
 
 export function Card({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {

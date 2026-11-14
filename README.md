@@ -91,6 +91,44 @@ cd android && ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a
 Needs JDK 17+, the Android SDK (platform 36, build-tools 36) and about 10 GB of
 disk for the native build. Store builds go through EAS (`eas build -p android`).
 
+## iOS (iPhone and iPad)
+
+The same Expo app targets iOS 16.4 and later, so it runs on every iPhone from
+the iPhone 8 / SE (2nd generation) up to the iPhone 18 Pro and 18 Pro Max, and
+on iPhone Duo (both the 5.4-inch outer display and the 7.6-inch inner one) as
+well as iPad. Layout follows the window, not the device: compact (< 600 pt,
+every phone in portrait, the Duo outer display) and regular (≥ 600 pt, the Duo
+inner display at 669 × 951 pt, iPad, split view) classes, continuous resizing
+(`UIRequiresFullScreen` is off), safe-area insets for the Dynamic Island and
+rounded corners, all four orientations, and a 28 s azan notification sound
+(under the 30 s iOS limit). Build with the newest Xcode (27.1 or later) so the
+app reaches the full inner display of iPhone Duo.
+
+Three ways to get a build:
+
+```bash
+# 1. Unsigned builds from GitHub Actions (no Apple account needed):
+#    .github/workflows/ios.yml runs on every push to this branch and uploads
+#    ios-simulator-app (drag onto any iPhone simulator), ios-simulator-screenshots
+#    (iPhone 18 Pro / Pro Max / Duo when the runner has them) and ios-unsigned-archive.
+
+# 2. On a Mac with Xcode:
+cd apps/mobile
+EXPO_PUBLIC_API_BASE_URL=https://quran-and-more.netlify.app npx expo prebuild -p ios
+cd ios && pod install && open QuranandMore.xcworkspace   # pick your team, run on a device or simulator
+
+# 3. TestFlight / App Store through EAS (needs an Expo account and the Apple Developer team):
+cd apps/mobile
+npx eas-cli login
+npx eas-cli build -p ios --profile production      # signed .ipa, credentials managed by EAS
+npx eas-cli submit -p ios                           # upload to App Store Connect
+npx eas-cli build -p ios --profile development     # simulator build for quick testing
+```
+
+Bundle id `foundation.quranandmore.app`, build number 5. Push notifications on
+iOS use local scheduled notifications (no APNs key needed); the `aps-environment`
+entitlement is present for a future remote-push setup.
+
 ## Rules that never change
 
 - Quranic text, translations and audio are served verbatim from the Quran
