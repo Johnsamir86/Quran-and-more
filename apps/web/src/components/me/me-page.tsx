@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { useFamily } from "@/components/family/family-provider";
+import AccountCard from "@/components/me/account-card";
 import LanguageSelect from "@/components/language-select";
 import SourcesBadge from "@/components/sources-badge";
 import ThemePicker from "@/components/theme-picker";
@@ -37,14 +38,7 @@ export default function MePage() {
         <p className={shell.muted}>{m.azan.notificationsHelp}</p>
         <div className={shell.row}><Link href="/azan" className={shell.btn}>🕌 {t.notifAzan}</Link></div>
       </section>
-      <section className={shell.card}>
-        <div className={shell.kicker}>{t.account}</div>
-        <p className={shell.muted}>{t.signInHelp}</p>
-        <div className={shell.row}>
-          <Link href="/settings" className={shell.chip}>{t.signInQuran}</Link>
-          <span className={shell.pill}>{t.guest}</span>
-        </div>
-      </section>
+      <AccountCard />
       <section className={shell.card}>
         <div className={shell.kicker}>{t.about}</div>
         <div className={shell.row}>

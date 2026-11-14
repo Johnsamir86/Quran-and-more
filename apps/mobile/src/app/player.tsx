@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack, router, useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { ActivityIndicator, BackHandler, FlatList, ImageBackground, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View, useWindowDimensions } from "react-native";
@@ -13,6 +13,8 @@ import {
 
 import { useFamily, useProgressTicker } from "@/lib/family";
 import { useI18n } from "@/lib/i18n";
+import { useOfflineSurah } from "@/lib/offline";
+import { useEntitlements } from "@/lib/purchases";
 import { fetchPlayerSurah, fetchReciters, fetchSurahs, fetchTafsir, fetchTafsirs, fetchTranslations, type TafsirResource } from "@/lib/player-api";
 import { LanguagePicker, usePalette } from "@/lib/ui";
 
@@ -27,7 +29,8 @@ export default function PlayerScreen() {
   const { m, locale, isAr: ar, num: digits } = useI18n();
   const T = m.player;
   const DEFAULT_TAFSIR = ar ? "926" : "169";
-  const dark = usePalette().dark;
+  const tokens = usePalette();
+  const dark = tokens.dark;
   const c = dark ? { bg: "#0d1512", card: "#13201b", ink: "#e9efea", muted: "#9fb0a7", line: "rgba(233,239,234,0.12)", accent: "#1d9e75" } : { bg: "#f6f3ea", card: "#fffdf7", ink: "#15201b", muted: "#5d6a63", line: "rgba(21,32,27,0.1)", accent: "#1d9e75" };
 
   const [state, dispatch] = useReducer(playerReducer, undefined, () => initialPlayerState());
@@ -140,7 +143,10 @@ export default function PlayerScreen() {
   }, [loadKey]);
 
   const gapless = state.engine === "gapless" && !!state.chapterAudio;
-  const desiredSrc = gapless ? state.chapterAudio?.url ?? null : segment?.audioUrl ?? null;
+  const entitlements = useEntitlements();
+  const offline = useOfflineSurah(state.reciter ? String(state.reciter.id) : null, state.surah?.number ?? null);
+  const canOffline = entitlements.entitlements.offlineAudio;
+  const desiredSrc = gapless ? (offline.uri && canOffline ? offline.uri : state.chapterAudio?.url ?? null) : segment?.audioUrl ?? null;
   const srcRef = useRef<string | null>(null);
   const seekFromTimeRef = useRef(false);
   const lastSeekIndexRef = useRef(-1);
@@ -392,7 +398,17 @@ export default function PlayerScreen() {
               <Text style={{ color: c.muted, fontSize: 12 }}>{T.surahs}</Text>
               {filteredSurahs.map((s) => <Row key={s.number} c={c} active={state.surah?.number === s.number} title={`${digits(s.number)}. ${s.arabicName}`} sub={`${s.latinName} · ${s.verseCount}`} onPress={() => { setStation(null); openSurahNumber(s.number, true); }} />)}
             </>)}
-            {panel === "reciter" && reciters.map((r) => <Row key={r.id} c={c} active={state.reciter?.id === r.id} title={ar ? r.arabicName : r.latinName} sub={`${r.riwayah}${r.style ? ` · ${r.style}` : ""} · ${(r.source && r.source !== "qf") ? T.noSync : r.chapterReciterId ? T.gapless : T.perAyah}`} onPress={() => dispatch({ type: "reciter", reciter: r })} />)}
+            {panel === "reciter" && reciters.map((r) => {
+              const archive = Boolean(r.source && r.source !== "qf");
+              const locked = archive && entitlements.enabled && !canOffline;
+              return <Row key={r.id} c={c} active={state.reciter?.id === r.id} title={`${locked ? "🔒 " : ""}${ar ? r.arabicName : r.latinName}`} sub={`${r.riwayah}${r.style ? ` · ${r.style}` : ""} · ${archive ? `${T.noSync}${locked ? ` · ${m.settings.offlineAudio}` : ""}` : r.chapterReciterId ? T.gapless : T.perAyah}`} onPress={() => (locked ? router.push("/me" as never) : dispatch({ type: "reciter", reciter: r }))} />;
+            })}
+            {panel === "reciter" && gapless && state.chapterAudio?.url ? (
+              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, alignItems: "center", paddingTop: 8 }}>
+                {offline.uri && canOffline ? <Pressable onPress={offline.remove} style={[st.chip, { borderColor: c.line, backgroundColor: c.card }]}><Text style={{ color: c.ink, fontSize: 13 }}>✓ {m.settings.offlineAudio} · {m.common.remove}</Text></Pressable>
+                  : <Pressable disabled={offline.busy} onPress={() => (canOffline ? offline.download(state.chapterAudio!.url) : router.push("/me" as never))} style={[st.chip, { borderColor: c.accent, backgroundColor: canOffline ? c.accent : c.card }]}><Text style={{ color: canOffline ? tokens.onAccent : c.ink, fontSize: 13 }}>{offline.busy ? m.common.loading : `⬇ ${m.settings.offlineAudio}${canOffline ? "" : ` · ${m.settings.subscribe}`}`}</Text></Pressable>}
+              </View>
+            ) : null}
             {panel === "translation" && (<>
               <Row c={c} active={state.translation.id === "none"} title={T.none} onPress={() => dispatch({ type: "translation", translation: NO_TRANSLATION })} />
               {translations.map((tr) => <Row key={tr.id} c={c} active={state.translation.id === tr.id} title={tr.label} sub={tr.languageName} onPress={() => dispatch({ type: "translation", translation: tr })} />)}

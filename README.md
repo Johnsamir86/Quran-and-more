@@ -91,6 +91,24 @@ cd android && ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a
 Needs JDK 17+, the Android SDK (platform 36, build-tools 36) and about 10 GB of
 disk for the native build. Store builds go through EAS (`eas build -p android`).
 
+## Brand, themes and navigation
+
+- Logo: an open book whose text line is a sound wave, gold ayah marker
+  (`brand/logo/mark.svg`; `node brand/build-assets.cjs` renders every icon,
+  splash, lockup and the Open Graph image into the apps). Brand system with
+  tokens, type and usage rules: https://claude.ai/artifact/GYXdDK8LaUAQeQuaJA7CJ1
+- Four selectable themes (Serene default, Classic, Night, Warm), each light and
+  dark, defined once in `packages/core/src/theme.ts` and applied as CSS
+  variables on the web and as the palette on mobile; contrast is tested.
+- Mobile tabs: Home, Quran, Learn, Azan, Me. Web mirrors them with `/me`.
+- Accounts (Apple, Google, email magic link, Quran.com) through Supabase and
+  the Offline Audio subscription through RevenueCat are implemented and
+  env-gated: without keys the app runs as guest with nothing locked. Set-up in
+  `docs/STORE.md`; signing in `docs/APPLE-SIGNING.md`; content review policy in
+  `docs/CONTENT-REVIEW.md`.
+- Pricing: paid app ($4.99) + Offline Audio ($1.99/month or $14.99/year,
+  7-day trial) for offline downloads and archive reciters.
+
 ## iOS (iPhone and iPad)
 
 The same Expo app targets iOS 16.4 and later, so it runs on every iPhone from

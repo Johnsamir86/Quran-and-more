@@ -52,6 +52,10 @@ Phase 1, Core reader on every screen
   signed store build still needs the Apple Developer team on EAS or a Mac.
   TV targets: later
 
+Brand and themes: logo, four themes, tabs, Me screen, notification chime,
+sources badge, store kit: done (2026-11-14). Accounts and Offline Audio code
+in place, waiting for Supabase / RevenueCat / store products.
+
 Phase 2, Study
 - Tafsir compare, hadith per ayah, Answers, qira'at (production), Read in
   Context, pin and compare, rich notes with embeds, PDF export
