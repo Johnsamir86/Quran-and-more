@@ -65,6 +65,8 @@ jobs:
             xcrun simctl boot "$UDID" || true
             xcrun simctl bootstatus "$UDID" -b || true
             xcrun simctl install "$UDID" build/sim/Build/Products/Release-iphonesimulator/QuranandMore.app
+            xcrun simctl privacy "$UDID" grant location foundation.quranandmore.app || true
+            xcrun simctl privacy "$UDID" grant notifications foundation.quranandmore.app 2>/dev/null || true
             SAFE=$(echo "$NAME" | tr ' ' '-')
             for ROUTE in / /azan /story /player?surah=18 /me; do
               xcrun simctl spawn "$UDID" defaults write foundation.quranandmore.app qamSmokeRoute "$ROUTE"
