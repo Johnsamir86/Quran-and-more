@@ -1,6 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback, useEffect, useState } from "react";
 
+let onChange: ((p: NotificationPrefs) => void) | null = null;
+/** lib/notifications registers the rescheduler here to avoid an import cycle. */
+export const setNotificationPrefsListener = (fn: (p: NotificationPrefs) => void) => { onChange = fn; };
+
 /** Notification preferences for everything that is not the azan (that lives in AzanSettings). */
 export interface NotificationPrefs {
   daily: boolean;
@@ -22,6 +26,6 @@ export const saveNotificationPrefs = (p: NotificationPrefs) => AsyncStorage.setI
 export const useNotificationPrefs = () => {
   const [prefs, setPrefs] = useState<NotificationPrefs>(DEFAULT_NOTIFICATION_PREFS);
   useEffect(() => { loadNotificationPrefs().then(setPrefs); }, []);
-  const update = useCallback((patch: Partial<NotificationPrefs>) => setPrefs((p) => { const next = { ...p, ...patch }; void saveNotificationPrefs(next); return next; }), []);
+  const update = useCallback((patch: Partial<NotificationPrefs>) => setPrefs((p) => { const next = { ...p, ...patch }; void saveNotificationPrefs(next); onChange?.(next); return next; }), []);
   return { prefs, update };
 };

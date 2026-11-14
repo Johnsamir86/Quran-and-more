@@ -15,7 +15,7 @@ export { useUiLocale };
 
 export const useToday = () => useMemo(() => new Date().toISOString().slice(0, 10), []);
 
-const NAV: { href: string; key: "search" | "learn" | "hifz" | "play" | "ask" | "azan" | "player" | "mushaf"; icon: string }[] = [
+const NAV: { href: string; key: "search" | "learn" | "hifz" | "play" | "ask" | "azan" | "player" | "mushaf" | "me"; icon: string }[] = [
   { href: "/search", key: "search", icon: "🔎" },
   { href: "/learn", key: "learn", icon: "🎓" },
   { href: "/hifz", key: "hifz", icon: "🧠" },
@@ -24,6 +24,7 @@ const NAV: { href: string; key: "search" | "learn" | "hifz" | "play" | "ask" | "
   { href: "/azan", key: "azan", icon: "🕌" },
   { href: "/player", key: "player", icon: "▶" },
   { href: "/mushaf", key: "mushaf", icon: "📖" },
+  { href: "/me", key: "me", icon: "👤" },
 ];
 
 export default function StudyShell({ title, children, actions }: { title?: string; children: ReactNode; actions?: ReactNode }) {

@@ -13,6 +13,7 @@ import { useI18n } from "@/lib/i18n";
 import { fetchTafsirText, fetchChapterRows, fetchAyahOfDay, type AyahOfDay, type ChapterRow } from "@/lib/study-api";
 import { fetchTafsirs } from "@/lib/player-api";
 import { API_BASE_URL } from "@/lib/api";
+import { SourcesBadge } from "@/lib/ui";
 
 const SLIDES = 4;
 
@@ -160,6 +161,7 @@ export default function StoryScreen() {
           {chip(`🖼 ${t.wallpaper}`, () => setWpIndex((i) => ((i ?? NATURE_WALLPAPERS.indexOf(wallpaper)) + 1) % NATURE_WALLPAPERS.length))}
           {chip(`🔀 ${t.nextAyah}`, () => load(true))}
           <Link href="/azan" asChild>{chip(`🕌 ${m.nav.azan}`, () => undefined)}</Link>
+          <SourcesBadge compact />
           {toast ? <Text style={{ color: ink, width: "100%", textAlign: "center", fontSize: 12 }}>{toast}</Text> : null}
         </View>
       </View>

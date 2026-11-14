@@ -187,6 +187,34 @@ export function ThemePicker() {
   );
 }
 
+/** "Review pending" badge opening the content-and-sources sheet (honest: no scholarly review yet). */
+export function SourcesBadge({ compact }: { compact?: boolean }) {
+  const { m } = useI18n();
+  const c = usePalette();
+  const [open, setOpen] = useState(false);
+  const rows = [["quranText", "quranTextSrc"], ["audio", "audioSrc"], ["translations", "translationsSrc"], ["prayer", "prayerSrc"], ["azan", "azanSrc"]] as const;
+  return (
+    <>
+      <Pressable onPress={() => setOpen(true)} accessibilityRole="button" style={{ flexDirection: "row", alignItems: "center", gap: 6, borderWidth: 1, borderColor: c.line, backgroundColor: c.card, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5 }}>
+        <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: c.warn }} />
+        <Text style={{ color: c.muted, fontSize: 12 }}>{compact ? m.sources.reviewPending : `${m.sources.title} · ${m.sources.reviewPending}`}</Text>
+      </Pressable>
+      <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
+        <Pressable style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" }} onPress={() => setOpen(false)}>
+          <View style={{ backgroundColor: c.card, borderTopLeftRadius: c.radius.lg, borderTopRightRadius: c.radius.lg, padding: 18, gap: 10, maxHeight: "85%" }} onStartShouldSetResponder={() => true}>
+            <Row style={{ justifyContent: "space-between" }}><H2>{m.sources.title}</H2><Pill>{m.sources.reviewPending}</Pill></Row>
+            <ScrollView contentContainerStyle={{ gap: 10 }}>
+              <Muted>{m.sources.reviewPendingHelp}</Muted>
+              {rows.map(([k, v]) => <View key={k}><Body style={{ fontWeight: "700" }}>{m.sources[k]}</Body><Muted>{m.sources[v]}</Muted></View>)}
+            </ScrollView>
+            <Button label={m.common.close} ghost onPress={() => setOpen(false)} />
+          </View>
+        </Pressable>
+      </Modal>
+    </>
+  );
+}
+
 const styles = StyleSheet.create({
   screen: { flex: 1 },
   screenContent: { padding: 14, gap: 14, paddingBottom: 60 },

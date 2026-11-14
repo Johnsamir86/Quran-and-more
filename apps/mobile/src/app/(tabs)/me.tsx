@@ -2,22 +2,24 @@ import { Ionicons } from "@expo/vector-icons";
 import Constants from "expo-constants";
 import { Link } from "expo-router";
 import { useState } from "react";
-import { Linking, Modal, Pressable, ScrollView, Switch, TextInput, View } from "react-native";
+import { Linking, Pressable, Switch, TextInput, View } from "react-native";
 
 import { API_BASE_URL } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { useFamily } from "@/lib/family";
 import { useI18n } from "@/lib/i18n";
+import { requestNotificationPermission } from "@/lib/azan";
+import { sendTestNotification } from "@/lib/notifications";
 import { useNotificationPrefs } from "@/lib/prefs";
 import { useEntitlements } from "@/lib/purchases";
-import { Body, Button, Card, Chip, H1, H2, Kicker, LanguagePicker, Muted, Pill, Row, Screen, ThemePicker, usePalette } from "@/lib/ui";
+import { Body, Button, Card, Chip, H1, H2, Kicker, LanguagePicker, Muted, Pill, Row, Screen, SourcesBadge, ThemePicker, usePalette } from "@/lib/ui";
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
 /** Me: who is using the app, how it looks, how it speaks, when it notifies, the account and the purchases. */
 export default function MeScreen() {
   const c = usePalette();
-  const { m } = useI18n();
+  const { m, locale } = useI18n();
   const t = m.settings;
   const { profile, state } = useFamily();
   const auth = useAuth();
@@ -25,7 +27,6 @@ export default function MeScreen() {
   const ent = useEntitlements();
   const [email, setEmail] = useState("");
   const [authMsg, setAuthMsg] = useState<string | null>(null);
-  const [sources, setSources] = useState(false);
   const version = Constants.expoConfig?.version ?? "1.0.0";
 
   const signIn = async (p: "apple" | "google" | "email" | "quran") => {
@@ -76,6 +77,7 @@ export default function MeScreen() {
         <Toggle label={t.notifHifz} value={prefs.hifz} onChange={(v) => update({ hifz: v })} />
         <Toggle label={t.notifStreak} value={prefs.streak} onChange={(v) => update({ streak: v })} />
         <Toggle label={t.notifFamily} value={prefs.family} onChange={(v) => update({ family: v })} />
+        <Row><Chip label={t.notifTest} onPress={async () => { if (await requestNotificationPermission()) await sendTestNotification(locale); }} /></Row>
         <Row style={{ justifyContent: "space-between" }}><Body>{t.notifSound}</Body><Row><Chip label={t.notifSoundChime} active={prefs.sound === "chime"} onPress={() => update({ sound: "chime" })} /><Chip label={t.notifSoundSilent} active={prefs.sound === "silent"} onPress={() => update({ sound: "silent" })} /></Row></Row>
       </Section>
 
@@ -117,26 +119,12 @@ export default function MeScreen() {
       <Section icon="information-circle-outline" title={t.about}>
         <Row style={{ justifyContent: "space-between" }}><Muted>{t.version}</Muted><Muted>{version}</Muted></Row>
         <Row>
-          <Chip label={t.sources} onPress={() => setSources(true)} />
+          <SourcesBadge />
           <Chip label={t.privacy} onPress={() => Linking.openURL(`${API_BASE_URL}/privacy`)} />
           <Chip label={t.terms} onPress={() => Linking.openURL(`${API_BASE_URL}/terms`)} />
         </Row>
       </Section>
 
-      <Modal visible={sources} transparent animationType="fade" onRequestClose={() => setSources(false)}>
-        <Pressable style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" }} onPress={() => setSources(false)}>
-          <View style={{ backgroundColor: c.card, borderTopLeftRadius: c.radius.lg, borderTopRightRadius: c.radius.lg, padding: 18, gap: 10, maxHeight: "85%" }} onStartShouldSetResponder={() => true}>
-            <Row style={{ justifyContent: "space-between" }}><H2>{m.sources.title}</H2><Pill>{m.sources.reviewPending}</Pill></Row>
-            <ScrollView contentContainerStyle={{ gap: 10 }}>
-              <Muted>{m.sources.reviewPendingHelp}</Muted>
-              {([["quranText", "quranTextSrc"], ["audio", "audioSrc"], ["translations", "translationsSrc"], ["prayer", "prayerSrc"], ["azan", "azanSrc"]] as const).map(([k, v]) => (
-                <View key={k}><Body style={{ fontWeight: "700" }}>{m.sources[k]}</Body><Muted>{m.sources[v]}</Muted></View>
-              ))}
-            </ScrollView>
-            <Button label={m.common.close} ghost onPress={() => setSources(false)} />
-          </View>
-        </Pressable>
-      </Modal>
     </Screen>
   );
 }

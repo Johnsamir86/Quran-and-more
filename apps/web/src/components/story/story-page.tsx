@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { NATURE_WALLPAPERS, hashString, languageNameForLocale, muezzinById, wallpaperForSurah, type PrayerName } from "@qam/core";
 
 import { useFamily } from "@/components/family/family-provider";
+import SourcesBadge from "@/components/sources-badge";
 import { loadAzanSettings } from "@/lib/azan-client";
 import { useI18n } from "@/lib/i18n";
 
@@ -179,6 +180,7 @@ export default function StoryPage() {
         <button className={styles.chip} onClick={() => setWpIndex((i) => ((i ?? NATURE_WALLPAPERS.indexOf(wallpaper)) + 1) % NATURE_WALLPAPERS.length)}>🖼 {t.wallpaper}</button>
         <button className={styles.chip} onClick={() => load(true)}>🔀 {t.nextAyah}</button>
         <Link href="/azan" className={styles.chip}>🕌 {m.nav.azan}</Link>
+        <SourcesBadge compact />
         {toast ? <div className={styles.hint}>{toast}</div> : null}
       </div>
     </div>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import SourcesBadge from "@/components/sources-badge";
 import { useI18n } from "@/lib/i18n";
 
 import StudyShell from "./study-shell";
@@ -32,7 +33,7 @@ export default function AskPage() {
   return (
     <StudyShell title={t.title}>
       <section className={styles.card}>
-        <div className={styles.kicker}>Quran AI · {t.pending}</div>
+        <div className={styles.row}><div className={styles.kicker}>Quran AI · {t.pending}</div><SourcesBadge compact /></div>
         <p className={styles.muted}>{t.intro}</p>
         <div className={styles.row}>{t.examples.map((e) => <button key={e} className={styles.chip} onClick={() => ask(e)}>{e}</button>)}</div>
       </section>

@@ -7,6 +7,7 @@ import { isBookmarked } from "@qam/core";
 
 import { useFamily } from "@/components/family/family-provider";
 
+import SourcesBadge from "@/components/sources-badge";
 import { useI18n } from "@/lib/i18n";
 
 import StudyShell from "./study-shell";
@@ -68,7 +69,7 @@ export default function StudyPage({ verseKey }: { verseKey: string }) {
   const playWord = (w: Word) => { if (!w.audioUrl) return; audioRef.current ??= new Audio(); audioRef.current.src = w.audioUrl; void audioRef.current.play().catch(() => undefined); };
 
   return (
-    <StudyShell title={t.title}>
+    <StudyShell title={t.title} actions={<SourcesBadge compact />}>
       {error ? <p className={styles.card} role="alert">{error}</p> : null}
       {!b && !error ? <p className={styles.muted}>{t.loading}</p> : null}
       {b ? (

@@ -2,12 +2,13 @@ import * as Notifications from "expo-notifications";
 import { Stack, router } from "expo-router";
 import { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
-import { I18nManager } from "react-native";
+import { I18nManager, Platform, Settings } from "react-native";
 
 import { resolveLocale, localeDir } from "@qam/core";
 
 import { FamilyProvider } from "@/lib/family";
-import { configureNotifications, refreshAzanSchedule } from "@/lib/azan";
+import { configureNotifications } from "@/lib/azan";
+import { refreshAllNotifications } from "@/lib/notifications";
 import { LocaleProvider, useI18n } from "@/lib/i18n";
 import { ThemeProvider, useTheme } from "@/lib/theme";
 
@@ -20,11 +21,15 @@ if (localeDir(deviceLocale) === "rtl" && !I18nManager.isRTL) {
 function AzanBoot() {
   const { locale } = useI18n();
   useEffect(() => {
-    configureNotifications().then(() => refreshAzanSchedule(locale)).catch(() => undefined);
+    configureNotifications().then(() => refreshAllNotifications(locale)).catch(() => undefined);
     const open = (response: Notifications.NotificationResponse) => {
       const url = response.notification.request.content.data?.url;
       if (typeof url === "string") router.push(url as never);
     };
+    // CI smoke tests set this with `xcrun simctl spawn <udid> defaults write foundation.quranandmore.app qamSmokeRoute /azan`.
+    if (Platform.OS === "ios") {
+      try { const r = Settings.get("qamSmokeRoute"); if (typeof r === "string" && r.startsWith("/")) setTimeout(() => router.push(r as never), 400); } catch { /* no defaults */ }
+    }
     Notifications.getLastNotificationResponseAsync().then((r) => { if (r) open(r); }).catch(() => undefined);
     const sub = Notifications.addNotificationResponseReceivedListener(open);
     return () => sub.remove();

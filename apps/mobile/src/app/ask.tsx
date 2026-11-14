@@ -4,7 +4,7 @@ import { Pressable, TextInput, View } from "react-native";
 
 import { ask, fetchAyahOfDay, type AskResult, type AyahOfDay } from "@/lib/study-api";
 import { useI18n } from "@/lib/i18n";
-import { Arabic, Body, Button, Card, Chip, ErrorBox, H1, H2, Kicker, Loading, Muted, Pill, Row, Screen, StudyNav, usePalette } from "@/lib/ui";
+import { Arabic, Body, Button, Card, Chip, ErrorBox, H1, H2, Kicker, Loading, Muted, Pill, Row, Screen, StudyNav, usePalette, SourcesBadge } from "@/lib/ui";
 
 
 export default function AskScreen() {
@@ -34,7 +34,7 @@ export default function AskScreen() {
         </Link>
       ) : null}
       <Card>
-        <Kicker>Quran.ai / Tazkiya-style · {T.pending}</Kicker>
+        <Row style={{ justifyContent: "space-between" }}><Kicker>Quran.ai / Tazkiya-style · {T.pending}</Kicker><SourcesBadge compact /></Row>
         <H1>{T.title}</H1>
         <TextInput value={q} onChangeText={setQ} placeholder={T.hint} placeholderTextColor={c.muted} multiline onSubmitEditing={() => send()} style={{ borderWidth: 1, borderColor: c.line, borderRadius: 14, padding: 12, color: c.ink, backgroundColor: c.card, fontSize: 16, minHeight: 60 }} />
         <Row style={{ justifyContent: "space-between" }}>

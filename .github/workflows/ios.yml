@@ -65,16 +65,15 @@ jobs:
             xcrun simctl boot "$UDID" || true
             xcrun simctl bootstatus "$UDID" -b || true
             xcrun simctl install "$UDID" build/sim/Build/Products/Release-iphonesimulator/QuranandMore.app
-            xcrun simctl launch "$UDID" foundation.quranandmore.app
-            sleep 12
             SAFE=$(echo "$NAME" | tr ' ' '-')
-            xcrun simctl io "$UDID" screenshot "../../../dist/ios-screens/$SAFE-home.png"
-            xcrun simctl openurl "$UDID" "quranandmore:///azan"; sleep 6
-            xcrun simctl io "$UDID" screenshot "../../../dist/ios-screens/$SAFE-azan.png"
-            xcrun simctl openurl "$UDID" "quranandmore:///story"; sleep 8
-            xcrun simctl io "$UDID" screenshot "../../../dist/ios-screens/$SAFE-story.png"
-            xcrun simctl openurl "$UDID" "quranandmore:///player?surah=18"; sleep 8
-            xcrun simctl io "$UDID" screenshot "../../../dist/ios-screens/$SAFE-player.png"
+            for ROUTE in / /azan /story /player?surah=18 /me; do
+              xcrun simctl spawn "$UDID" defaults write foundation.quranandmore.app qamSmokeRoute "$ROUTE"
+              xcrun simctl terminate "$UDID" foundation.quranandmore.app 2>/dev/null || true
+              xcrun simctl launch "$UDID" foundation.quranandmore.app
+              sleep 12
+              xcrun simctl io "$UDID" screenshot "../../../dist/ios-screens/$SAFE-$(echo "$ROUTE" | tr -c 'a-z0-9\n' '-' | sed 's/^-*//;s/-*$//;s/^$/home/').png"
+            done
+            xcrun simctl spawn "$UDID" defaults delete foundation.quranandmore.app qamSmokeRoute || true
             xcrun simctl shutdown "$UDID" || true
           done
           ls -la ../../../dist/ios-screens || true
