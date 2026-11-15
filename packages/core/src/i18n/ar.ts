@@ -51,6 +51,7 @@ export const ar: PartialMessages = {
     focusView: "شاشة واحدة", listView: "قائمة", language: "لغة الواجهة", wbwLanguage: "لغة معاني الكلمات", tafsirPick: "اختيار التفسير", nextUp: "التالية", credit: "الصورة",
     bookmark: "علامة", bookmarked: "محفوظة", notes: "ملاحظاتي", noteHint: "اكتب تدبّرك أو ملاحظتك على هذه الآية…", saveNote: "حفظ الملاحظة", deleteNote: "حذف",
     family: "العائلة", noProfile: "اختر ملفًا من صفحة العائلة لحفظ العلامات والملاحظات", library: "المحفوظات", repeatAyahShort: "تكرار",
+    voice: "قل اسم السورة", listening: "أستمع…", voiceHint: "جرّب: شغّل سورة الكهف · افتح يس الآية ٣٦", voiceHeard: "سمعت", voiceNotUnderstood: "لم أتبيّن اسم السورة. حاول مرة أخرى.", voiceUnsupported: "الأوامر الصوتية تحتاج إذن الميكروفون ومتصفحًا مدعومًا", lockScreen: "يستمر التشغيل في الخلفية مع أزرار شاشة القفل",
   },
   mushaf: {
     title: "المصحف", surah: "سورة", juz: "الجزء", player: "المشغّل", family: "العائلة", tryAgain: "إعادة المحاولة", listenFromHere: "استمع من هنا",
@@ -132,6 +133,7 @@ export const ar: PartialMessages = {
     customise: "تخصيص", font: "الخط العربي", size: "حجم النص", background: "الخلفية", nature: "طبيعة", solid: "لون", photo: "صورتي", upload: "اختيار صورة", dim: "تعتيم", textColor: "لون النص", auto: "تلقائي", light: "فاتح", dark: "داكن",
     voice: "الصوت", reciter: "القارئ", playAyah: "تشغيل هذه الآية", effect: "مؤثر", effectNone: "بدون", effectReverb: "صدى المسجد", effectEcho: "صدى", effectSlow: "بطيء", effectsWebOnly: "المؤثرات الصوتية متاحة في نسخة الويب", reset: "إعادة الضبط",
     shareTitle: "مشاركة الآية", shareImage: "مشاركة كصورة", downloadImage: "تنزيل الصورة", copyLink: "نسخ الرابط", shareText: "آية اليوم من القرآن وأكثر", preparing: "جارٍ تجهيز الصورة…", shareUnsupported: "مشاركة الملفات غير مدعومة هنا؛ نزّل الصورة بدلًا من ذلك",
+    chooseAyahs: "اختيار الآيات", fromAyah: "من الآية", toAyah: "إلى الآية", apply: "عرض", ayahRange: "الآيات", moving: "متحرّكة", shareVideo: "مشاركة كفيديو", videoHint: "الصوت مع إبراز الكلمات أثناء التلاوة وخلفيتك، بصيغة MP4 لإنستغرام وتيك توك وواتساب وريلز", preparingVideo: "جارٍ إخراج الفيديو…", videoReady: "الفيديو جاهز", videoUnsupported: "هذا المتصفح لا يستطيع إخراج الفيديو؛ افتح الرابط في كروم أو سفاري", words: "إبراز الكلمات", quality: "الجودة", shareVideoWeb: "يفتح استوديو الفيديو في المتصفح",
   },
   settings: {
     title: "الإعدادات", appearance: "المظهر", theme: "السمة", themeHelp: "أربع سمات، لكلٍّ منها وضع فاتح وداكن. يُحفظ الاختيار على هذا الجهاز.",

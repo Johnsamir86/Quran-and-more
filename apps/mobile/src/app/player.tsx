@@ -1,5 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
+import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from "expo-speech-recognition";
+
+import { API_BASE_URL } from "@/lib/api";
 import { Stack, router, useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
@@ -8,7 +11,7 @@ import { ActivityIndicator, BackHandler, FlatList, ImageBackground, Pressable, S
 import {
   NO_TRANSLATION, PLAYBACK_RATES, isBookmarked, notesFor, PLAYER_STORAGE_KEYS, STATIONS, TEXT_SIZE_SCALE, currentSegment, decideAtSegmentEnd, initialPlayerState,
   locateInAyah, locateInChapter, nextSurahNumber, playerReducer, WALLPAPERS, WALLPAPER_STORAGE_KEY, wallpaperById, wallpaperForSurah,
-  type PlayerPanel, type Wallpaper, type WallpaperMode, type PlayerReciter, type PlayerState, type PlayerSurah, type PlayerTranslation, type PlayerWord, type RepeatMode, type Station, type TextSize, languageNameForLocale } from "@qam/core";
+  type PlayerPanel, type Wallpaper, type WallpaperMode, type PlayerReciter, type PlayerState, type PlayerSurah, type PlayerTranslation, type PlayerWord, type RepeatMode, type Station, type TextSize, languageNameForLocale , parseVoiceCommand } from "@qam/core";
 
 import { useFamily, useProgressTicker } from "@/lib/family";
 import { useI18n } from "@/lib/i18n";
@@ -24,7 +27,7 @@ const load = async <V,>(key: string, fallback: V): Promise<V> => { try { const r
 const save = (key: string, value: unknown) => AsyncStorage.setItem(key, JSON.stringify(value)).catch(() => undefined);
 
 export default function PlayerScreen() {
-  const { surah: surahParam } = useLocalSearchParams<{ surah?: string }>();
+  const { surah: surahParam, voice: voiceParam } = useLocalSearchParams<{ surah?: string; voice?: string }>();
   const { m, locale, isAr: ar, num: digits } = useI18n();
   const T = m.player;
   const DEFAULT_TAFSIR = ar ? "926" : "169";
@@ -73,6 +76,55 @@ export default function PlayerScreen() {
   useProgressTicker(segment?.ayah?.key ?? null, null, state.isPlaying && !!family.profile);
 
   useEffect(() => { setAudioModeAsync({ playsInSilentMode: true, shouldPlayInBackground: true, interruptionMode: "doNotMix" }).catch(() => undefined); }, []);
+
+  /* Lock screen / notification controls: title, reciter and artwork follow the ayah; play, pause, scrub and ±10 s work from the lock screen. */
+  useEffect(() => {
+    if (!state.surah) return;
+    const metadata = { title: `${ar ? "سورة" : "Surah"} ${state.surah.arabicName}${segment?.ayah ? ` · ${T.ayah} ${segment.ayah.number}` : ""}`, artist: state.reciter ? (ar ? state.reciter.arabicName : state.reciter.latinName) : "Quran and More", albumTitle: "Quran and More", artworkUrl: `${API_BASE_URL}/icon-512.png` };
+    try { player.setActiveForLockScreen(true, metadata, { showSeekForward: true, showSeekBackward: true, seekForwardIntervalSeconds: 10, seekBackwardIntervalSeconds: 10, showNextTrack: false, showPreviousTrack: false }); } catch { /* older runtime */ }
+  }, [state.surah, state.reciter, segment?.ayah?.number, ar, player, T.ayah]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => { try { player.clearLockScreenControls(); } catch { /* ignore */ } }, [player]);
+
+  /* Voice commands: "play Surah Al-Kahf", "شغّل سورة يس الآية ٣٦". */
+  const [listening, setListening] = useState(false);
+  const [voiceToast, setVoiceToast] = useState<string | null>(null);
+  const voiceFlash = (x: string) => { setVoiceToast(x); setTimeout(() => setVoiceToast(null), 2600); };
+  useSpeechRecognitionEvent("start", () => setListening(true));
+  useSpeechRecognitionEvent("end", () => setListening(false));
+  useSpeechRecognitionEvent("error", () => { setListening(false); voiceFlash(T.voiceUnsupported); });
+  useSpeechRecognitionEvent("result", (e) => {
+    if (!e.isFinal) return;
+    const transcript = e.results[0]?.transcript ?? "";
+    const cmd = parseVoiceCommand(transcript, surahs.map((x) => ({ number: x.number, arabicName: x.arabicName, latinName: x.latinName })));
+    if (cmd.action === "pause" || cmd.action === "stop") { dispatch({ type: "pause" }); voiceFlash(`${T.voiceHeard}: ${transcript}`); return; }
+    if (cmd.action === "next") { dispatch({ type: "next" }); return; }
+    if (cmd.action === "prev") { dispatch({ type: "prev" }); return; }
+    if (cmd.surah) {
+      const target = surahs.find((x) => x.number === cmd.surah);
+      if (target) {
+        voiceFlash(`${T.voiceHeard}: ${ar ? target.arabicName : target.latinName}${cmd.ayah ? ` · ${T.ayah} ${cmd.ayah}` : ""}`);
+        dispatch({ type: "open", surah: target, index: 0, play: true });
+        if (cmd.ayah) pendingAyahRef.current = cmd.ayah;
+        return;
+      }
+    }
+    voiceFlash(T.voiceNotUnderstood);
+  });
+  const pendingAyahRef = useRef<number | null>(null);
+  useEffect(() => {
+    const want = pendingAyahRef.current; if (!want || !state.segments.length) return;
+    const idx = state.segments.findIndex((sg) => sg.ayah?.number === want);
+    if (idx >= 0) { pendingAyahRef.current = null; dispatch({ type: "seek", index: idx }); }
+  }, [state.segments]);
+  const startVoice = useCallback(async () => {
+    if (listening) { ExpoSpeechRecognitionModule.stop(); return; }
+    try {
+      const perm = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
+      if (!perm.granted) { voiceFlash(T.voiceUnsupported); return; }
+      ExpoSpeechRecognitionModule.start({ lang: ar ? "ar-SA" : locale.startsWith("ar") ? "ar-SA" : `${locale}`, interimResults: false, maxAlternatives: 3, continuous: false });
+    } catch { voiceFlash(T.voiceUnsupported); }
+  }, [listening, ar, locale]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (voiceParam === "1" && surahs.length) { const id = setTimeout(() => { void startVoice(); }, 600); return () => clearTimeout(id); } }, [voiceParam, surahs.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /* bootstrap */
   useEffect(() => {
@@ -354,7 +406,9 @@ export default function PlayerScreen() {
           <Btn label={state.isPlaying ? "❚❚" : "▶"} big onPress={() => dispatch({ type: "toggle" })} c={fc} small={landscape} />
           <Btn label={ar ? "⏮" : "⏭"} onPress={() => dispatch({ type: "next" })} c={fc} small={landscape} />
           <Btn label="»" onPress={() => state.surah && openSurahNumber(nextSurahNumber(state.surah.number), state.isPlaying)} c={fc} small={landscape} />
+          <Btn label={listening ? "🎙…" : "🎙"} onPress={() => { void startVoice(); }} c={fc} small={landscape} />
         </View>
+        {voiceToast || listening ? <Text style={{ color: fc.muted, fontSize: 12, textAlign: "center" }} numberOfLines={2}>{listening ? `${T.listening} ${T.voiceHint}` : voiceToast}</Text> : null}
       </View>
 
         </View>

@@ -7,7 +7,7 @@
  *    API key is configured the backend adds internet search results per theme.
  * Every surah maps to a theme so the wallpaper changes with the surah.
  */
-export type WallpaperKind = "art" | "live" | "nature" | "plain";
+export type WallpaperKind = "art" | "live" | "nature" | "video" | "plain";
 
 export type WallpaperTheme =
   | "light" | "dawn" | "night" | "stars" | "sea" | "mountains" | "forest" | "garden" | "desert"
@@ -18,8 +18,10 @@ export interface Wallpaper {
   kind: WallpaperKind;
   title: { ar: string; en: string };
   theme: WallpaperTheme;
-  /** nature only */
+  /** nature: the photo; video: the poster frame */
   url?: string;
+  /** video only: short looping mp4 (9:16) */
+  video?: string;
   credit?: string;
   /** art/live only: palette seed */
   colors?: [string, string, string];
@@ -83,7 +85,21 @@ export const PLAIN_WALLPAPERS: Wallpaper[] = [
   { id: "p-night", kind: "plain", theme: "night", title: { ar: "ليل", en: "Night" }, colors: ["#0d1512", "#13201b", "#1d9e75"], tone: "light" },
 ];
 
-export const WALLPAPERS: Wallpaper[] = [...PLAIN_WALLPAPERS, ...LIVE_WALLPAPERS, ...ART_WALLPAPERS, ...NATURE_WALLPAPERS];
+/** Public origin that serves the app's own media (video backgrounds); the mobile app has no local copy. */
+export const MEDIA_ORIGIN = "https://quran-and-more.netlify.app";
+const v = (id: string) => ({ url: `${MEDIA_ORIGIN}/story/bg/${id}.jpg`, video: `${MEDIA_ORIGIN}/story/bg/${id}.mp4` });
+
+/** Moving backgrounds: six-second looping clips rendered for the app (no people, no text). */
+export const VIDEO_WALLPAPERS: Wallpaper[] = [
+  { id: "v-sea-shore", kind: "video", theme: "sea", title: { ar: "شاطئ البحر", en: "Sea shore" }, ...v("sea-shore"), credit: "Quran and More", tone: "light" },
+  { id: "v-forest-trees", kind: "video", theme: "forest", title: { ar: "أشجار تتمايل", en: "Swaying trees" }, ...v("forest-trees"), credit: "Quran and More", tone: "light" },
+  { id: "v-sky-clouds", kind: "video", theme: "sky", title: { ar: "سماء وغيوم", en: "Moving sky" }, ...v("sky-clouds"), credit: "Quran and More", tone: "light" },
+  { id: "v-desert-dunes", kind: "video", theme: "desert", title: { ar: "كثبان رملية", en: "Desert dunes" }, ...v("desert-dunes"), credit: "Quran and More", tone: "light" },
+  { id: "v-mountain-mist", kind: "video", theme: "mountains", title: { ar: "ضباب الجبال", en: "Mountain mist" }, ...v("mountain-mist"), credit: "Quran and More", tone: "light" },
+  { id: "v-night-stars", kind: "video", theme: "stars", title: { ar: "سماء الليل", en: "Night sky" }, ...v("night-stars"), credit: "Quran and More", tone: "light" },
+];
+
+export const WALLPAPERS: Wallpaper[] = [...PLAIN_WALLPAPERS, ...LIVE_WALLPAPERS, ...ART_WALLPAPERS, ...NATURE_WALLPAPERS, ...VIDEO_WALLPAPERS];
 
 export const wallpaperById = (id: string): Wallpaper | undefined => WALLPAPERS.find((w) => w.id === id);
 

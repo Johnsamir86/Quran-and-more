@@ -31,6 +31,7 @@ import {
   type WallpaperMode,
   wallpaperById,
   wallpaperForSurah,
+  parseVoiceCommand,
 } from "@qam/core";
 
 import Link from "next/link";
@@ -323,8 +324,51 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
     ms.setActionHandler("pause", () => dispatch({ type: "pause" }));
     ms.setActionHandler("previoustrack", () => dispatch({ type: "prev" }));
     ms.setActionHandler("nexttrack", () => dispatch({ type: "next" }));
+    try {
+      ms.setActionHandler("seekbackward", (d) => { const a = audioRef.current; if (a) a.currentTime = Math.max(0, a.currentTime - (d.seekOffset ?? 10)); });
+      ms.setActionHandler("seekforward", (d) => { const a = audioRef.current; if (a) a.currentTime = Math.min(a.duration || Infinity, a.currentTime + (d.seekOffset ?? 10)); });
+      ms.setActionHandler("seekto", (d) => { const a = audioRef.current; if (a && typeof d.seekTime === "number") a.currentTime = d.seekTime; });
+      ms.setActionHandler("stop", () => dispatch({ type: "pause" }));
+    } catch { /* older browsers reject some actions */ }
     ms.playbackState = state.isPlaying ? "playing" : "paused";
   }, [state.surah, state.reciter, segment, state.isPlaying, ar, t.ayah]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !("mediaSession" in navigator) || typeof navigator.mediaSession.setPositionState !== "function") return;
+    const a = audioRef.current; if (!a || !Number.isFinite(a.duration) || a.duration <= 0) return;
+    try { navigator.mediaSession.setPositionState({ duration: a.duration, position: Math.min(a.currentTime, a.duration), playbackRate: a.playbackRate }); } catch { /* ignore */ }
+  }, [progress, state.isPlaying]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /* ---------- voice commands (Web Speech API) ---------- */
+  const [listening, setListening] = useState(false);
+  const recognitionRef = useRef<{ stop: () => void } | null>(null);
+  const voiceSupported = typeof window !== "undefined" && !!((window as unknown as { SpeechRecognition?: unknown }).SpeechRecognition ?? (window as unknown as { webkitSpeechRecognition?: unknown }).webkitSpeechRecognition);
+  const flash = (x: string) => { setToast(x); window.setTimeout(() => setToast(null), 2600); };
+  const startVoice = () => {
+    if (listening) { recognitionRef.current?.stop(); return; }
+    type SR = { lang: string; continuous: boolean; interimResults: boolean; maxAlternatives: number; onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null; onend: (() => void) | null; onerror: (() => void) | null; start: () => void; stop: () => void };
+    const Ctor = ((window as unknown as { SpeechRecognition?: new () => SR }).SpeechRecognition ?? (window as unknown as { webkitSpeechRecognition?: new () => SR }).webkitSpeechRecognition);
+    if (!Ctor) { flash(t.voiceUnsupported); return; }
+    const r = new Ctor(); recognitionRef.current = r;
+    r.lang = ar ? "ar-SA" : locale; r.continuous = false; r.interimResults = false; r.maxAlternatives = 3;
+    r.onend = () => setListening(false); r.onerror = () => { setListening(false); flash(t.voiceUnsupported); };
+    r.onresult = (e) => {
+      const alternatives = Array.from(e.results[0] ?? []).map((x) => x.transcript);
+      let handled = false;
+      for (const transcript of alternatives) {
+        const cmd = parseVoiceCommand(transcript, surahs.map((x) => ({ number: x.number, arabicName: x.arabicName, latinName: x.latinName })));
+        if (cmd.action === "pause" || cmd.action === "stop") { dispatch({ type: "pause" }); handled = true; break; }
+        if (cmd.action === "next") { seekFromTimeRef.current = false; dispatch({ type: "next" }); handled = true; break; }
+        if (cmd.action === "prev") { seekFromTimeRef.current = false; dispatch({ type: "prev" }); handled = true; break; }
+        if (cmd.surah) {
+          const target = surahs.find((x) => x.number === cmd.surah);
+          if (target) { flash(`${t.voiceHeard}: ${ar ? target.arabicName : target.latinName}${cmd.ayah ? ` · ${t.ayah} ${num(cmd.ayah)}` : ""}`); pendingAyahRef.current = cmd.ayah; pendingSurahRef.current = target.number; dispatch({ type: "open", surah: target, index: 0, play: true }); handled = true; break; }
+        }
+      }
+      if (!handled) flash(`${t.voiceNotUnderstood} (${alternatives[0] ?? ""})`);
+    };
+    try { r.start(); setListening(true); } catch { flash(t.voiceUnsupported); }
+  };
+  useEffect(() => { if (new URLSearchParams(window.location.search).get("voice") === "1" && surahs.length && voiceSupported) { const id = window.setTimeout(startVoice, 500); return () => window.clearTimeout(id); } }, [surahs.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /* ---------- auto-scroll ---------- */
   useEffect(() => {
@@ -367,9 +411,10 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
   }, [panel, segment, state.tafsir?.key, tafsirId]);
 
   /* Deep link ?ayah=N: once the requested surah's segments are in, jump to that ayah. */
+  const pendingSurahRef = useRef<number | null>(initialSurah ?? null);
   useEffect(() => {
     const want = pendingAyahRef.current;
-    if (want === null || !state.segments.length || state.surah?.number !== initialSurah) return;
+    if (want === null || !state.segments.length || state.surah?.number !== pendingSurahRef.current) return;
     const idx = state.segments.findIndex((seg) => seg.ayah?.number === want);
     if (idx >= 0) { seekFromTimeRef.current = false; dispatch({ type: "seek", index: idx }); }
     pendingAyahRef.current = null;
@@ -759,7 +804,9 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
             <button className={`${styles.iconBtn} ${styles.playBtn}`} aria-label={state.isPlaying ? t.pause : t.play} onClick={() => dispatch({ type: "toggle" })} disabled={!desiredSrc}>{state.isPlaying ? "❚❚" : "▶"}</button>
             <button className={styles.iconBtn} aria-label={t.nextAyah} title={t.nextAyah} onClick={() => { seekFromTimeRef.current = false; dispatch({ type: "next" }); }}>{isRtl ? "⏮" : "⏭"}</button>
             <button className={styles.iconBtn} aria-label={t.nextSurah} title={t.nextSurah} onClick={() => state.surah && openSurahNumber(nextSurahNumber(state.surah.number), state.isPlaying)}>»</button>
+            {voiceSupported ? <button className={`${styles.iconBtn} ${listening ? styles.playBtn : ""}`} aria-label={t.voice} title={`${t.voice} · ${t.voiceHint}`} aria-pressed={listening} onClick={startVoice}>🎙</button> : null}
           </div>
+          {listening ? <div className={styles.status} aria-live="polite">{t.listening} {t.voiceHint}</div> : null}
           <div className={styles.status} aria-live="polite">{statusLine}</div>
         </div>
       </footer>

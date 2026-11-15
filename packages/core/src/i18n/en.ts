@@ -54,6 +54,7 @@ export const en = {
     focusView: "One screen", listView: "List", language: "Interface language", wbwLanguage: "Word meanings language", tafsirPick: "Choose tafsir", nextUp: "Next", credit: "Photo",
     bookmark: "Bookmark", bookmarked: "Saved", notes: "My notes", noteHint: "Write your reflection or note on this ayah…", saveNote: "Save note", deleteNote: "Delete",
     family: "Family", noProfile: "Choose a profile on the Family page to save bookmarks and notes", library: "Saved", repeatAyahShort: "Repeat",
+    voice: "Say a surah", listening: "Listening…", voiceHint: "Try: play Surah Al-Kahf · open Ya-Sin ayah 36", voiceHeard: "Heard", voiceNotUnderstood: "Sorry, I did not catch a surah name. Try again.", voiceUnsupported: "Voice commands need microphone access and a supported browser", lockScreen: "Playback continues in the background with lock-screen controls",
   },
   mushaf: {
     title: "Mushaf", surah: "Surah", juz: "Juz", player: "Player", family: "Family", tryAgain: "Try again", listenFromHere: "Listen from here",
@@ -134,6 +135,7 @@ export const en = {
     customise: "Customise", font: "Arabic font", size: "Text size", background: "Background", nature: "Nature", solid: "Colour", photo: "My photo", upload: "Choose a photo", dim: "Dim", textColor: "Text colour", auto: "Auto", light: "Light", dark: "Dark",
     voice: "Voice", reciter: "Reciter", playAyah: "Play this ayah", effect: "Effect", effectNone: "Plain", effectReverb: "Mosque reverb", effectEcho: "Echo", effectSlow: "Slow", effectsWebOnly: "Sound effects are available in the web app", reset: "Reset",
     shareTitle: "Share the ayah", shareImage: "Share as image", downloadImage: "Download image", copyLink: "Copy link", shareText: "Ayah of the day from Quran and More", preparing: "Preparing the image…", shareUnsupported: "Sharing files is not supported here; download the image instead",
+    chooseAyahs: "Choose ayahs", fromAyah: "From ayah", toAyah: "To ayah", apply: "Show", ayahRange: "Ayahs", moving: "Moving", shareVideo: "Share as video", videoHint: "Voice, words highlighted as they are recited, and your background, as an MP4 for Instagram, TikTok, WhatsApp and Reels", preparingVideo: "Rendering the video…", videoReady: "Video ready", videoUnsupported: "This browser cannot render video; open the link in Chrome or Safari", words: "Highlight words", quality: "Quality", shareVideoWeb: "Opens the video studio in the browser",
   },
   settings: {
     title: "Settings", appearance: "Appearance", theme: "Theme", themeHelp: "Four looks, each with light and dark. The choice is saved on this device.",

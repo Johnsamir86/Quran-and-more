@@ -71,7 +71,7 @@
           "yo"
         ]
       },
-      "buildNumber": "7",
+      "buildNumber": "8",
       "requireFullScreen": false,
       "config": {
         "usesNonExemptEncryption": false
@@ -87,7 +87,7 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "foundation.quranandmore.app",
-      "versionCode": 7
+      "versionCode": 8
     },
     "web": {
       "output": "single",
@@ -95,6 +95,14 @@
     },
     "plugins": [
       "expo-router",
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Quran and More uses the microphone for voice commands (say a surah to play it) and the memorisation check. Nothing is uploaded.",
+          "speechRecognitionPermission": "Quran and More uses speech recognition so you can say which surah to play."
+        }
+      ],
+      "expo-video",
       [
         "expo-splash-screen",
         {

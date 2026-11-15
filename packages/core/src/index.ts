@@ -18,3 +18,4 @@ export * from "./prayer-times";
 export * from "./azan";
 export * from "./theme";
 export * from "./sources";
+export * from "./voice-commands";

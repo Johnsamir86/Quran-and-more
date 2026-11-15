@@ -32,6 +32,7 @@ export default function HomeScreen() {
 
   const tiles: { href: string; icon: IconName; label: string }[] = [
     { href: "/player", icon: "play-circle-outline", label: m.nav.player },
+    { href: "/player?voice=1", icon: "mic-outline", label: m.player.voice },
     { href: "/mushaf", icon: "book-outline", label: m.nav.mushaf },
     { href: "/search", icon: "search-outline", label: m.nav.search },
     { href: "/lessons", icon: "school-outline", label: m.learn.title },

@@ -1,6 +1,9 @@
 "use client";
 
-import { NATURE_WALLPAPERS, wallpaperById } from "@qam/core";
+import { MEDIA_ORIGIN, NATURE_WALLPAPERS, VIDEO_WALLPAPERS, wallpaperById } from "@qam/core";
+
+/** The app's own media is addressed absolutely for the mobile apps; on the web use the same-origin path so canvas and video can read it anywhere (previews, local dev). */
+export const localMedia = (url?: string): string | undefined => (url && typeof window !== "undefined" ? url.replace(MEDIA_ORIGIN, "") : url);
 
 /** Story editor: fonts, backgrounds, image rendering, sharing and voice effects for the ayah-of-the-day page. */
 
@@ -20,7 +23,7 @@ export const ensureStoryFonts = () => {
   document.head.appendChild(link);
 };
 
-export type StoryBg = { kind: "nature"; id: string } | { kind: "solid"; id: string } | { kind: "photo"; dataUrl: string };
+export type StoryBg = { kind: "nature"; id: string } | { kind: "video"; id: string } | { kind: "solid"; id: string } | { kind: "photo"; dataUrl: string };
 export type StoryEffect = "none" | "reverb" | "echo" | "slow";
 export interface StoryPrefs { font: StoryFont; size: number; bg: StoryBg | null; dim: number; tone: "auto" | "light" | "dark"; reciter: string | null; effect: StoryEffect }
 export const DEFAULT_STORY_PREFS: StoryPrefs = { font: "naskh", size: 1, bg: null, dim: 0.3, tone: "auto", reciter: null, effect: "none" };
@@ -41,8 +44,12 @@ export const SOLID_BACKGROUNDS: { id: string; colors: [string, string]; tone: "l
   { id: "sand", colors: ["#fbf4ec", "#f0dfcf"], tone: "dark" },
 ];
 
-export interface ResolvedBg { url?: string; colors?: [string, string]; tone: "light" | "dark"; credit?: string }
+export interface ResolvedBg { url?: string; video?: string; colors?: [string, string]; tone: "light" | "dark"; credit?: string }
 export const resolveBg = (bg: StoryBg | null, fallbackNatureId: string): ResolvedBg => {
+  if (bg?.kind === "video") {
+    const w = VIDEO_WALLPAPERS.find((x) => x.id === bg.id) ?? VIDEO_WALLPAPERS[0];
+    return { url: localMedia(w.url), video: localMedia(w.video), tone: w.tone === "dark" ? "dark" : "light", credit: w.credit };
+  }
   if (!bg || bg.kind === "nature") {
     const w = wallpaperById(bg?.id ?? fallbackNatureId) ?? NATURE_WALLPAPERS[0];
     return { url: w.url, tone: w.tone === "dark" ? "dark" : "light", credit: w.credit };
@@ -163,7 +170,8 @@ export class StoryVoice {
   private source: MediaElementAudioSourceNode | null = null;
   private wet: AudioNode[] = [];
   onState: ((playing: boolean) => void) | null = null;
-  constructor() { this.el = new Audio(); this.el.crossOrigin = "anonymous"; this.el.preload = "auto"; this.el.onended = () => this.onState?.(false); this.el.onpause = () => this.onState?.(false); this.el.onplay = () => this.onState?.(true); }
+  private queue: string[] = [];
+  constructor() { this.el = new Audio(); this.el.crossOrigin = "anonymous"; this.el.preload = "auto"; this.el.onended = () => { const nextUrl = this.queue.shift(); if (nextUrl) { this.el.src = nextUrl; this.el.currentTime = 0; void this.el.play(); } else this.onState?.(false); }; this.el.onpause = () => this.onState?.(false); this.el.onplay = () => this.onState?.(true); }
   private impulse(ctx: AudioContext, seconds: number, decay: number) {
     const len = Math.floor(ctx.sampleRate * seconds); const buf = ctx.createBuffer(2, len, ctx.sampleRate);
     for (let ch = 0; ch < 2; ch++) { const d = buf.getChannelData(ch); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay); }
@@ -186,6 +194,8 @@ export class StoryVoice {
     this.el.currentTime = 0;
     await this.el.play();
   }
-  stop() { this.el.pause(); }
+  /** Play several ayah files back to back (a range of the story). */
+  async playList(urls: string[], effect: StoryEffect) { this.queue = urls.slice(1); await this.play(urls[0], effect); }
+  stop() { this.queue = []; this.el.pause(); }
   get playing() { return !this.el.paused; }
 }

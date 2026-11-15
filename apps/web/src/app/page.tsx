@@ -33,6 +33,7 @@ export default function HomePage() {
         <p className={styles.sub}>{h.sub}</p>
         <div className={styles.cta}>
           <Link className={styles.primary} href="/player">▶ {h.startListening}</Link>
+          <Link className={styles.secondary} href="/player?voice=1">🎙 {m.player.voice}</Link>
           <Link className={styles.secondary} href="/mushaf">📖 {h.openMushaf}</Link>
           <LanguageSelect className={styles.secondary} />
         </div>
