@@ -28,6 +28,7 @@ export default function StoryVideoPage() {
   const from = Math.max(1, Number(params.get("from") ?? 1) || 1);
   const to = Math.max(from, Number(params.get("to") ?? from) || from);
   const embedded = params.get("embed") === "1"; // opened from the mobile app
+  const auto = params.get("auto") === "1"; // start rendering as soon as the ayat are in
 
   const [prefs, setPrefs] = useState<StoryPrefs>(() => ({ ...loadStoryPrefsSafe(), ...fromParams(params) }));
   const [reciters, setReciters] = useState<PlayerReciter[]>([]);
@@ -113,6 +114,8 @@ export default function StoryVideoPage() {
     } finally { setProgress(null); }
   };
   useEffect(() => () => { abort.current?.abort(); if (result) URL.revokeObjectURL(result.url); }, [result]);
+  const autoStarted = useRef(false);
+  useEffect(() => { if (auto && pages.length && reciter && supported && !autoStarted.current) { autoStarted.current = true; void render(); } }, [auto, pages.length, reciter, supported]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const share = async () => { if (!result) return; const ok = await shareVideoFile(result, `ayah-${reference.replace(":", "-")}`, t.title, `${shareText}\n${studyUrl}`); if (!ok) setError(t.shareUnsupported); };
 

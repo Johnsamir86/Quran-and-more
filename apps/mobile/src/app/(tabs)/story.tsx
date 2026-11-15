@@ -171,7 +171,7 @@ export default function StoryScreen() {
     if (!ayah) return;
     const [s, a] = ayah.verseKey.split(":");
     const bgId = prefs.bg && prefs.bg.kind !== "photo" ? prefs.bg.id : "";
-    const q = `surah=${range?.surah ?? s}&from=${range?.from ?? a}&to=${range?.to ?? a}${bgId ? `&bg=${bgId}` : ""}${prefs.reciter ? `&reciter=${prefs.reciter}` : ""}&font=${prefs.font}&size=${prefs.size}&dim=${prefs.dim}&tone=${prefs.tone}&embed=1`;
+    const q = `surah=${range?.surah ?? s}&from=${range?.from ?? a}&to=${range?.to ?? a}${bgId ? `&bg=${bgId}` : ""}${prefs.reciter ? `&reciter=${prefs.reciter}` : ""}&font=${prefs.font}&size=${prefs.size}&dim=${prefs.dim}&tone=${prefs.tone}&embed=1&auto=1`;
     WebBrowser.openBrowserAsync(`${API_BASE_URL}/story/video?${q}`, { presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN }).catch(() => flash(m.common.unavailable));
   };
   const applyRange = () => { Keyboard.dismiss(); const c = chapters.find((x) => x.id === pick.surah); const max = c?.versesCount ?? 286; const from = Math.min(max, Math.max(1, pick.from)); const to = Math.min(max, Math.max(from, pick.to)); setSheet("none"); router.push({ pathname: "/story", params: { surah: String(pick.surah), from: String(from), to: String(to) } } as never); };

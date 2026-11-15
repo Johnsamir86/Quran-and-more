@@ -138,7 +138,7 @@ export default function StoryPage() {
   const flash = (text: string) => { setToast(text); window.setTimeout(() => setToast(null), 2200); };
   const studyUrl = ayah ? `${typeof window !== "undefined" ? window.location.origin : ""}/study/${ayah.verseKey}` : "";
   const bgParam = prefs.bg && prefs.bg.kind !== "photo" ? prefs.bg.id : "";
-  const videoHref = ayah ? `/story/video?surah=${range?.surah ?? ayah.verseKey.split(":")[0]}&from=${range?.from ?? ayah.verseKey.split(":")[1]}&to=${range?.to ?? ayah.verseKey.split(":")[1]}${bgParam ? `&bg=${bgParam}` : ""}${prefs.reciter ? `&reciter=${prefs.reciter}` : ""}&font=${prefs.font}&size=${prefs.size}&dim=${prefs.dim}&tone=${prefs.tone}` : "/story/video";
+  const videoHref = ayah ? `/story/video?surah=${range?.surah ?? ayah.verseKey.split(":")[0]}&from=${range?.from ?? ayah.verseKey.split(":")[1]}&to=${range?.to ?? ayah.verseKey.split(":")[1]}${bgParam ? `&bg=${bgParam}` : ""}${prefs.reciter ? `&reciter=${prefs.reciter}` : ""}&font=${prefs.font}&size=${prefs.size}&dim=${prefs.dim}&tone=${prefs.tone}&auto=1` : "/story/video";
   const applyRange = () => { const c = chapters.find((x) => x.id === pick.surah); const max = c?.versesCount ?? 286; const from = Math.min(max, Math.max(1, pick.from)); const to = Math.min(max, Math.max(from, pick.to)); setSheet("none"); router.push(`/story?surah=${pick.surah}&from=${from}&to=${to}`); };
   const shareText = ayah ? `${ayah.text}\n${ayah.translation ?? ""}\n(${ayah.verseKey}) · ${t.shareText}` : t.shareText;
 

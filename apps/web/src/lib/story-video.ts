@@ -1,16 +1,17 @@
 "use client";
 
-import { ArrayBufferTarget, Muxer } from "mp4-muxer";
+import { ALL_FORMATS, BlobSource, BufferTarget, CanvasSink, CanvasSource, EncodedAudioPacketSource, EncodedPacket, EncodedPacketSink, Input, MP4, Mp4OutputFormat, Output, UrlSource, canEncodeVideo } from "mediabunny";
 
 import { STORY_FONTS, type ResolvedBg, type StoryFont } from "./story-tools";
 
 /**
  * Renders an ayah story as a vertical video (1080 × 1920): the chosen background
  * (moving clip, photo or colour), the recitation, each word lit as it is recited,
- * the translation and the brand. Encoding uses WebCodecs + mp4-muxer (H.264 + AAC,
- * plays everywhere) and falls back to MediaRecorder (WebM, or MP4 on Safari).
- * Frames are produced in real time so moving backgrounds stay in sync; a 20 s
- * story takes about 20 s to render.
+ * the translation and the brand. Video is H.264 through WebCodecs (mediabunny);
+ * the reciter's MP3 frames are copied into the MP4 unchanged, so the voice never
+ * depends on a browser audio encoder. Moving backgrounds are decoded frame by
+ * frame, so rendering runs faster than real time; MediaRecorder is the fallback
+ * where H.264 encoding is unavailable.
  */
 
 export interface VideoPage {
@@ -44,11 +45,11 @@ export interface VideoInput {
 
 export interface VideoResult { blob: Blob; mime: string; ext: "mp4" | "webm"; durationMs: number; engine: "webcodecs" | "recorder" }
 
-const GAP_MS = 700, INTRO_MS = 900, OUTRO_MS = 1500, FPS = 30, LEAD_MS = 90;
+/* The reciter's files are copied into the MP4 back to back (no re-encoding), so pages change exactly at file boundaries. */
+const GAP_MS = 0, INTRO_MS = 0, OUTRO_MS = 1500, FPS = 30, LEAD_MS = 90;
 
 export const canRenderVideo = (): boolean => typeof document !== "undefined" && (typeof (window as unknown as { VideoEncoder?: unknown }).VideoEncoder === "function" || typeof (window as unknown as { MediaRecorder?: unknown }).MediaRecorder === "function");
 
-const hasWebCodecs = () => typeof (window as unknown as { VideoEncoder?: unknown }).VideoEncoder === "function" && typeof (window as unknown as { AudioEncoder?: unknown }).AudioEncoder === "function";
 
 const loadImage = (src: string) => new Promise<HTMLImageElement>((resolve, reject) => { const i = new Image(); if (!src.startsWith("data:")) i.crossOrigin = "anonymous"; i.onload = () => resolve(i); i.onerror = reject; i.src = src; });
 
@@ -104,29 +105,39 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
   const { onProgress, signal } = input;
   const throwIfAborted = () => { if (signal?.aborted) throw new DOMException("aborted", "AbortError"); };
 
-  // 1. audio: decode every ayah, lay them on one timeline. The context is created before the first await so
-  // Safari keeps the user activation (otherwise the recorder path records silence).
-  const probe = new AudioContext();
-  await probe.resume().catch(() => undefined);
-  const buffers: AudioBuffer[] = [];
-  for (let i = 0; i < input.pages.length; i++) { buffers.push(await fetchAudio(probe, input.pages[i].audioUrl, signal)); onProgress?.((i + 1) / input.pages.length, "audio"); }
-  // Word timings derived from the full-surah recording can sit a little off the per-ayah cut; align the
-  // first word to the audible onset of each file (bounded to ±600 ms).
+  // 1. audio: fetch every ayah file and read its MP3 frames. They are muxed into the MP4 untouched, so the
+  // voice never depends on the browser's audio encoder (iOS Safari produced silent AAC tracks).
+  const blobs: Blob[] = [];
+  for (let i = 0; i < input.pages.length; i++) {
+    const res = await fetch(input.pages[i].audioUrl, { signal }); if (!res.ok) throw new Error(`audio ${res.status}`);
+    blobs.push(await res.blob()); onProgress?.((i + 1) / input.pages.length, "audio");
+  }
+  interface Parsed { packets: EncodedPacket[]; durationMs: number; config: AudioDecoderConfig | null; sampleRate: number; channels: number }
+  const parsed: Parsed[] = [];
+  for (const b of blobs) {
+    const inp = new Input({ source: new BlobSource(b), formats: ALL_FORMATS });
+    const track = await inp.getPrimaryAudioTrack(); if (!track) throw new Error("audio track");
+    const packets: EncodedPacket[] = [];
+    for await (const pk of new EncodedPacketSink(track).packets()) packets.push(pk);
+    const last = packets[packets.length - 1];
+    parsed.push({ packets, durationMs: last ? (last.timestamp + last.duration) * 1000 : 0, config: await track.getDecoderConfig(), sampleRate: track.sampleRate, channels: track.numberOfChannels });
+  }
+  const durations = parsed.map((p) => p.durationMs);
+  // Word timings derived from the full-surah recording can sit a little off the per-ayah cut; align the first
+  // word to the audible onset of each file (bounded to ±600 ms). Decoding is optional: skip it where it fails.
+  const onsets: number[] = await Promise.all(blobs.map(async (b) => {
+    try { const ctx = new OfflineAudioContext(1, 1, 48000); const buf = await ctx.decodeAudioData(await b.arrayBuffer()); const ch = buf.getChannelData(0); const step = Math.max(1, Math.floor(buf.sampleRate / 1000)); for (let k = 0; k < ch.length; k += step) if (Math.abs(ch[k]) > 0.02) return (k / buf.sampleRate) * 1000; return 0; } catch { return -1; }
+  }));
   const timings: [number, number, number][][] = input.pages.map((p, i) => {
     if (!p.wordTimings.length) return [];
-    const b = buffers[i]; const ch = b.getChannelData(0); const step = Math.max(1, Math.floor(b.sampleRate / 1000));
-    let onset = 0; for (let k = 0; k < ch.length; k += step) { if (Math.abs(ch[k]) > 0.02) { onset = (k / b.sampleRate) * 1000; break; } }
+    if (onsets[i] < 0) return p.wordTimings;
     const first = Math.min(...p.wordTimings.map(([, f]) => f));
-    const shift = Math.max(-600, Math.min(600, onset - first));
+    const shift = Math.max(-600, Math.min(600, onsets[i] - first));
     return p.wordTimings.map(([pos, f, t]) => [pos, f + shift, t + shift] as [number, number, number]);
   });
-  const sampleRate = 48000;
   const starts: number[] = []; let cursor = INTRO_MS;
-  for (const b of buffers) { starts.push(cursor); cursor += b.duration * 1000 + GAP_MS; }
+  for (const d of durations) { starts.push(cursor); cursor += d + GAP_MS; }
   const totalMs = cursor - GAP_MS + OUTRO_MS;
-  const offline = new OfflineAudioContext(2, Math.ceil((totalMs / 1000) * sampleRate), sampleRate);
-  buffers.forEach((b, i) => { const src = offline.createBufferSource(); src.buffer = b; src.connect(offline.destination); src.start(starts[i] / 1000); });
-  const mixed = await offline.startRendering();
   throwIfAborted();
 
   // 2. visuals
@@ -135,9 +146,18 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
   const family = STORY_FONTS[input.font].family;
   const arSize = Math.round(58 * input.size * S);
   try { await document.fonts.load(`500 ${arSize}px ${family}`); await document.fonts.load(`400 ${Math.round(32 * S)}px "Plus Jakarta Sans"`); } catch { /* fallback faces */ }
-  let bgImage: HTMLImageElement | null = null, bgVideo: HTMLVideoElement | null = null;
-  if (input.bg.video) { try { bgVideo = await loadVideo(input.bg.video); } catch { bgVideo = null; } }
-  if (!bgVideo && input.bg.url) { try { bgImage = await loadImage(input.bg.url); } catch { bgImage = null; } }
+  // Moving background: decode the clip's frames directly (fast, no real-time pacing); fall back to a <video>
+  // element played in real time, then to the poster image.
+  let bgImage: HTMLImageElement | null = null, bgVideo: HTMLVideoElement | null = null, bgSink: CanvasSink | null = null, bgClipMs = 0, bgFrame: CanvasImageSource | null = null;
+  if (input.bg.video) {
+    try {
+      const clip = new Input({ source: new UrlSource(input.bg.video), formats: [MP4] });
+      const track = await clip.getPrimaryVideoTrack();
+      if (track && (await track.canDecode())) { bgSink = new CanvasSink(track, { width: W, height: H, fit: "cover", poolSize: 3 }); bgClipMs = (await clip.computeDuration()) * 1000; if (!(await bgSink.getCanvas(0))) bgSink = null; }
+    } catch { bgSink = null; }
+    if (!bgSink) { try { bgVideo = await loadVideo(input.bg.video); } catch { bgVideo = null; } }
+  }
+  if (!bgSink && !bgVideo && input.bg.url) { try { bgImage = await loadImage(input.bg.url); } catch { bgImage = null; } }
   const light = input.tone === "light";
   const ink = light ? "#ffffff" : "#15201b", muted = light ? "rgba(255,255,255,0.85)" : "rgba(21,32,27,0.8)", accent = "#d8ad5c";
 
@@ -160,7 +180,8 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
 
   const drawFrame = (tMs: number) => {
     // background
-    if (bgVideo) { const s = Math.max(W / bgVideo.videoWidth, H / bgVideo.videoHeight); const w = bgVideo.videoWidth * s, h = bgVideo.videoHeight * s; ctx.drawImage(bgVideo, (W - w) / 2, (H - h) / 2, w, h); }
+    if (bgFrame) ctx.drawImage(bgFrame, 0, 0, W, H);
+    else if (bgVideo) { const s = Math.max(W / bgVideo.videoWidth, H / bgVideo.videoHeight); const w = bgVideo.videoWidth * s, h = bgVideo.videoHeight * s; ctx.drawImage(bgVideo, (W - w) / 2, (H - h) / 2, w, h); }
     else if (bgImage) { const s = Math.max(W / bgImage.width, H / bgImage.height); const w = bgImage.width * s, h = bgImage.height * s; ctx.drawImage(bgImage, (W - w) / 2, (H - h) / 2, w, h); }
     else { const g = ctx.createLinearGradient(0, 0, W, H); g.addColorStop(0, input.bg.colors?.[0] ?? "#0f5a4a"); g.addColorStop(1, input.bg.colors?.[1] ?? "#14805f"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); }
     ctx.fillStyle = light ? `rgba(0,0,0,${input.dim})` : `rgba(255,255,255,${input.dim})`; ctx.fillRect(0, 0, W, H);
@@ -168,7 +189,7 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
     ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
     // which page
     let idx = input.pages.length - 1;
-    for (let i = 0; i < starts.length; i++) if (tMs < starts[i] + buffers[i].duration * 1000 + GAP_MS / 2) { idx = i; break; }
+    for (let i = 0; i < starts.length; i++) if (tMs < starts[i] + durations[i] + GAP_MS / 2) { idx = i; break; }
     if (tMs < starts[0]) idx = 0;
     const page = input.pages[idx], lay = layouts[idx];
     const local = tMs - starts[idx];
@@ -178,7 +199,7 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
     input.pages.forEach((_, i) => {
       const x = 24 * S + i * (barW + 6 * S);
       ctx.fillStyle = light ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.25)"; ctx.fillRect(x, 60 * S, barW, 4 * S);
-      const f = i < idx ? 1 : i > idx ? 0 : Math.min(1, Math.max(0, local / (buffers[idx].duration * 1000)));
+      const f = i < idx ? 1 : i > idx ? 0 : Math.min(1, Math.max(0, local / (durations[idx])));
       ctx.fillStyle = ink; ctx.fillRect(x, 60 * S, barW * f, 4 * S);
     });
     // kicker
@@ -224,66 +245,66 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
     if (!started && input.bg.url) { try { bgImage = await loadImage(input.bg.url); } catch { bgImage = null; } bgVideo = null; }
   }
   const frames = Math.ceil((totalMs / 1000) * FPS);
+  // Walk the clip's frames in order (sequential decoding is cheap; random access is not) and loop at its end.
+  let bgIter: AsyncGenerator<{ canvas: HTMLCanvasElement | OffscreenCanvas; timestamp: number; duration: number }, void, unknown> | null = null;
+  let bgCur: { canvas: HTMLCanvasElement | OffscreenCanvas; timestamp: number; duration: number } | null = null;
+  const nextBgFrame = async (tMs: number) => {
+    if (!bgSink || !bgClipMs) return;
+    const want = (tMs % bgClipMs) / 1000;
+    try {
+      if (!bgIter || (bgCur && want < bgCur.timestamp)) { bgIter = bgSink.canvases(0) as typeof bgIter; bgCur = null; }
+      while (!bgCur || bgCur.timestamp + bgCur.duration <= want) { const n = await bgIter!.next(); if (n.done) { bgIter = null; break; } bgCur = n.value; }
+      if (bgCur) bgFrame = bgCur.canvas;
+    } catch { /* keep the previous frame */ }
+  };
 
-  // H.264 + AAC through WebCodecs when the browser can encode them (Chrome, Edge, Android Chrome, recent Safari);
-  // otherwise MediaRecorder below (WebM on Chromium builds without H.264, MP4 on Safari).
-  let vConfig: VideoEncoderConfig | null = null;
-  if (hasWebCodecs()) {
-    for (const codec of W >= 1080 ? ["avc1.640028", "avc1.4d0028", "avc1.42002a"] : ["avc1.4d001f", "avc1.42001f"]) {
-      const cfg: VideoEncoderConfig = { codec, width: W, height: H, bitrate: W >= 1080 ? 9_000_000 : 5_000_000, framerate: FPS, latencyMode: "quality", avc: { format: "avc" } } as VideoEncoderConfig;
-      try { if ((await VideoEncoder.isConfigSupported(cfg)).supported) { vConfig = cfg; break; } } catch { /* try next */ }
+  // H.264 video through WebCodecs where available (Chrome, Edge, Android, Safari 16.4+), MP3 audio copied as is.
+  const canAvc = !input.forceRecorder && (await canEncodeVideo("avc", { width: W, height: H }).catch(() => false));
+  if (canAvc) try {
+    const format = new Mp4OutputFormat({ fastStart: "in-memory" });
+    const output = new Output({ format, target: new BufferTarget() });
+    const videoSource = new CanvasSource(canvas, { codec: "avc", bitrate: W >= 1080 ? 9_000_000 : 5_000_000, keyFrameInterval: 2 });
+    output.addVideoTrack(videoSource, { frameRate: FPS });
+    const audioSource = new EncodedAudioPacketSource("mp3");
+    output.addAudioTrack(audioSource);
+    await output.start();
+    let seq = 0;
+    for (let i = 0; i < parsed.length; i++) {
+      const { packets, config } = parsed[i];
+      for (let k = 0; k < packets.length; k++) {
+        const pk = packets[k];
+        await audioSource.add(new EncodedPacket(pk.data, "key", pk.timestamp + starts[i] / 1000, pk.duration, seq++), k === 0 && i === 0 && config ? { decoderConfig: config } : undefined);
+      }
     }
-  }
-  // AAC where the platform has an encoder (Android, macOS, Windows, iOS); Opus otherwise (Linux Chromium).
-  let audioCodec: "aac" | "opus" | null = null;
-  if (vConfig) {
-    for (const [name, codec] of [["aac", "mp4a.40.2"], ["opus", "opus"]] as const) {
-      try { if ((await AudioEncoder.isConfigSupported({ codec, numberOfChannels: 2, sampleRate, bitrate: 160_000 })).supported) { audioCodec = name; break; } } catch { /* try next */ }
-    }
-    if (!audioCodec) vConfig = null;
-  }
-  if (vConfig && audioCodec && !input.forceRecorder) try {
-    const muxer = new Muxer({ target: new ArrayBufferTarget(), video: { codec: "avc", width: W, height: H }, audio: { codec: audioCodec, numberOfChannels: 2, sampleRate }, fastStart: "in-memory" });
-    const videoEncoder = new VideoEncoder({ output: (chunk, meta) => muxer.addVideoChunk(chunk, meta), error: (e) => { throw e; } });
-    videoEncoder.configure(vConfig);
-    const audioEncoder = new AudioEncoder({ output: (chunk, meta) => muxer.addAudioChunk(chunk, meta), error: (e) => { throw e; } });
-    audioEncoder.configure({ codec: audioCodec === "aac" ? "mp4a.40.2" : "opus", numberOfChannels: 2, sampleRate, bitrate: 160_000 });
-    // audio: feed in 1 s slices
-    const chunk = sampleRate;
-    for (let off = 0; off < mixed.length; off += chunk) {
-      const n = Math.min(chunk, mixed.length - off);
-      const data = new Float32Array(n * 2);
-      const l = mixed.getChannelData(0), r = mixed.getChannelData(1);
-      for (let i = 0; i < n; i++) { data[i * 2] = l[off + i]; data[i * 2 + 1] = r[off + i]; }
-      audioEncoder.encode(new AudioData({ format: "f32", sampleRate, numberOfFrames: n, numberOfChannels: 2, timestamp: Math.round((off / sampleRate) * 1_000_000), data }));
-    }
-    // video frames in real time, clocked so moving backgrounds progress naturally
     const t0 = performance.now();
     for (let i = 0; i < frames; i++) {
       throwIfAborted();
       const tMs = (i / FPS) * 1000;
-      const wait = t0 + tMs - performance.now(); if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+      if (bgVideo) { const wait = t0 + tMs - performance.now(); if (wait > 0) await new Promise((r) => setTimeout(r, wait)); }
+      await nextBgFrame(tMs);
       drawFrame(tMs);
-      const frame = new VideoFrame(canvas, { timestamp: Math.round(tMs * 1000), duration: Math.round(1_000_000 / FPS) });
-      videoEncoder.encode(frame, { keyFrame: i % (FPS * 2) === 0 });
-      frame.close();
-      if (videoEncoder.encodeQueueSize > 8) await new Promise((r) => setTimeout(r, 8));
+      await videoSource.add(i / FPS, 1 / FPS);
       onProgress?.(i / frames, "render");
     }
     onProgress?.(1, "encode");
-    await videoEncoder.flush(); await audioEncoder.flush(); videoEncoder.close(); audioEncoder.close();
-    muxer.finalize();
+    await output.finalize();
     bgVideo?.pause();
-    const buf = (muxer.target as ArrayBufferTarget).buffer;
-    await probe.close().catch(() => undefined);
+    const buf = (output.target as BufferTarget).buffer!;
     return { blob: new Blob([buf], { type: "video/mp4" }), mime: "video/mp4", ext: "mp4", durationMs: totalMs, engine: "webcodecs" };
   } catch (e) {
     if (e instanceof DOMException && e.name === "AbortError") throw e;
-    // Encoder failed mid-way (seen on some Safari builds): record instead.
+    // Encoder failed: record instead.
   }
 
-  // Fallback: MediaRecorder with live audio playback through the same (activated) context
-  const live = probe;
+  // Fallback (no H.264 encoder, e.g. Firefox): decode and mix the ayat, then record canvas + audio.
+  const live = new AudioContext();
+  await live.resume().catch(() => undefined);
+  const decoded: AudioBuffer[] = [];
+  for (const b of blobs) decoded.push(await live.decodeAudioData(await b.arrayBuffer()));
+  const sampleRate = live.sampleRate;
+  const offline = new OfflineAudioContext(2, Math.ceil((totalMs / 1000) * sampleRate), sampleRate);
+  decoded.forEach((b, i) => { const src = offline.createBufferSource(); src.buffer = b; src.connect(offline.destination); src.start(starts[i] / 1000); });
+  const mixed = await offline.startRendering();
   const dest = live.createMediaStreamDestination();
   const src = live.createBufferSource(); src.buffer = mixed; src.connect(dest);
   const stream = canvas.captureStream(FPS);
@@ -293,12 +314,12 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
   const parts: Blob[] = []; rec.ondataavailable = (e) => { if (e.data.size) parts.push(e.data); };
   const done = new Promise<void>((resolve) => { rec.onstop = () => resolve(); });
   drawFrame(0); rec.start(250); await live.resume(); src.start();
-  const t0 = performance.now();
+  const t0r = performance.now();
   for (let i = 0; i < frames; i++) {
     throwIfAborted();
     const tMs = (i / FPS) * 1000;
-    const wait = t0 + tMs - performance.now(); if (wait > 0) await new Promise((r) => setTimeout(r, wait));
-    drawFrame(tMs); onProgress?.(i / frames, "render");
+    const wait = t0r + tMs - performance.now(); if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+    await nextBgFrame(tMs); drawFrame(tMs); onProgress?.(i / frames, "render");
   }
   rec.stop(); await done; src.disconnect(); await live.close().catch(() => undefined); bgVideo?.pause();
   const isMp4 = (rec.mimeType || mime).includes("mp4");
