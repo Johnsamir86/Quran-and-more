@@ -45,8 +45,8 @@ export default function TabsLayout() {
       <Tabs.Screen name="quran" options={{ title: m.nav.quran }} />
       <Tabs.Screen name="learn" options={{ title: m.nav.learn }} />
       <Tabs.Screen name="azan" options={{ title: m.nav.azan }} />
-      <Tabs.Screen name="me" options={{ title: m.nav.me }} />
       <Tabs.Screen name="story" options={{ title: m.nav.story, headerShown: false }} />
+      <Tabs.Screen name="me" options={{ title: m.nav.me }} />
     </Tabs>
   );
 }
