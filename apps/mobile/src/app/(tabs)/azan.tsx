@@ -103,7 +103,7 @@ export default function AzanScreen() {
       <Stack.Screen options={{ title: t.title }} />
       <StudyNav current="azan" />
       <Row>
-        {([["/adhkar", m.nav.adhkar, "sparkles-outline"], ["/qibla", m.nav.qibla, "compass-outline"], ["/calendar", m.nav.calendar, "moon-outline"], ["/tasbih", m.nav.tasbih, "ellipse-outline"], ["/khatmah", m.nav.khatmah, "calendar-number-outline"]] as const).map(([href, label, icon]) => (
+        {([["/adhkar", m.nav.adhkar, "sparkles-outline"], ["/qibla", m.nav.qibla, "compass-outline"], ["/calendar", m.nav.calendar, "moon-outline"], ["/tasbih", m.nav.tasbih, "ellipse-outline"], ["/khatmah", m.nav.khatmah, "calendar-number-outline"], ["/names", m.nav.names, "star-outline"]] as const).map(([href, label, icon]) => (
           <Link key={href} href={href as never} asChild>
             <Pressable accessibilityRole="button" style={{ flexDirection: "row", gap: 6, alignItems: "center", paddingVertical: 8, paddingHorizontal: 12, borderRadius: 999, borderWidth: 1, borderColor: c.line, backgroundColor: c.card }}>
               <Ionicons name={icon} size={16} color={c.accent} /><Text style={{ color: c.ink, fontSize: 13 }}>{label}</Text>

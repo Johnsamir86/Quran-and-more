@@ -14,7 +14,7 @@ export const en = {
     offline: "Could not reach the content service. Check your connection and try again.", noProfile: "Choose a profile on the Family page first",
     on: "On", off: "Off", enable: "Enable", disable: "Disable", chooseLanguage: "Choose the interface language",
   },
-  nav: { home: "Home", search: "Search", learn: "Learn", hifz: "Memorise", play: "Play", ask: "Ask", player: "Player", mushaf: "Mushaf", family: "Family", azan: "Azan", story: "Ayah of the day", quran: "Quran", me: "Me", study: "Study", adhkar: "Adhkar", qibla: "Qibla", khatmah: "Khatmah", calendar: "Calendar", tasbih: "Tasbih" },
+  nav: { home: "Home", search: "Search", learn: "Learn", hifz: "Memorise", play: "Play", ask: "Ask", player: "Player", mushaf: "Mushaf", family: "Family", azan: "Azan", story: "Ayah of the day", quran: "Quran", me: "Me", study: "Study", adhkar: "Adhkar", qibla: "Qibla", khatmah: "Khatmah", calendar: "Calendar", tasbih: "Tasbih", names: "99 names" },
   home: {
     kicker: "The Noble Quran", title: "Quran and More", sub: "One Quran experience for the whole family: gapless recitation with word sync, the mushaf in the official script, tafsir and translations in every language, and a profile for every member.",
     startListening: "Start listening", openMushaf: "Open the mushaf",
@@ -31,6 +31,7 @@ export const en = {
       azan: { title: "Azan", sub: "Prayer times for your city, the azan in the voice you choose, a reminder for each prayer" },
       story: { title: "Ayah of the day", sub: "One ayah a day, full screen, with its meaning and a moment to reflect" },
       kahf: { title: "Surah Al-Kahf", sub: "Read on Friday" },
+      names: { title: "99 names of Allah", sub: "Al-Asma al-Husna with meanings, a name for each day, and search" },
       adhkar: { title: "Adhkar", sub: "Morning, evening, after-prayer, sleep and waking remembrances from Hisn al-Muslim, with a counter for each" },
       qibla: { title: "Qibla", sub: "A compass that points to the Kaaba from where you are, with the bearing and distance" },
       calendar: { title: "Hijri calendar", sub: "Today's Hijri date, the coming Islamic dates and the days left to Ramadan" },
@@ -186,6 +187,7 @@ export const en = {
       title: "Tasbih", tap: "Tap to count", rounds: "Rounds", total: "Total", target: "Target", reset: "Reset", vibrate: "Vibrate", sound: "Sound", afterPrayer: "After-prayer sequence (33 · 33 · 34)",
       formula: "Formula", custom: "Custom", roundDone: "Round complete", keepScreenOn: "Keep the screen on",
     },
+    names: { title: "The 99 names of Allah", today: "Name of the day", search: "Search a name or meaning", meaning: "Meaning", about: "The list of ninety-nine names narrated through al-Walid ibn Muslim (Tirmidhi 3507). Scholars note that Allah has names beyond these; the meanings are short glosses, not full explanations." },
     khatmah: {
       title: "Khatmah", sub: "Finish the whole Quran on a plan", plan: "Plan a khatmah", days: "Days", startPage: "Start from page", pagesPerDay: "pages a day", today: "Today's portion", pages: "Pages", page: "Page", juz: "Juz",
       readUpTo: "Read up to page", markRead: "Mark today's portion as read", behind: "pages behind schedule", onTrack: "On track", finished: "Khatmah complete. May Allah accept it from you.", daysLeft: "days left",

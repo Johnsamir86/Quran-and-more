@@ -8,7 +8,7 @@ export const zh: PartialMessages = {
     start: "开始", again: "再来", poweredBy: "由 Quran Foundation API 提供支持", privacy: "隐私", terms: "条款", offline: "无法连接内容服务。请检查网络后重试。", noProfile: "请先在家庭页面选择一个档案",
     on: "开", off: "关", enable: "启用", disable: "停用", chooseLanguage: "选择界面语言",
   },
-  nav: { home: "首页", search: "搜索", learn: "学习", hifz: "背诵", play: "游戏", ask: "提问", player: "播放器", mushaf: "经本", family: "家庭", azan: "宣礼", story: "每日一节", quran: "古兰经", me: "我", study: "研读", adhkar: "赞念", qibla: "朝向", khatmah: "完读", calendar: "历法", tasbih: "念珠" },
+  nav: { home: "首页", search: "搜索", learn: "学习", hifz: "背诵", play: "游戏", ask: "提问", player: "播放器", mushaf: "经本", family: "家庭", azan: "宣礼", story: "每日一节", quran: "古兰经", me: "我", study: "研读", adhkar: "赞念", qibla: "朝向", khatmah: "完读", calendar: "历法", tasbih: "念珠", names: "99尊名" },
   home: {
     kicker: "尊贵的古兰经", title: "古兰经与更多", sub: "全家共享的古兰经体验：逐词同步的无间断诵读、官方字体的经本、所有语言的注释与译文，以及每位成员的专属档案。",
     startListening: "开始聆听", openMushaf: "打开经本",
@@ -25,6 +25,7 @@ export const zh: PartialMessages = {
       azan: { title: "宣礼", sub: "所在城市的礼拜时间、自选嗓音的宣礼，以及每次礼拜的提醒" },
       story: { title: "每日一节", sub: "每天一节全屏呈现，附含义与片刻省思" },
       kahf: { title: "山洞章", sub: "主麻日诵读" },
+      names: { title: "真主的99个尊名", sub: "带释义的尊名、每日一名与搜索" },
       adhkar: { title: "赞念", sub: "来自《穆斯林堡垒》的晨、昏、礼拜后、睡前与醒来赞念，每条带计数" },
       qibla: { title: "朝向", sub: "从您所在位置指向天房的罗盘，含方位角和距离" },
       calendar: { title: "伊斯兰历", sub: "今日伊历日期、即将到来的伊斯兰节日和距离斋月的天数" },
@@ -111,6 +112,7 @@ export const zh: PartialMessages = {
     tasbih: {
       title: "念珠",
     },
+    names: { title: "真主的99个尊名" },
     khatmah: {
       title: "完读",
     },

@@ -8,7 +8,7 @@ export const nl: PartialMessages = {
     today: "vandaag", tomorrow: "morgen", days: "dagen", minutes: "min", done: "Klaar", start: "Starten", again: "Opnieuw", poweredBy: "Mogelijk gemaakt door de API's van Quran Foundation", privacy: "Privacy", terms: "Voorwaarden",
     offline: "De inhoudsdienst is niet bereikbaar. Controleer je verbinding en probeer het opnieuw.", noProfile: "Kies eerst een profiel op de gezinspagina", on: "Aan", off: "Uit", enable: "Inschakelen", disable: "Uitschakelen", chooseLanguage: "Kies de taal van de interface",
   },
-  nav: { home: "Home", search: "Zoeken", learn: "Leren", hifz: "Memoriseren", play: "Spelen", ask: "Vragen", player: "Speler", mushaf: "Mushaf", family: "Gezin", azan: "Adhan", story: "Vers van de dag", quran: "Koran", me: "Ik", study: "Studie", adhkar: "Adhkar", qibla: "Qibla", khatmah: "Khatma", calendar: "Kalender", tasbih: "Tasbih" },
+  nav: { home: "Home", search: "Zoeken", learn: "Leren", hifz: "Memoriseren", play: "Spelen", ask: "Vragen", player: "Speler", mushaf: "Mushaf", family: "Gezin", azan: "Adhan", story: "Vers van de dag", quran: "Koran", me: "Ik", study: "Studie", adhkar: "Adhkar", qibla: "Qibla", khatmah: "Khatma", calendar: "Kalender", tasbih: "Tasbih", names: "99 namen" },
   home: {
     kicker: "De Edele Koran", title: "Koran en meer", sub: "Eén Koranervaring voor het hele gezin: naadloze recitatie met woordsynchronisatie, de mushaf in het officiële schrift, tafsir en vertalingen in elke taal en een profiel voor iedereen.",
     startListening: "Begin met luisteren", openMushaf: "Open de mushaf",
@@ -25,6 +25,7 @@ export const nl: PartialMessages = {
       azan: { title: "Adhan", sub: "Gebedstijden voor jouw stad, de adhan in de stem die jij kiest, een herinnering bij elk gebed" },
       story: { title: "Vers van de dag", sub: "Elke dag één vers op volledig scherm, met de betekenis en een moment van bezinning" },
       kahf: { title: "Soera Al-Kahf", sub: "Gelezen op vrijdag" },
+      names: { title: "99 namen van Allah", sub: "De schoonste namen met betekenis, een naam per dag en zoeken" },
       adhkar: { title: "Adhkar", sub: "Smeekbeden voor ochtend, avond, na het gebed, voor het slapen en bij het ontwaken uit Hisn al-Muslim, met teller" },
       qibla: { title: "Qibla", sub: "Een kompas dat vanaf jouw locatie naar de Kaäba wijst, met richting en afstand" },
       calendar: { title: "Hijri-kalender", sub: "De hijri-datum van vandaag, komende islamitische dagen en de dagen tot Ramadan" },
@@ -117,6 +118,7 @@ export const nl: PartialMessages = {
     tasbih: {
       title: "Tasbih",
     },
+    names: { title: "99 namen van Allah" },
     khatmah: {
       title: "Khatma",
     },

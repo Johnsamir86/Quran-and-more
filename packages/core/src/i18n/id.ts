@@ -9,7 +9,7 @@ export const id: PartialMessages = {
     privacy: "Privasi", terms: "Ketentuan", offline: "Tidak dapat menghubungi layanan konten. Periksa koneksi Anda lalu coba lagi.", noProfile: "Pilih profil di halaman Keluarga terlebih dahulu",
     on: "Aktif", off: "Nonaktif", enable: "Aktifkan", disable: "Nonaktifkan", chooseLanguage: "Pilih bahasa antarmuka",
   },
-  nav: { home: "Beranda", search: "Cari", learn: "Belajar", hifz: "Hafalan", play: "Main", ask: "Tanya", player: "Pemutar", mushaf: "Mushaf", family: "Keluarga", azan: "Azan", story: "Ayat hari ini", quran: "Al-Qur'an", me: "Saya", study: "Kajian", adhkar: "Zikir", qibla: "Kiblat", khatmah: "Khatam", calendar: "Kalender", tasbih: "Tasbih" },
+  nav: { home: "Beranda", search: "Cari", learn: "Belajar", hifz: "Hafalan", play: "Main", ask: "Tanya", player: "Pemutar", mushaf: "Mushaf", family: "Keluarga", azan: "Azan", story: "Ayat hari ini", quran: "Al-Qur'an", me: "Saya", study: "Kajian", adhkar: "Zikir", qibla: "Kiblat", khatmah: "Khatam", calendar: "Kalender", tasbih: "Tasbih", names: "99 nama" },
   home: {
     kicker: "Al-Qur'an Al-Karim", title: "Quran dan lainnya", sub: "Satu pengalaman Al-Qur'an untuk seluruh keluarga: tilawah tanpa jeda dengan sinkronisasi kata, mushaf dengan khat resmi, tafsir dan terjemahan dalam semua bahasa, serta profil untuk setiap anggota.",
     startListening: "Mulai mendengarkan", openMushaf: "Buka mushaf",
@@ -26,6 +26,7 @@ export const id: PartialMessages = {
       azan: { title: "Azan", sub: "Jadwal salat kota Anda, azan dengan suara pilihan Anda, pengingat di setiap waktu salat" },
       story: { title: "Ayat hari ini", sub: "Satu ayat setiap hari, layar penuh, dengan maknanya dan sejenak merenung" },
       kahf: { title: "Surah Al-Kahfi", sub: "Dibaca pada hari Jumat" },
+      names: { title: "Asmaul Husna", sub: "99 nama Allah dengan artinya, satu nama tiap hari, dan pencarian" },
       adhkar: { title: "Zikir", sub: "Zikir pagi, petang, setelah salat, sebelum tidur dan saat bangun dari Hisnul Muslim, dengan penghitung" },
       qibla: { title: "Kiblat", sub: "Kompas yang menunjuk Ka'bah dari lokasi Anda, dengan arah dan jarak" },
       calendar: { title: "Kalender Hijriah", sub: "Tanggal Hijriah hari ini, hari-hari Islam mendatang dan hitung mundur Ramadan" },
@@ -198,6 +199,7 @@ export const id: PartialMessages = {
       roundDone: "Putaran selesai",
       keepScreenOn: "Biarkan layar menyala",
     },
+    names: { title: "Asmaul Husna" },
     khatmah: {
       title: "Khatam",
       sub: "Selesaikan seluruh Al-Qur'an dengan rencana",

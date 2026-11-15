@@ -39,6 +39,7 @@ export default function HomeScreen() {
     { href: "/khatmah", icon: "calendar-number-outline", label: m.nav.khatmah },
     { href: "/tasbih", icon: "ellipse-outline", label: m.nav.tasbih },
     { href: "/calendar", icon: "moon-outline", label: m.nav.calendar },
+    { href: "/names", icon: "star-outline", label: m.nav.names },
     { href: "/search", icon: "search-outline", label: m.nav.search },
     { href: "/lessons", icon: "school-outline", label: m.learn.title },
     { href: "/hifz", icon: "repeat-outline", label: m.nav.hifz },

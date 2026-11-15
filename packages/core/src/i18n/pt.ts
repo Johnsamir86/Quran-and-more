@@ -8,7 +8,7 @@ export const pt: PartialMessages = {
     unavailable: "indisponível", today: "hoje", tomorrow: "amanhã", days: "dias", minutes: "min", done: "Concluído", start: "Começar", again: "Outra vez", poweredBy: "Com as APIs da Quran Foundation", privacy: "Privacidade", terms: "Termos",
     offline: "Não foi possível contactar o serviço de conteúdo. Verifique a ligação e tente de novo.", noProfile: "Escolha primeiro um perfil na página Família", on: "Ligado", off: "Desligado", enable: "Ativar", disable: "Desativar", chooseLanguage: "Escolha o idioma da interface",
   },
-  nav: { home: "Início", search: "Pesquisar", learn: "Aprender", hifz: "Memorizar", play: "Jogar", ask: "Perguntar", player: "Leitor", mushaf: "Mushaf", family: "Família", azan: "Adhan", story: "Versículo do dia", quran: "Alcorão", me: "Eu", study: "Estudo", adhkar: "Adhkar", qibla: "Qibla", khatmah: "Khatma", calendar: "Calendário", tasbih: "Tasbih" },
+  nav: { home: "Início", search: "Pesquisar", learn: "Aprender", hifz: "Memorizar", play: "Jogar", ask: "Perguntar", player: "Leitor", mushaf: "Mushaf", family: "Família", azan: "Adhan", story: "Versículo do dia", quran: "Alcorão", me: "Eu", study: "Estudo", adhkar: "Adhkar", qibla: "Qibla", khatmah: "Khatma", calendar: "Calendário", tasbih: "Tasbih", names: "99 nomes" },
   home: {
     kicker: "O Nobre Alcorão", title: "Alcorão e mais", sub: "Uma única experiência do Alcorão para toda a família: recitação contínua com sincronização de palavras, o mushaf na escrita oficial, tafsir e traduções em todos os idiomas e um perfil para cada membro.",
     startListening: "Começar a ouvir", openMushaf: "Abrir o mushaf",
@@ -25,6 +25,7 @@ export const pt: PartialMessages = {
       azan: { title: "Adhan", sub: "Horários de oração da sua cidade, o adhan na voz que escolher e um lembrete em cada oração" },
       story: { title: "Versículo do dia", sub: "Um versículo por dia, em ecrã inteiro, com o seu significado e um momento de reflexão" },
       kahf: { title: "Surata Al-Kahf", sub: "Lida à sexta-feira" },
+      names: { title: "99 nomes de Allah", sub: "Os mais belos nomes com significado, um nome por dia e busca" },
       adhkar: { title: "Adhkar", sub: "Lembranças da manhã, da tarde, após a oração, ao dormir e ao acordar de Hisn al-Muslim, com contador" },
       qibla: { title: "Qibla", sub: "Uma bússola que aponta para a Caaba a partir da sua localização, com rumo e distância" },
       calendar: { title: "Calendário hijri", sub: "A data hijri de hoje, as próximas datas islâmicas e os dias até o Ramadã" },
@@ -117,6 +118,7 @@ export const pt: PartialMessages = {
     tasbih: {
       title: "Tasbih",
     },
+    names: { title: "99 nomes de Allah" },
     khatmah: {
       title: "Khatma",
     },

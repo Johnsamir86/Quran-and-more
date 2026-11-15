@@ -10,7 +10,7 @@ export const es: PartialMessages = {
     offline: "No se pudo conectar con el servicio de contenido. Revisa tu conexión e inténtalo de nuevo.", noProfile: "Elige primero un perfil en la página Familia",
     on: "Activado", off: "Desactivado", enable: "Activar", disable: "Desactivar", chooseLanguage: "Elige el idioma de la interfaz",
   },
-  nav: { home: "Inicio", search: "Buscar", learn: "Aprender", hifz: "Memorizar", play: "Jugar", ask: "Preguntar", player: "Reproductor", mushaf: "Mushaf", family: "Familia", azan: "Adhan", story: "Aleya del día", quran: "Corán", me: "Yo", study: "Estudio", adhkar: "Adhkar", qibla: "Qibla", khatmah: "Jatma", calendar: "Calendario", tasbih: "Tasbih" },
+  nav: { home: "Inicio", search: "Buscar", learn: "Aprender", hifz: "Memorizar", play: "Jugar", ask: "Preguntar", player: "Reproductor", mushaf: "Mushaf", family: "Familia", azan: "Adhan", story: "Aleya del día", quran: "Corán", me: "Yo", study: "Estudio", adhkar: "Adhkar", qibla: "Qibla", khatmah: "Jatma", calendar: "Calendario", tasbih: "Tasbih", names: "99 nombres" },
   home: {
     kicker: "El Noble Corán", title: "Corán y más", sub: "Una sola experiencia del Corán para toda la familia: recitación continua con sincronización de palabras, el mushaf en la escritura oficial, tafsir y traducciones en todos los idiomas, y un perfil para cada miembro.",
     startListening: "Empezar a escuchar", openMushaf: "Abrir el mushaf",
@@ -27,6 +27,7 @@ export const es: PartialMessages = {
       azan: { title: "Adhan", sub: "Horarios de oración de tu ciudad, el adhan con la voz que elijas y un aviso en cada oración" },
       story: { title: "Aleya del día", sub: "Una aleya al día, a pantalla completa, con su significado y un momento de reflexión" },
       kahf: { title: "Sura Al-Kahf", sub: "Se lee el viernes" },
+      names: { title: "99 nombres de Allah", sub: "Los nombres más bellos con su significado, un nombre al día y búsqueda" },
       adhkar: { title: "Adhkar", sub: "Recuerdos de la mañana, la tarde, tras la oración, al dormir y al despertar de Hisn al-Muslim, con contador" },
       qibla: { title: "Qibla", sub: "Una brújula que señala la Kaaba desde tu ubicación, con el rumbo y la distancia" },
       calendar: { title: "Calendario hiyrí", sub: "La fecha hiyrí de hoy, las próximas fechas islámicas y los días que faltan para Ramadán" },
@@ -207,6 +208,7 @@ export const es: PartialMessages = {
       roundDone: "Vuelta completa",
       keepScreenOn: "Mantener la pantalla encendida",
     },
+    names: { title: "99 nombres de Allah" },
     khatmah: {
       title: "Jatma",
       sub: "Termina todo el Corán con un plan",

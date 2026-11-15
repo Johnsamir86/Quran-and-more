@@ -11,7 +11,7 @@ export const fr: PartialMessages = {
     offline: "Impossible de joindre le service de contenu. Vérifiez votre connexion et réessayez.", noProfile: "Choisissez d'abord un profil sur la page Famille",
     on: "Activé", off: "Désactivé", enable: "Activer", disable: "Désactiver", chooseLanguage: "Choisir la langue de l'interface",
   },
-  nav: { home: "Accueil", search: "Recherche", learn: "Apprendre", hifz: "Mémoriser", play: "Jouer", ask: "Demander", player: "Lecteur", mushaf: "Mushaf", family: "Famille", azan: "Adhan", story: "Verset du jour", quran: "Coran", me: "Moi", study: "Étude", adhkar: "Adhkar", qibla: "Qibla", khatmah: "Khatma", calendar: "Calendrier", tasbih: "Tasbih" },
+  nav: { home: "Accueil", search: "Recherche", learn: "Apprendre", hifz: "Mémoriser", play: "Jouer", ask: "Demander", player: "Lecteur", mushaf: "Mushaf", family: "Famille", azan: "Adhan", story: "Verset du jour", quran: "Coran", me: "Moi", study: "Étude", adhkar: "Adhkar", qibla: "Qibla", khatmah: "Khatma", calendar: "Calendrier", tasbih: "Tasbih", names: "99 noms" },
   home: {
     kicker: "Le Noble Coran", title: "Coran et plus", sub: "Une seule expérience du Coran pour toute la famille : récitation continue avec synchronisation des mots, le mushaf dans l'écriture officielle, tafsir et traductions dans toutes les langues, et un profil pour chacun.",
     startListening: "Commencer l'écoute", openMushaf: "Ouvrir le mushaf",
@@ -28,6 +28,7 @@ export const fr: PartialMessages = {
       azan: { title: "Adhan", sub: "Horaires de prière de votre ville, l'adhan avec la voix de votre choix, un rappel à chaque prière" },
       story: { title: "Verset du jour", sub: "Un verset par jour, plein écran, avec son sens et un moment de réflexion" },
       kahf: { title: "Sourate Al-Kahf", sub: "À lire le vendredi" },
+      names: { title: "99 noms d'Allah", sub: "Les plus beaux noms avec leur sens, un nom par jour, et la recherche" },
       adhkar: { title: "Adhkar", sub: "Invocations du matin, du soir, après la prière, du coucher et du réveil (Hisn al-Muslim), avec un compteur" },
       qibla: { title: "Qibla", sub: "Une boussole qui indique la Kaaba depuis votre position, avec la direction et la distance" },
       calendar: { title: "Calendrier hégirien", sub: "La date hégirienne du jour, les dates islamiques à venir et le compte à rebours du Ramadan" },
@@ -214,6 +215,7 @@ export const fr: PartialMessages = {
       roundDone: "Tour terminé",
       keepScreenOn: "Garder l'écran allumé",
     },
+    names: { title: "99 noms d'Allah" },
     khatmah: {
       title: "Khatma",
       sub: "Terminer tout le Coran selon un plan",

@@ -24,3 +24,4 @@ export * from "./qibla";
 export * from "./hijri";
 export * from "./tasbih";
 export * from "./khatmah";
+export * from "./names";

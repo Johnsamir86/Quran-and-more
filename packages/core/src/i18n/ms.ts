@@ -8,7 +8,7 @@ export const ms: PartialMessages = {
     unavailable: "tidak tersedia", today: "hari ini", tomorrow: "esok", days: "hari", minutes: "min", done: "Selesai", start: "Mula", again: "Lagi", poweredBy: "Dikuasakan API Quran Foundation", privacy: "Privasi", terms: "Terma",
     offline: "Tidak dapat mencapai perkhidmatan kandungan. Semak sambungan anda dan cuba lagi.", noProfile: "Pilih profil di halaman Keluarga dahulu", on: "Hidup", off: "Mati", enable: "Dayakan", disable: "Lumpuhkan", chooseLanguage: "Pilih bahasa antara muka",
   },
-  nav: { home: "Utama", search: "Cari", learn: "Belajar", hifz: "Hafaz", play: "Main", ask: "Tanya", player: "Pemain", mushaf: "Mushaf", family: "Keluarga", azan: "Azan", story: "Ayat hari ini", quran: "Al-Quran", me: "Saya", study: "Kajian", adhkar: "Zikir", qibla: "Kiblat", khatmah: "Khatam", calendar: "Kalendar", tasbih: "Tasbih" },
+  nav: { home: "Utama", search: "Cari", learn: "Belajar", hifz: "Hafaz", play: "Main", ask: "Tanya", player: "Pemain", mushaf: "Mushaf", family: "Keluarga", azan: "Azan", story: "Ayat hari ini", quran: "Al-Quran", me: "Saya", study: "Kajian", adhkar: "Zikir", qibla: "Kiblat", khatmah: "Khatam", calendar: "Kalendar", tasbih: "Tasbih", names: "99 nama" },
   home: {
     kicker: "Al-Quran Al-Karim", title: "Quran dan lagi", sub: "Satu pengalaman Al-Quran untuk seisi keluarga: bacaan tanpa jeda dengan penyegerakan perkataan, mushaf dalam khat rasmi, tafsir dan terjemahan dalam semua bahasa, dan profil untuk setiap ahli.",
     startListening: "Mula mendengar", openMushaf: "Buka mushaf",
@@ -25,6 +25,7 @@ export const ms: PartialMessages = {
       azan: { title: "Azan", sub: "Waktu solat bandar anda, azan dengan suara pilihan anda, peringatan pada setiap waktu" },
       story: { title: "Ayat hari ini", sub: "Satu ayat sehari, skrin penuh, dengan maknanya dan seketika untuk merenung" },
       kahf: { title: "Surah Al-Kahfi", sub: "Dibaca pada hari Jumaat" },
+      names: { title: "Asmaul Husna", sub: "99 nama Allah dengan maksudnya, satu nama setiap hari, dan carian" },
       adhkar: { title: "Zikir", sub: "Zikir pagi, petang, selepas solat, sebelum tidur dan ketika bangun daripada Hisnul Muslim, dengan pembilang" },
       qibla: { title: "Kiblat", sub: "Kompas yang menunjuk ke Kaabah dari lokasi anda, dengan arah dan jarak" },
       calendar: { title: "Kalendar Hijrah", sub: "Tarikh Hijrah hari ini, tarikh Islam akan datang dan hari ke Ramadan" },
@@ -116,6 +117,7 @@ export const ms: PartialMessages = {
     tasbih: {
       title: "Tasbih",
     },
+    names: { title: "Asmaul Husna" },
     khatmah: {
       title: "Khatam",
     },

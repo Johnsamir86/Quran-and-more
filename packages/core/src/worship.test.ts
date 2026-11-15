@@ -113,3 +113,14 @@ describe("khatmah", () => {
     expect(juzOfPage(1)).toBe(1); expect(juzOfPage(21)).toBe(1); expect(juzOfPage(22)).toBe(2); expect(juzOfPage(604)).toBe(30);
   });
 });
+
+describe("99 names", () => {
+  it("has 99 unique names in the Tirmidhi order", async () => {
+    const { DIVINE_NAMES, nameOfDay } = await import("./names");
+    expect(DIVINE_NAMES).toHaveLength(99);
+    expect(new Set(DIVINE_NAMES.map((n) => n.tr)).size).toBe(99);
+    expect(DIVINE_NAMES[0].tr).toBe("Ar-Rahman");
+    expect(DIVINE_NAMES[98].tr).toBe("As-Sabur");
+    expect(nameOfDay(new Date(2026, 10, 15)).n).toBeGreaterThan(0);
+  });
+});

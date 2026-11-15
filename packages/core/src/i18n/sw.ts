@@ -8,7 +8,7 @@ export const sw: PartialMessages = {
     tomorrow: "kesho", days: "siku", minutes: "dak", done: "Imekamilika", start: "Anza", again: "Tena", poweredBy: "Inaendeshwa na API za Quran Foundation", privacy: "Faragha", terms: "Masharti",
     offline: "Haikuweza kufikia huduma ya maudhui. Angalia muunganisho wako kisha ujaribu tena.", noProfile: "Chagua wasifu kwenye ukurasa wa Familia kwanza", on: "Imewashwa", off: "Imezimwa", enable: "Washa", disable: "Zima", chooseLanguage: "Chagua lugha ya kiolesura",
   },
-  nav: { home: "Nyumbani", search: "Tafuta", learn: "Jifunze", hifz: "Hifadhi", play: "Cheza", ask: "Uliza", player: "Kicheza", mushaf: "Msahafu", family: "Familia", azan: "Adhana", story: "Aya ya leo", quran: "Qur'ani", me: "Mimi", study: "Somo", adhkar: "Adhkari", qibla: "Kibla", khatmah: "Khatma", calendar: "Kalenda", tasbih: "Tasbihi" },
+  nav: { home: "Nyumbani", search: "Tafuta", learn: "Jifunze", hifz: "Hifadhi", play: "Cheza", ask: "Uliza", player: "Kicheza", mushaf: "Msahafu", family: "Familia", azan: "Adhana", story: "Aya ya leo", quran: "Qur'ani", me: "Mimi", study: "Somo", adhkar: "Adhkari", qibla: "Kibla", khatmah: "Khatma", calendar: "Kalenda", tasbih: "Tasbihi", names: "Majina 99" },
   home: {
     kicker: "Qur'ani Tukufu", title: "Qur'ani na Zaidi", sub: "Uzoefu mmoja wa Qur'ani kwa familia nzima: kisomo kisichokatika chenye kusawazisha maneno, msahafu kwa hati rasmi, tafsiri na tarjuma kwa kila lugha, na wasifu kwa kila mwanafamilia.",
     startListening: "Anza kusikiliza", openMushaf: "Fungua msahafu",
@@ -25,6 +25,7 @@ export const sw: PartialMessages = {
       azan: { title: "Adhana", sub: "Nyakati za swala za mji wako, adhana kwa sauti unayochagua, kikumbusho kila swala" },
       story: { title: "Aya ya leo", sub: "Aya moja kila siku, skrini nzima, pamoja na maana yake na muda wa kutafakari" },
       kahf: { title: "Suratul Kahf", sub: "Husomwa siku ya Ijumaa" },
+      names: { title: "Majina 99 ya Allah", sub: "Majina mazuri na maana zake, jina la kila siku, na utafutaji" },
       adhkar: { title: "Adhkari", sub: "Adhkari za asubuhi, jioni, baada ya swala, kabla ya kulala na unapoamka kutoka Hisn al-Muslim, na kihesabu" },
       qibla: { title: "Kibla", sub: "Dira inayoelekeza Kaaba kutoka ulipo, na mwelekeo na umbali" },
       calendar: { title: "Kalenda ya Hijria", sub: "Tarehe ya Hijria ya leo, siku za Kiislamu zijazo na siku zilizobaki hadi Ramadhani" },
@@ -116,6 +117,7 @@ export const sw: PartialMessages = {
     tasbih: {
       title: "Tasbihi",
     },
+    names: { title: "Majina 99 ya Allah" },
     khatmah: {
       title: "Khatma",
     },

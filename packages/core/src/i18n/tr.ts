@@ -9,7 +9,7 @@ export const tr: PartialMessages = {
     privacy: "Gizlilik", terms: "Şartlar", offline: "İçerik hizmetine ulaşılamadı. Bağlantını kontrol edip tekrar dene.", noProfile: "Önce Aile sayfasından bir profil seç",
     on: "Açık", off: "Kapalı", enable: "Etkinleştir", disable: "Devre dışı bırak", chooseLanguage: "Arayüz dilini seç",
   },
-  nav: { home: "Ana sayfa", search: "Ara", learn: "Öğren", hifz: "Ezberle", play: "Oyna", ask: "Sor", player: "Oynatıcı", mushaf: "Mushaf", family: "Aile", azan: "Ezan", story: "Günün ayeti", quran: "Kur'an", me: "Ben", study: "İnceleme", adhkar: "Zikirler", qibla: "Kıble", khatmah: "Hatim", calendar: "Takvim", tasbih: "Tesbih" },
+  nav: { home: "Ana sayfa", search: "Ara", learn: "Öğren", hifz: "Ezberle", play: "Oyna", ask: "Sor", player: "Oynatıcı", mushaf: "Mushaf", family: "Aile", azan: "Ezan", story: "Günün ayeti", quran: "Kur'an", me: "Ben", study: "İnceleme", adhkar: "Zikirler", qibla: "Kıble", khatmah: "Hatim", calendar: "Takvim", tasbih: "Tesbih", names: "99 isim" },
   home: {
     kicker: "Kur'an-ı Kerim", title: "Kur'an ve daha fazlası", sub: "Tüm aile için tek bir Kur'an deneyimi: kelime eşlemeli kesintisiz tilavet, resmî hatla mushaf, her dilde tefsir ve meal, her aile üyesine bir profil.",
     startListening: "Dinlemeye başla", openMushaf: "Mushafı aç",
@@ -26,6 +26,7 @@ export const tr: PartialMessages = {
       azan: { title: "Ezan", sub: "Şehrine göre namaz vakitleri, seçtiğin sesle ezan ve her vakitte hatırlatma" },
       story: { title: "Günün ayeti", sub: "Her gün tam ekranda bir ayet, anlamı ve bir tefekkür anı" },
       kahf: { title: "Kehf Suresi", sub: "Cuma günü okunur" },
+      names: { title: "Esmâü'l-Hüsnâ", sub: "Allah'ın 99 ismi anlamlarıyla, her güne bir isim ve arama" },
       adhkar: { title: "Zikirler", sub: "Hisnü'l-Müslim'den sabah, akşam, namaz sonrası, uyku ve uyanış zikirleri, her biri için sayaçla" },
       qibla: { title: "Kıble", sub: "Bulunduğunuz yerden Kâbe'yi gösteren pusula, açı ve mesafeyle" },
       calendar: { title: "Hicri takvim", sub: "Bugünün hicri tarihi, yaklaşan dinî günler ve Ramazan'a kalan günler" },
@@ -199,6 +200,7 @@ export const tr: PartialMessages = {
       roundDone: "Tur tamamlandı",
       keepScreenOn: "Ekranı açık tut",
     },
+    names: { title: "Esmâü'l-Hüsnâ" },
     khatmah: {
       title: "Hatim",
       sub: "Kur'an'ın tamamını bir planla bitirin",

@@ -10,7 +10,7 @@ export const de: PartialMessages = {
     offline: "Der Inhaltsdienst ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut.", noProfile: "Wähle zuerst ein Profil auf der Familienseite",
     on: "An", off: "Aus", enable: "Aktivieren", disable: "Deaktivieren", chooseLanguage: "Sprache der Oberfläche wählen",
   },
-  nav: { home: "Start", search: "Suche", learn: "Lernen", hifz: "Auswendig lernen", play: "Spielen", ask: "Fragen", player: "Player", mushaf: "Mushaf", family: "Familie", azan: "Adhan", story: "Vers des Tages", quran: "Koran", me: "Ich", study: "Studium", adhkar: "Adhkar", qibla: "Qibla", khatmah: "Khatma", calendar: "Kalender", tasbih: "Tasbih" },
+  nav: { home: "Start", search: "Suche", learn: "Lernen", hifz: "Auswendig lernen", play: "Spielen", ask: "Fragen", player: "Player", mushaf: "Mushaf", family: "Familie", azan: "Adhan", story: "Vers des Tages", quran: "Koran", me: "Ich", study: "Studium", adhkar: "Adhkar", qibla: "Qibla", khatmah: "Khatma", calendar: "Kalender", tasbih: "Tasbih", names: "99 Namen" },
   home: {
     kicker: "Der edle Koran", title: "Koran und mehr", sub: "Ein Koran-Erlebnis für die ganze Familie: lückenlose Rezitation mit Wortsynchronisation, der Mushaf in der offiziellen Schrift, Tafsir und Übersetzungen in allen Sprachen und ein Profil für jedes Familienmitglied.",
     startListening: "Zuhören starten", openMushaf: "Mushaf öffnen",
@@ -27,6 +27,7 @@ export const de: PartialMessages = {
       azan: { title: "Adhan", sub: "Gebetszeiten für deine Stadt, der Adhan in der Stimme deiner Wahl, eine Erinnerung zu jedem Gebet" },
       story: { title: "Vers des Tages", sub: "Ein Vers pro Tag im Vollbild, mit seiner Bedeutung und einem Moment zum Nachdenken" },
       kahf: { title: "Sure Al-Kahf", sub: "Wird am Freitag gelesen" },
+      names: { title: "99 Namen Allahs", sub: "Die schönsten Namen mit Bedeutung, ein Name pro Tag und Suche" },
       adhkar: { title: "Adhkar", sub: "Bittgebete für Morgen, Abend, nach dem Gebet, vor dem Schlafen und beim Aufwachen aus Hisn al-Muslim, mit Zähler" },
       qibla: { title: "Qibla", sub: "Ein Kompass, der von deinem Standort zur Kaaba zeigt, mit Richtung und Entfernung" },
       calendar: { title: "Hidschri-Kalender", sub: "Das heutige Hidschri-Datum, kommende islamische Tage und die Tage bis Ramadan" },
@@ -208,6 +209,7 @@ export const de: PartialMessages = {
       roundDone: "Runde abgeschlossen",
       keepScreenOn: "Bildschirm anlassen",
     },
+    names: { title: "99 Namen Allahs" },
     khatmah: {
       title: "Khatma",
       sub: "Den ganzen Koran nach Plan beenden",

@@ -8,7 +8,7 @@ export const it: PartialMessages = {
     tomorrow: "domani", days: "giorni", minutes: "min", done: "Fatto", start: "Inizia", again: "Ancora", poweredBy: "Basato sulle API di Quran Foundation", privacy: "Privacy", terms: "Termini",
     offline: "Impossibile raggiungere il servizio dei contenuti. Controlla la connessione e riprova.", noProfile: "Scegli prima un profilo nella pagina Famiglia", on: "Attivo", off: "Spento", enable: "Attiva", disable: "Disattiva", chooseLanguage: "Scegli la lingua dell'interfaccia",
   },
-  nav: { home: "Home", search: "Cerca", learn: "Impara", hifz: "Memorizza", play: "Gioca", ask: "Chiedi", player: "Lettore", mushaf: "Mushaf", family: "Famiglia", azan: "Adhan", story: "Versetto del giorno", quran: "Corano", me: "Io", study: "Studio", adhkar: "Adhkar", qibla: "Qibla", khatmah: "Khatma", calendar: "Calendario", tasbih: "Tasbih" },
+  nav: { home: "Home", search: "Cerca", learn: "Impara", hifz: "Memorizza", play: "Gioca", ask: "Chiedi", player: "Lettore", mushaf: "Mushaf", family: "Famiglia", azan: "Adhan", story: "Versetto del giorno", quran: "Corano", me: "Io", study: "Studio", adhkar: "Adhkar", qibla: "Qibla", khatmah: "Khatma", calendar: "Calendario", tasbih: "Tasbih", names: "99 nomi" },
   home: {
     kicker: "Il Nobile Corano", title: "Corano e altro", sub: "Un'unica esperienza del Corano per tutta la famiglia: recitazione continua con sincronizzazione delle parole, il mushaf nella scrittura ufficiale, tafsir e traduzioni in ogni lingua e un profilo per ciascuno.",
     startListening: "Inizia ad ascoltare", openMushaf: "Apri il mushaf",
@@ -25,6 +25,7 @@ export const it: PartialMessages = {
       azan: { title: "Adhan", sub: "Orari di preghiera della tua città, l'adhan con la voce che scegli, un promemoria a ogni preghiera" },
       story: { title: "Versetto del giorno", sub: "Un versetto al giorno a schermo intero, con il suo significato e un momento di riflessione" },
       kahf: { title: "Sura Al-Kahf", sub: "Si legge il venerdì" },
+      names: { title: "99 nomi di Allah", sub: "I nomi più belli con il significato, un nome al giorno e ricerca" },
       adhkar: { title: "Adhkar", sub: "Invocazioni del mattino, della sera, dopo la preghiera, prima di dormire e al risveglio da Hisn al-Muslim, con contatore" },
       qibla: { title: "Qibla", sub: "Una bussola che indica la Kaaba dalla tua posizione, con direzione e distanza" },
       calendar: { title: "Calendario egiriano", sub: "La data egiriana di oggi, le prossime date islamiche e i giorni al Ramadan" },
@@ -117,6 +118,7 @@ export const it: PartialMessages = {
     tasbih: {
       title: "Tasbih",
     },
+    names: { title: "99 nomi di Allah" },
     khatmah: {
       title: "Khatma",
     },
