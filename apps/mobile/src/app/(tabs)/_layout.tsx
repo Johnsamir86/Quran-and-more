@@ -12,11 +12,13 @@ const ICONS: Record<string, [IconName, IconName]> = {
   learn: ["school-outline", "school"],
   azan: ["moon-outline", "moon"],
   me: ["person-circle-outline", "person-circle"],
+  story: ["sparkles-outline", "sparkles"],
 };
 
 /**
- * Five top-level destinations, the same on iOS and Android:
- * Home (today), Quran (read / listen / search), Learn (study, lessons, hifz, play, ask), Azan, Me (profile and settings).
+ * Six top-level destinations, the same on iOS and Android:
+ * Home (today), Quran (read / listen / search), Learn (study, lessons, hifz, play, ask), Azan, Me (profile and settings),
+ * and the ayah of the day as a full-screen story (no header; it draws its own top bar).
  */
 export default function TabsLayout() {
   const { m } = useI18n();
@@ -44,6 +46,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="learn" options={{ title: m.nav.learn }} />
       <Tabs.Screen name="azan" options={{ title: m.nav.azan }} />
       <Tabs.Screen name="me" options={{ title: m.nav.me }} />
+      <Tabs.Screen name="story" options={{ title: m.nav.story, headerShown: false }} />
     </Tabs>
   );
 }

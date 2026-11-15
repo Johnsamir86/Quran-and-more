@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import { useFonts } from "expo-font";
 import * as ImagePicker from "expo-image-picker";
-import { Link, Stack, router, useLocalSearchParams } from "expo-router";
+import { Link, router, useLocalSearchParams } from "expo-router";
 import * as Sharing from "expo-sharing";
 import { StatusBar } from "expo-status-bar";
 import { VideoView, useVideoPlayer } from "expo-video";
@@ -56,7 +56,7 @@ export default function StoryScreen() {
   const { profile, dispatch } = useFamily();
   const player = useAudioPlayer(null);
   const status = useAudioPlayerStatus(player);
-  const [fontsLoaded] = useFonts({ Amiri: require("../../assets/fonts/Amiri-Regular.ttf"), ScheherazadeNew: require("../../assets/fonts/ScheherazadeNew-Regular.ttf") });
+  const [fontsLoaded] = useFonts({ Amiri: require("../../../assets/fonts/Amiri-Regular.ttf"), ScheherazadeNew: require("../../../assets/fonts/ScheherazadeNew-Regular.ttf") });
 
   const [ayah, setAyah] = useState<AyahOfDay | null>(null);
   const [pages, setPages] = useState<AyahOfDay[]>([]);
@@ -221,7 +221,6 @@ export default function StoryScreen() {
       {bg.video && !capturing ? <VideoView player={bgPlayer} style={{ position: "absolute", inset: 0 }} contentFit="cover" nativeControls={false} /> : null}
       {/* The video layer is not part of a view capture, so the poster frame stands in for it while sharing as an image. */}
       <ImageBackground source={bg.uri && (!bg.video || capturing) ? { uri: bg.uri } : undefined} style={{ flex: 1 }} resizeMode="cover">
-        <Stack.Screen options={{ headerShown: false }} />
         <StatusBar style={light ? "dark" : "light"} />
         <View style={{ flex: 1, backgroundColor: light ? `rgba(255,255,255,${prefs.dim})` : `rgba(0,0,0,${prefs.dim})`, paddingTop: insets.top + 10, paddingBottom: insets.bottom + 10 }}>
           {!capturing ? (
@@ -230,7 +229,7 @@ export default function StoryScreen() {
               <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
                 <Text style={{ color: ink, fontSize: 13, flex: 1 }} numberOfLines={1}>✨ {range ? `${chapter ? (isAr ? chapter.nameArabic : chapter.nameSimple) : t.ayahRange} ${range.surah}:${range.from}${range.to !== range.from ? `-${range.to}` : ""}` : `${t.title} · ${greeting}`}</Text>
                 {chip(`🎨 ${t.customise}`, () => setSheet("edit"))}
-                <Pressable onPress={() => (router.canGoBack() ? router.back() : router.replace("/"))} style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: chipBg, alignItems: "center", justifyContent: "center" }}><Text style={{ color: ink, fontSize: 16 }}>✕</Text></Pressable>
+                <Pressable onPress={() => router.replace("/" as never)} style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: chipBg, alignItems: "center", justifyContent: "center" }}><Text style={{ color: ink, fontSize: 16 }}>✕</Text></Pressable>
               </View>
               {azanOn ? <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: "rgba(29,158,117,0.9)", borderRadius: 14, padding: 10 }}><Text style={{ color: "#fff" }}>🕌 {m.azan.title}</Text>{chip(`⏹ ${m.azan.stop}`, () => { player.pause(); setAzanOn(false); setVoice("idle"); })}</View> : null}
             </View>
@@ -281,7 +280,7 @@ export default function StoryScreen() {
 
           {capturing ? (
             <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingBottom: 8 }}>
-              <Image source={require("../../assets/images/icon.png")} style={{ width: 28, height: 28, borderRadius: 7 }} />
+              <Image source={require("../../../assets/images/icon.png")} style={{ width: 28, height: 28, borderRadius: 7 }} />
               <Text style={{ color: ink, fontWeight: "700" }}>{m.common.appName}</Text>
               <Text style={{ color: ink, opacity: 0.8, fontSize: 12 }}>quran-and-more.netlify.app</Text>
             </View>
