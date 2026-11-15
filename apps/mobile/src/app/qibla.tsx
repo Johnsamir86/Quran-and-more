@@ -78,10 +78,14 @@ export default function QiblaScreen() {
           <View style={{ alignItems: "center", gap: 12 }}>
             <Animated.View style={{ width: SIZE, height: SIZE, borderRadius: SIZE / 2, borderWidth: 2, borderColor: aligned ? c.accent : c.line, backgroundColor: c.card, transform: [{ rotate }], alignItems: "center", justifyContent: "center" }}>
               {Array.from({ length: 36 }, (_, i) => (
-                <View key={i} style={{ position: "absolute", top: 6, left: SIZE / 2 - 1, width: 2, height: i % 9 === 0 ? 18 : 10, backgroundColor: c.muted, opacity: i % 3 === 0 ? 1 : 0.5, transform: [{ translateY: -(SIZE / 2 - 6) }, { rotate: `${i * 10}deg` }, { translateY: SIZE / 2 - 6 }] }} />
+                <View key={i} pointerEvents="none" style={{ position: "absolute", width: SIZE - 4, height: SIZE - 4, alignItems: "center", transform: [{ rotate: `${i * 10}deg` }] }}>
+                  <View style={{ marginTop: 6, width: 2, height: i % 9 === 0 ? 18 : 10, backgroundColor: c.muted, opacity: i % 3 === 0 ? 1 : 0.5 }} />
+                </View>
               ))}
               {(["N", "E", "S", "W"] as const).map((k, i) => (
-                <Text key={k} style={{ position: "absolute", top: 26, color: k === "N" ? c.bad : c.muted, fontWeight: "700", transform: [{ translateY: -(SIZE / 2 - 26) }, { rotate: `${i * 90}deg` }, { translateY: SIZE / 2 - 26 }] }}>{k}</Text>
+                <View key={k} pointerEvents="none" style={{ position: "absolute", width: SIZE - 4, height: SIZE - 4, alignItems: "center", transform: [{ rotate: `${i * 90}deg` }] }}>
+                  <Text style={{ marginTop: 26, color: k === "N" ? c.bad : c.muted, fontWeight: "700" }}>{k}</Text>
+                </View>
               ))}
               <View style={{ position: "absolute", alignItems: "center", transform: [{ rotate: `${bearing ?? 0}deg` }] }}>
                 <Text style={{ fontSize: 26, lineHeight: 30 }}>🕋</Text>
