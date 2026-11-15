@@ -35,11 +35,13 @@ Added 2026-11-14 (same version, run in the background alongside app builds):
 | Reciter | Audio | Words | Low-confidence words | Fallback pieces |
 |---|---|---|---|---|
 | Mahmoud Ali al-Banna murattal (`x-banna`) | 27.0 h | 77,477 | 4.0% | 14 of 492 pieces |
-| Mahmoud Ali al-Banna mujawwad (`x-banna-mujawwad`) | 68 of 114 surahs so far (9.8 h) | 11,158 | 34.5% | 5 of 76 pieces |
+| Mahmoud Ali al-Banna mujawwad (`x-banna-mujawwad`) | 67.9 h | 77,450 | 35.2% | 994 of 1,448 pieces |
 
-The mujawwad recordings are slow, melismatic and heavily reverberant, so a third of the words score
-low even though the Viterbi path is complete; expect the highlight to drift inside long drawn-out
-syllables there. The murattal set is as good as the other three archive reciters.
+The mujawwad recordings are slow, melismatic and heavily reverberant: a third of the words score low
+and two thirds of the pieces fell back to letter-count spreading, so word positions there are
+approximate (verse boundaries are still anchored). It took 17.3 h of CPU for 67.9 h of audio.
+Re-run it first if a better model becomes available. The murattal set is as good as the other three
+archive reciters.
 
 A low-confidence word still gets a position (the Viterbi path is complete); it means the acoustic
 score for that word was weak, usually reverb, a long pause inside the word or a reciter's repetition.
