@@ -8,7 +8,7 @@ import { NATURE_WALLPAPERS, VIDEO_WALLPAPERS, languageNameForLocale, type Player
 
 import { useI18n } from "@/lib/i18n";
 import { SOLID_BACKGROUNDS, STORY_FONTS, ensureStoryFonts, loadStoryPrefs, localMedia, resolveBg, saveStoryPrefs, type StoryBg, type StoryFont, type StoryPrefs } from "@/lib/story-tools";
-import { canRenderVideo, canShareVideo, renderStoryVideo, shareVideoFile, type VideoPage, type VideoResult } from "@/lib/story-video";
+import { canRenderVideo, canShareVideo, renderStoryVideo, shareVideoFile, videoHasAudio, type VideoPage, type VideoResult } from "@/lib/story-video";
 
 import styles from "./story.module.css";
 
@@ -38,6 +38,7 @@ export default function StoryVideoPage() {
   const [progress, setProgress] = useState<{ fraction: number; stage: "audio" | "render" | "encode" } | null>(null);
   const [result, setResult] = useState<(VideoResult & { url: string }) | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [audioOk, setAudioOk] = useState<boolean | null>(null);
   const abort = useRef<AbortController | null>(null);
   const supported = typeof window !== "undefined" && canRenderVideo();
 
@@ -100,7 +101,12 @@ export default function StoryVideoPage() {
     setError(null); setResult(null);
     abort.current?.abort(); abort.current = new AbortController();
     try {
-      const r = await renderStoryVideo({ pages, bg: bgResolved, font: prefs.font, size: prefs.size, tone, dim: prefs.dim, surahName, reciterName: ar ? reciter.arabicName : reciter.latinName, brand: m.common.appName, highlightWords: highlight, quality, signal: abort.current.signal, onProgress: (fraction, stage) => setProgress({ fraction, stage }) });
+      const opts = { pages, bg: bgResolved, font: prefs.font, size: prefs.size, tone, dim: prefs.dim, surahName, reciterName: ar ? reciter.arabicName : reciter.latinName, brand: m.common.appName, highlightWords: highlight, quality, signal: abort.current.signal, onProgress: (fraction: number, stage: "audio" | "render" | "encode") => setProgress({ fraction, stage }) };
+      let r = await renderStoryVideo(opts);
+      // Some Safari builds hand back a WebCodecs file without a usable audio track: check, and re-render by recording.
+      let audible = await videoHasAudio(r.blob);
+      if (audible === false && r.engine === "webcodecs") { r = await renderStoryVideo({ ...opts, forceRecorder: true }); audible = await videoHasAudio(r.blob); }
+      setAudioOk(audible);
       setResult({ ...r, url: URL.createObjectURL(r.blob) });
     } catch (e) {
       if (!(e instanceof DOMException && e.name === "AbortError")) setError(t.videoUnsupported);
@@ -150,7 +156,7 @@ export default function StoryVideoPage() {
             {!result ? <button className={`${styles.chip} ${styles.primaryBtn}`} onClick={render} disabled={!pages.length || !!progress || !supported}>🎬 {progress ? stageLabel : t.shareVideo}</button> : null}
             {progress ? <button className={styles.chip} onClick={() => abort.current?.abort()}>✕ {m.common.close}</button> : null}
             {result && canShareVideo(result.ext) ? <button className={`${styles.chip} ${styles.primaryBtn}`} onClick={share}>📤 {m.common.share}</button> : null}
-            {result ? <a className={styles.chip} href={result.url} download={`ayah-${reference.replace(":", "-")}.${result.ext}`}>⬇ {result.ext.toUpperCase()} · {(result.blob.size / 1_000_000).toFixed(1)} MB · {result.engine === "webcodecs" ? "H.264" : "rec"}</a> : null}
+            {result ? <a className={styles.chip} href={result.url} download={`ayah-${reference.replace(":", "-")}.${result.ext}`}>⬇ {result.ext.toUpperCase()} · {(result.blob.size / 1_000_000).toFixed(1)} MB · {result.engine === "webcodecs" ? "H.264" : "rec"}{audioOk === false ? " · 🔇" : audioOk ? " · 🔊" : ""}</a> : null}
             {result ? <button className={styles.chip} onClick={() => setResult(null)}>↺ {t.reset}</button> : null}
           </div>
 

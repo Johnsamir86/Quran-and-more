@@ -38,6 +38,8 @@ export interface VideoInput {
   quality: "high" | "medium";
   onProgress?: (fraction: number, stage: "audio" | "render" | "encode") => void;
   signal?: AbortSignal;
+  /** Skip WebCodecs and record the canvas + audio stream instead (used when a WebCodecs result came back silent). */
+  forceRecorder?: boolean;
 }
 
 export interface VideoResult { blob: Blob; mime: string; ext: "mp4" | "webm"; durationMs: number; engine: "webcodecs" | "recorder" }
@@ -240,7 +242,7 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
     }
     if (!audioCodec) vConfig = null;
   }
-  if (vConfig && audioCodec) try {
+  if (vConfig && audioCodec && !input.forceRecorder) try {
     const muxer = new Muxer({ target: new ArrayBufferTarget(), video: { codec: "avc", width: W, height: H }, audio: { codec: audioCodec, numberOfChannels: 2, sampleRate }, fastStart: "in-memory" });
     const videoEncoder = new VideoEncoder({ output: (chunk, meta) => muxer.addVideoChunk(chunk, meta), error: (e) => { throw e; } });
     videoEncoder.configure(vConfig);
@@ -251,8 +253,9 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
     for (let off = 0; off < mixed.length; off += chunk) {
       const n = Math.min(chunk, mixed.length - off);
       const data = new Float32Array(n * 2);
-      for (let c = 0; c < 2; c++) data.set(mixed.getChannelData(c).subarray(off, off + n), c * n);
-      audioEncoder.encode(new AudioData({ format: "f32-planar", sampleRate, numberOfFrames: n, numberOfChannels: 2, timestamp: Math.round((off / sampleRate) * 1_000_000), data }));
+      const l = mixed.getChannelData(0), r = mixed.getChannelData(1);
+      for (let i = 0; i < n; i++) { data[i * 2] = l[off + i]; data[i * 2 + 1] = r[off + i]; }
+      audioEncoder.encode(new AudioData({ format: "f32", sampleRate, numberOfFrames: n, numberOfChannels: 2, timestamp: Math.round((off / sampleRate) * 1_000_000), data }));
     }
     // video frames in real time, clocked so moving backgrounds progress naturally
     const t0 = performance.now();
@@ -308,4 +311,19 @@ export const shareVideoFile = async (result: VideoResult, name: string, title: s
   const file = new File([result.blob], `${name}.${result.ext}`, { type: result.mime });
   if (typeof navigator.share !== "function" || !navigator.canShare?.({ files: [file] })) return false;
   try { await navigator.share({ files: [file], title, text }); return true; } catch { return false; }
+};
+
+/**
+ * Does the rendered file carry an audible track? Decodes it with the Web Audio API (Safari and Chrome
+ * both decode MP4/AAC and WebM/Opus) and looks for signal. Returns null when the browser cannot tell.
+ */
+export const videoHasAudio = async (blob: Blob): Promise<boolean | null> => {
+  try {
+    const ctx = new OfflineAudioContext(1, 1, 48000);
+    const buf = await ctx.decodeAudioData(await blob.arrayBuffer());
+    if (!buf.length) return false;
+    const d = buf.getChannelData(0); let peak = 0;
+    for (let i = 0; i < d.length; i += 97) { const v = Math.abs(d[i]); if (v > peak) peak = v; if (peak > 0.01) return true; }
+    return peak > 0.01;
+  } catch { return null; }
 };

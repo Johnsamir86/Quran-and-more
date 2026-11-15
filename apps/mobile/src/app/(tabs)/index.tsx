@@ -49,13 +49,14 @@ export default function HomeScreen() {
         <H1>{profile ? `${profile.avatar ?? ""} ${profile.displayName}`.trim() : m.common.appName}</H1>
       </View>
 
+      {/* Study card: the ayah of the day stays reachable from the Azan tab and the daily notification. */}
       {ayah ? (
-        <Link href={{ pathname: "/story" } as never} asChild>
+        <Link href={{ pathname: "/study/[verseKey]", params: { verseKey: last?.lastVerseKey ?? ayah.verseKey } } as never} asChild>
           <Pressable accessibilityRole="button">
             <Card>
-              <Row style={{ justifyContent: "space-between" }}><Kicker>{m.story.title} · {ayah.verseKey}</Kicker><Ionicons name="sparkles-outline" size={18} color={c.accent2} /></Row>
+              <Row style={{ justifyContent: "space-between" }}><Kicker>{m.home.tiles.study.title} · {last?.lastVerseKey ?? ayah.verseKey}</Kicker><Ionicons name="layers-outline" size={18} color={c.accent2} /></Row>
               <Arabic size={24}>{ayah.text}</Arabic>
-              {ayah.translation ? <Muted>{ayah.translation.replace(/<[^>]+>/g, "")}</Muted> : null}
+              <Muted>{m.home.tiles.study.sub}</Muted>
             </Card>
           </Pressable>
         </Link>
