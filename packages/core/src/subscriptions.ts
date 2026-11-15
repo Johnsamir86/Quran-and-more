@@ -84,3 +84,33 @@ export const isFreeReciter = (r: { id?: string | null; chapterReciterId?: number
   if (r.chapterReciterId != null && FREE_CHAPTER_RECITER_IDS.includes(r.chapterReciterId)) return true;
   return r.recitationId != null && r.chapterReciterId == null && FREE_CHAPTER_RECITER_IDS.includes(r.recitationId);
 };
+
+/* ---------- Plans: Free, Plus (monthly / yearly, with limits), Unlimited (lifetime, everything on) ---------- */
+export type PlanId = "free" | "plus" | "unlimited";
+/** RevenueCat entitlement ids: monthly and yearly grant "offline_audio" (Plus); the lifetime product grants "plus_unlimited". */
+export const PLAN_ENTITLEMENTS = { plus: "offline_audio", unlimited: "plus_unlimited" } as const;
+export interface PlanLimits { offlineSurahs: number; askPerDay: number; videoPerMonth: number; videoHd: boolean }
+export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
+  free: { offlineSurahs: 0, askPerDay: 0, videoPerMonth: 0, videoHd: false },
+  plus: { offlineSurahs: 30, askPerDay: 20, videoPerMonth: 15, videoHd: false },
+  unlimited: { offlineSurahs: Infinity, askPerDay: Infinity, videoPerMonth: Infinity, videoHd: true },
+};
+export const planFromEntitlements = (active: readonly string[]): PlanId =>
+  active.includes(PLAN_ENTITLEMENTS.unlimited) ? "unlimited" : active.includes(PLAN_ENTITLEMENTS.plus) ? "plus" : "free";
+
+/** Usage counters kept on the device for the Plus limits (reset by day / by month). */
+export interface UsageRecord { day: string; ask: number; month: string; video: number }
+export const emptyUsage = (now: Date): UsageRecord => ({ day: now.toISOString().slice(0, 10), ask: 0, month: now.toISOString().slice(0, 7), video: 0 });
+export const normalizeUsage = (u: UsageRecord | null | undefined, now: Date): UsageRecord => {
+  const e = emptyUsage(now);
+  if (!u) return e;
+  return { day: u.day === e.day ? u.day : e.day, ask: u.day === e.day ? u.ask : 0, month: u.month === e.month ? u.month : e.month, video: u.month === e.month ? u.video : 0 };
+};
+export const usageAllowed = (plan: PlanId, u: UsageRecord | null | undefined, kind: "ask" | "video", now: Date): boolean => {
+  const n = normalizeUsage(u, now); const l = PLAN_LIMITS[plan];
+  return kind === "ask" ? n.ask < l.askPerDay : n.video < l.videoPerMonth;
+};
+export const bumpUsage = (u: UsageRecord | null | undefined, kind: "ask" | "video", now: Date): UsageRecord => {
+  const n = normalizeUsage(u, now);
+  return kind === "ask" ? { ...n, ask: n.ask + 1 } : { ...n, video: n.video + 1 };
+};

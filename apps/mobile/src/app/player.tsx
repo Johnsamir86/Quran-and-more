@@ -15,7 +15,7 @@ import {
 
 import { useFamily, useProgressTicker } from "@/lib/family";
 import { useI18n } from "@/lib/i18n";
-import { useOfflineSurah } from "@/lib/offline";
+import { useOfflineSurah, listDownloads } from "@/lib/offline";
 import { usePlus } from "@/lib/plus";
 import { useEntitlements } from "@/lib/purchases";
 import { fetchPlayerSurah, fetchReciters, fetchSurahs, fetchTafsir, fetchTafsirs, fetchTranslations, type TafsirResource } from "@/lib/player-api";
@@ -179,7 +179,7 @@ export default function PlayerScreen() {
     save("qam.player.tafsir", tafsirChoice);
   }, [hydrated, state.reciter, state.translation, state.textSize, state.autoAdvance, state.motion, state.resume, view, wallpaperMode, fixedWallpaper, tafsirChoice]);
 
-  const { plus } = usePlus();
+  const { plus, limits } = usePlus();
   const wallpaper: Wallpaper = useMemo(() => {
     const n = state.surah?.number ?? 1;
     if (!plus) return wallpaperById(dark ? "p-night" : "p-paper") ?? WALLPAPERS[0];
@@ -207,7 +207,8 @@ export default function PlayerScreen() {
   const gapless = state.engine === "gapless" && !!state.chapterAudio;
   const entitlements = useEntitlements();
   const offline = useOfflineSurah(state.reciter ? String(state.reciter.id) : null, state.surah?.number ?? null);
-  const canOffline = entitlements.entitlements.offlineAudio;
+  // Downloads are usable only while a plan is active; Plus keeps at most 30 surahs, Unlimited has no cap.
+  const canOffline = plus;
   const desiredSrc = gapless ? (offline.uri && canOffline ? offline.uri : state.chapterAudio?.url ?? null) : segment?.audioUrl ?? null;
   const srcRef = useRef<string | null>(null);
   const seekFromTimeRef = useRef(false);
@@ -470,7 +471,7 @@ export default function PlayerScreen() {
             {panel === "reciter" && gapless && state.chapterAudio?.url ? (
               <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, alignItems: "center", paddingTop: 8 }}>
                 {offline.uri && canOffline ? <Pressable onPress={offline.remove} style={[st.chip, { borderColor: c.line, backgroundColor: c.card }]}><Text style={{ color: c.ink, fontSize: 13 }}>✓ {m.settings.offlineAudio} · {m.common.remove}</Text></Pressable>
-                  : <Pressable disabled={offline.busy} onPress={() => (canOffline ? offline.download(state.chapterAudio!.url) : router.push("/me" as never))} style={[st.chip, { borderColor: c.accent, backgroundColor: canOffline ? c.accent : c.card }]}><Text style={{ color: canOffline ? tokens.onAccent : c.ink, fontSize: 13 }}>{offline.busy ? m.common.loading : `⬇ ${m.settings.offlineAudio}${canOffline ? "" : ` · ${m.settings.subscribe}`}`}</Text></Pressable>}
+                  : <Pressable disabled={offline.busy} onPress={() => (!canOffline ? router.push("/plus?feature=offline" as never) : listDownloads().length >= limits.offlineSurahs ? voiceFlash(m.plus.downloadsLimit) : offline.download(state.chapterAudio!.url))} style={[st.chip, { borderColor: c.accent, backgroundColor: canOffline ? c.accent : c.card }]}><Text style={{ color: canOffline ? tokens.onAccent : c.ink, fontSize: 13 }}>{offline.busy ? m.common.loading : `⬇ ${m.settings.offlineAudio}${canOffline ? "" : ` · ${m.settings.subscribe}`}`}</Text></Pressable>}
               </View>
             ) : null}
             {panel === "translation" && (<>

@@ -7,6 +7,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { NATURE_WALLPAPERS, VIDEO_WALLPAPERS, languageNameForLocale, type PlayerAyah, type PlayerReciter, type PlayerSegment, type PlayerSurah, type PlayerTranslation, normalizeHex } from "@qam/core";
 
 import { useI18n } from "@/lib/i18n";
+import { usePlus, useUsage } from "@/lib/plus";
+import { PlusCard } from "@/components/plus-gate";
 import { SOLID_BACKGROUNDS, STORY_FONTS, ensureStoryFonts, loadStoryPrefs, localMedia, resolveBg, saveStoryPrefs, type StoryBg, type StoryFont, type StoryPrefs, storyInk } from "@/lib/story-tools";
 import { canRenderVideo, canShareVideo, probePlayback, renderCaps, renderStoryVideo, shareVideoFile, videoHasAudio, type RenderCaps, type VideoPage, type VideoResult } from "@/lib/story-video";
 
@@ -41,6 +43,9 @@ export default function StoryVideoPage() {
   const [payload, setPayload] = useState<Payload | null>(null);
   const [highlight, setHighlight] = useState(params.get("words") !== "0");
   const [quality, setQuality] = useState<"high" | "medium">(params.get("q") === "medium" ? "medium" : "high");
+  const { limits } = usePlus();
+  const usage = useUsage();
+  const [limitHit, setLimitHit] = useState(false);
   const [progress, setProgress] = useState<{ fraction: number; stage: "audio" | "render" | "encode" } | null>(null);
   const [result, setResult] = useState<(VideoResult & { url: string }) | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -105,10 +110,12 @@ export default function StoryVideoPage() {
 
   const render = async () => {
     if (!pages.length || !reciter) return;
+    if (!usage.allowed("video")) { setLimitHit(true); return; }
     setError(null); setResult(null);
     abort.current?.abort(); abort.current = new AbortController();
     try {
-      const opts = { pages, bg: bgResolved, font: prefs.font, size: prefs.size, tone, color: prefs.color, dim: prefs.dim, surahName, reciterName: ar ? reciter.arabicName : reciter.latinName, brand: m.common.appName, highlightWords: highlight, quality, signal: abort.current.signal, onProgress: (fraction: number, stage: "audio" | "render" | "encode") => setProgress({ fraction, stage }) };
+      const opts = { pages, bg: bgResolved, font: prefs.font, size: prefs.size, tone, color: prefs.color, dim: prefs.dim, surahName, quality: limits.videoHd ? quality : "medium", reciterName: ar ? reciter.arabicName : reciter.latinName, brand: m.common.appName, highlightWords: highlight, signal: abort.current.signal, onProgress: (fraction: number, stage: "audio" | "render" | "encode") => setProgress({ fraction, stage }) };
+      usage.bump("video");
       let r = await renderStoryVideo(opts);
       // Some Safari builds hand back a WebCodecs file without a usable audio track: check, and re-render by recording.
       let audible = await videoHasAudio(r.blob);
@@ -132,6 +139,7 @@ export default function StoryVideoPage() {
 
   return (
     <div className={`${styles.root} ${bgResolved.tone === "dark" ? styles.onLight : ""}`} style={rootStyle} dir={isRtl ? "rtl" : "ltr"}>
+      {limitHit ? <div style={{ position: "absolute", inset: 0, zIndex: 20, overflow: "auto", padding: 16, background: "rgba(0,0,0,0.6)" }}><div style={{ width: "min(640px, 100%)", margin: "0 auto" }}><PlusCard feature="video" inline /><p style={{ textAlign: "center", color: "#fff" }}>{m.plus.limitVideo}</p></div></div> : null}
       {bgResolved.video ? <video className={styles.bgVideo} src={bgResolved.video} poster={bgResolved.url} autoPlay muted loop playsInline aria-hidden /> : null}
       <div className={styles.top}>
         <div className={styles.head}>
@@ -201,7 +209,7 @@ export default function StoryVideoPage() {
           <div className={styles.group}>
             <div className={styles.row}>
               <button className={`${styles.opt} ${highlight ? styles.optOn : ""}`} onClick={() => setHighlight((h) => !h)}>✨ {t.words}</button>
-              {(["high", "medium"] as const).map((q) => <button key={q} className={`${styles.opt} ${quality === q ? styles.optOn : ""}`} onClick={() => setQuality(q)}>{q === "high" ? "1080p" : "720p"}</button>)}
+              {(["high", "medium"] as const).map((q) => <button key={q} className={`${styles.opt} ${(limits.videoHd ? quality : "medium") === q ? styles.optOn : ""}`} onClick={() => setQuality(q)} disabled={q === "high" && !limits.videoHd}>{q === "high" ? (limits.videoHd ? "1080p" : `🔒 1080p · ${m.plus.unlimited}`) : "720p"}</button>)}
             </div>
             <TextColorPicker value={prefs.color} autoLabel={t.auto} onChange={(color) => update({ color, tone: "auto" })} />
           </div>

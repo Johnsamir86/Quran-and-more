@@ -124,3 +124,21 @@ describe("99 names", () => {
     expect(nameOfDay(new Date(2026, 10, 15)).n).toBeGreaterThan(0);
   });
 });
+
+describe("plans and limits", () => {
+  it("maps entitlements to plans and meters Plus", async () => {
+    const { planFromEntitlements, usageAllowed, bumpUsage, PLAN_LIMITS, isFreeReciter } = await import("./subscriptions");
+    expect(planFromEntitlements([])).toBe("free");
+    expect(planFromEntitlements(["offline_audio"])).toBe("plus");
+    expect(planFromEntitlements(["offline_audio", "plus_unlimited"])).toBe("unlimited");
+    const now = new Date(2026, 10, 16, 9);
+    let u = bumpUsage(null, "ask", now);
+    for (let i = 1; i < PLAN_LIMITS.plus.askPerDay; i++) u = bumpUsage(u, "ask", now);
+    expect(usageAllowed("plus", u, "ask", now)).toBe(false);
+    expect(usageAllowed("unlimited", u, "ask", now)).toBe(true);
+    expect(usageAllowed("plus", u, "ask", new Date(2026, 10, 17, 9))).toBe(true); // next day resets
+    expect(usageAllowed("free", null, "video", now)).toBe(false);
+    expect(isFreeReciter({ id: "c7", chapterReciterId: 7, recitationId: 7 })).toBe(true);
+    expect(isFreeReciter({ id: "c1", chapterReciterId: 1, recitationId: 1 })).toBe(false);
+  });
+});

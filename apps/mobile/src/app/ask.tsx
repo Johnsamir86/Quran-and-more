@@ -4,7 +4,7 @@ import { Pressable, TextInput, View } from "react-native";
 
 import { ask, fetchAyahOfDay, type AskResult, type AyahOfDay } from "@/lib/study-api";
 import { useI18n } from "@/lib/i18n";
-import { PlusGate } from "@/lib/plus";
+import { Paywall, PlusGate, useUsage } from "@/lib/plus";
 import { Arabic, Body, Button, Card, Chip, ErrorBox, H1, H2, Kicker, Loading, Muted, Pill, Row, Screen, StudyNav, usePalette, SourcesBadge } from "@/lib/ui";
 
 
@@ -19,15 +19,19 @@ function AskScreen() {
   const [today, setToday] = useState<AyahOfDay | null>(null);
   useEffect(() => { fetchAyahOfDay(locale).then(setToday).catch(() => undefined); }, [locale]);
 
+  const usage = useUsage();
+  const [limitHit, setLimitHit] = useState(false);
   const send = async (text = q) => {
     const question = text.trim(); if (question.length < 3) return;
+    if (!usage.allowed("ask")) { setLimitHit(true); return; }
     setLoading(true); setError(null); setQ("");
-    try { const r = await ask(question, locale); setHistory((h) => [r, ...h]); } catch (e) { setError((e as Error).message); } finally { setLoading(false); }
+    try { const r = await ask(question, locale); usage.bump("ask"); setHistory((h) => [r, ...h]); } catch (e) { setError((e as Error).message); } finally { setLoading(false); }
   };
 
   return (
     <Screen>
       <Stack.Screen options={{ title: T.title }} />
+      {limitHit ? <><ErrorBox message={m.plus.limitReached} /><Paywall feature="ask" inline /></> : null}
       <StudyNav current="ask" />
       {today ? (
         <Link href={{ pathname: "/study/[verseKey]", params: { verseKey: today.verseKey } } as never} asChild>

@@ -1,8 +1,8 @@
 import { Stack, useRouter } from "expo-router";
 import type { ReactNode } from "react";
-import { Switch, Text, View } from "react-native";
+import { View } from "react-native";
 
-import { PLUS_PRICE, type PlusFeature } from "@qam/core";
+import { PLAN_LIMITS, PLUS_PRICE, bumpUsage, usageAllowed, type PlanId, type PlusFeature, type UsageRecord } from "@qam/core";
 
 import { useI18n } from "@/lib/i18n";
 import { useEntitlements } from "@/lib/purchases";
@@ -15,9 +15,18 @@ import { Body, Button, Card, H1, Kicker, Muted, Pill, Row, Screen, usePalette } 
  */
 export const usePlus = () => {
   const ent = useEntitlements();
-  const [preview, setPreview] = useStored<"plus" | "free">("qam.plus.preview", () => "plus");
-  const plus = ent.enabled ? ent.entitlements.offlineAudio : preview !== "free";
-  return { plus, enabled: ent.enabled, busy: ent.busy, purchase: ent.purchase, restore: ent.restore, preview, setPreview };
+  const [preview, setPreview] = useStored<PlanId>("qam.plus.preview", () => "unlimited");
+  const plan: PlanId = ent.enabled ? ent.entitlements.plan : preview;
+  return { plan, plus: plan !== "free", unlimited: plan === "unlimited", limits: PLAN_LIMITS[plan], enabled: ent.enabled, busy: ent.busy, purchase: ent.purchase, restore: ent.restore, preview, setPreview };
+};
+
+/** Device-side counters for the Plus limits (Ask per day, videos per month). */
+export const useUsage = () => {
+  const { plan } = usePlus();
+  const [usage, setUsage] = useStored<UsageRecord | null>("qam.usage.v1", () => null);
+  const allowed = (kind: "ask" | "video") => usageAllowed(plan, usage, kind, new Date());
+  const bump = (kind: "ask" | "video") => setUsage((u) => bumpUsage(u, kind, new Date()));
+  return { usage, allowed, bump, plan };
 };
 
 export function Paywall({ feature, inline }: { feature?: PlusFeature; inline?: boolean }) {
@@ -25,7 +34,7 @@ export function Paywall({ feature, inline }: { feature?: PlusFeature; inline?: b
   const { m } = useI18n();
   const t = m.plus;
   const router = useRouter();
-  const { enabled, busy, purchase, restore, preview, setPreview } = usePlus();
+  const { enabled, busy, purchase, restore, preview, setPreview, plan } = usePlus();
   const body = (
     <>
       <Card style={{ borderColor: c.accent }}>
@@ -34,6 +43,9 @@ export function Paywall({ feature, inline }: { feature?: PlusFeature; inline?: b
         {feature ? <Pill>🔒 {t.features[feature]} · {t.locked}</Pill> : null}
         <Body>{t.freeIncludes}</Body>
         <Body>{t.plusIncludes}</Body>
+        <Body>• {t.plusPlans}</Body>
+        <Body>• {t.unlimitedPlan}</Body>
+        <Muted>{t.downloadsNeedActive}</Muted>
       </Card>
       <Card>
         <Row>
@@ -45,7 +57,7 @@ export function Paywall({ feature, inline }: { feature?: PlusFeature; inline?: b
         <Row><Button ghost label={t.restore} onPress={restore} disabled={!enabled || busy} />{!inline ? <Button ghost label={t.notNow} onPress={() => (router.canGoBack() ? router.back() : router.replace("/"))} /> : null}</Row>
         {!enabled ? (
           <View style={{ gap: 6 }}>
-            <Row style={{ justifyContent: "space-between" }}><Text style={{ color: c.ink, flex: 1 }}>{t.previewPlus}</Text><Switch value={preview !== "free"} onValueChange={(v) => setPreview(v ? "plus" : "free")} /></Row>
+            <Row>{(["free", "plus", "unlimited"] as PlanId[]).map((p) => <Button key={p} ghost={plan !== p} label={p === "free" ? t.inactive : p === "plus" ? t.badge : t.unlimited} onPress={() => setPreview(p)} />)}</Row>
             <Muted>{t.previewHelp}</Muted>
           </View>
         ) : null}

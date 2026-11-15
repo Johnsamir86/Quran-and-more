@@ -1,6 +1,8 @@
 import Purchases, { LOG_LEVEL, PURCHASES_ERROR_CODE } from "react-native-purchases";
 import { Platform } from "react-native";
 
+import { planFromEntitlements } from "@qam/core";
+
 import { OFFLINE_AUDIO_ENTITLEMENT, type Entitlements } from "./purchases";
 
 /** RevenueCat adapter. Configure once with the platform key; offerings are set up in the RevenueCat dashboard (see docs/STORE.md). */
@@ -15,8 +17,10 @@ const ensure = async () => {
 };
 
 const toEnt = (info: Awaited<ReturnType<typeof Purchases.getCustomerInfo>>): Entitlements => {
-  const e = info.entitlements.active[OFFLINE_AUDIO_ENTITLEMENT];
-  return { offlineAudio: Boolean(e), expiresAt: e?.expirationDate ?? null };
+  const active = Object.keys(info.entitlements.active);
+  const plan = planFromEntitlements(active);
+  const e = info.entitlements.active[OFFLINE_AUDIO_ENTITLEMENT] ?? info.entitlements.active["plus_unlimited"];
+  return { offlineAudio: plan !== "free", expiresAt: e?.expirationDate ?? null, plan };
 };
 
 export const getEntitlements = async (): Promise<Entitlements> => { await ensure(); return toEnt(await Purchases.getCustomerInfo()); };

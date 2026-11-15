@@ -5,6 +5,8 @@ import { useState } from "react";
 
 import SourcesBadge from "@/components/sources-badge";
 import { useI18n } from "@/lib/i18n";
+import { useUsage } from "@/lib/plus";
+import { PlusCard } from "@/components/plus-gate";
 
 import StudyShell from "./study-shell";
 import styles from "./study.module.css";
@@ -19,19 +21,24 @@ export default function AskPage() {
   const [items, setItems] = useState<Answer[]>([]);
   const [loading, setLoading] = useState(false);
   const [reported, setReported] = useState<Set<string>>(new Set());
+  const usage = useUsage();
+  const [limitHit, setLimitHit] = useState(false);
 
   const ask = async (question: string) => {
     if (question.trim().length < 3) return;
+    if (!usage.allowed("ask")) { setLimitHit(true); return; }
     setLoading(true); setQ("");
     try {
       const res = await fetch("/api/ask", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ question, language: locale }) });
       const json = (await res.json()) as Answer & { error?: { message: string } };
+      usage.bump("ask");
       setItems((list) => [...list, json.error ? { question, mode: "retrieval", answer: json.error.message, sources: [], disclaimer: "", model: null } : json]);
     } finally { setLoading(false); }
   };
 
   return (
     <StudyShell title={t.title}>
+      {limitHit ? <><p className={styles.card}>{m.plus.limitReached}</p><PlusCard feature="ask" inline /></> : null}
       <section className={styles.card}>
         <div className={styles.row}><div className={styles.kicker}>Quran AI · {t.pending}</div><SourcesBadge compact /></div>
         <p className={styles.muted}>{t.intro}</p>

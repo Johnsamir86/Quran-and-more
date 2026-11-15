@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
+import type { PlanId } from "@qam/core";
+
 /**
  * Offline Audio subscription (RevenueCat). Product ids:
  *  - offline_audio_monthly  $1.99 / month
@@ -11,10 +13,10 @@ export const OFFLINE_AUDIO_ENTITLEMENT = "offline_audio";
 export const PRODUCT_IDS = { monthly: "offline_audio_monthly", yearly: "offline_audio_yearly", lifetime: "plus_lifetime" } as const;
 export const PURCHASES_ENABLED = Boolean(process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY || process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY);
 
-export interface Entitlements { offlineAudio: boolean; expiresAt: string | null }
+export interface Entitlements { offlineAudio: boolean; expiresAt: string | null; plan: PlanId }
 
 export const useEntitlements = () => {
-  const [ent, setEnt] = useState<Entitlements>({ offlineAudio: !PURCHASES_ENABLED, expiresAt: null });
+  const [ent, setEnt] = useState<Entitlements>({ offlineAudio: !PURCHASES_ENABLED, expiresAt: null, plan: PURCHASES_ENABLED ? "free" : "unlimited" });
   const [busy, setBusy] = useState(false);
   const refresh = useCallback(async () => {
     if (!PURCHASES_ENABLED) return;

@@ -6,19 +6,25 @@ Status: recommendation for the launch pricing of the iOS and Android apps. Writt
 
 The owner chose a tighter free tier than the recommendation below, and the apps now enforce it:
 
-| Free, no ads | Plus ($1.99 / month, $14.99 / year, $29.99 once) |
-| --- | --- |
-| The whole mushaf (all layouts), word by word, search | Everything else |
-| The player with three reciters: Mishari al-Afasy, Mahmoud Khalil al-Husary (murattal), Abdul Basit (murattal) | All reciters, offline audio, archive and mujawwad recordings |
-| One translation and one tafsir at a time | Several tafsirs side by side, all translations |
-| Plain background in the player | Wallpapers, moving backgrounds |
-| — | Ayah of the day, image and video sharing |
-| — | Ask, memorisation, lessons and games |
-| — | Family profiles, azan and prayer times |
-| — | Adhkar, Qibla, Hijri calendar, tasbih, khatmah, 99 names |
-| — | TV screens, screen mirroring and car browse screens (when built) |
+| Free, no ads | Plus ($1.99 / month or $14.99 / year) | Unlimited ($29.99 once, for life) |
+| --- | --- | --- |
+| The whole mushaf (all layouts), word by word, search | Everything | Everything, no limits |
+| The player with three reciters: Mishari al-Afasy, Mahmoud Khalil al-Husary (murattal), Abdul Basit (murattal) | All reciters; offline audio up to 30 downloaded surahs | All reciters; unlimited downloads |
+| One translation and one tafsir at a time | Several tafsirs side by side, all translations | Same |
+| Plain background in the player | Wallpapers, moving backgrounds | Same |
+| — | Ayah of the day, image sharing, 15 videos a month in 720p | Unlimited videos in 1080p |
+| — | Ask (20 questions a day), memorisation, lessons and games | Ask unlimited |
+| — | Family profiles, azan and prayer times | Same |
+| — | Adhkar, Qibla, Hijri calendar, tasbih, khatmah, 99 names | Same |
+| — | — | TV screens, screen mirroring, car browse screens and every future feature |
 
-Implementation: `isFreeReciter` and `PLUS_PRICE` in `packages/core/src/subscriptions.ts`; the gate
+Downloads are kept and played only while a plan is active: when a monthly or yearly subscription
+lapses, the files stay on the device but the player falls back to streaming the three free reciters
+until it is renewed. Usage counters for the Plus limits live on the device (`UsageRecord`).
+
+Implementation: `isFreeReciter`, `PLUS_PRICE`, `PLAN_LIMITS`, `planFromEntitlements` and the usage
+helpers in `packages/core/src/subscriptions.ts` (RevenueCat entitlements `offline_audio` for Plus and
+`plus_unlimited` for the lifetime product); the gate
 components `PlusGate` / `Paywall` on mobile (`apps/mobile/src/lib/plus.tsx`, RevenueCat
 entitlement, preview switch in test builds) and on web (`apps/web/src/components/plus-gate.tsx`,
 local flag until the web checkout exists; `NEXT_PUBLIC_PAYWALL=off` disables the web gates).

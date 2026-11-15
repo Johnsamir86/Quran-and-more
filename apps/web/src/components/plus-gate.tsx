@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { PLUS_PRICE, type PlusFeature } from "@qam/core";
+import { PLUS_PRICE, type PlanId, type PlusFeature } from "@qam/core";
 
 import StudyShell from "@/components/study/study-shell";
 import shell from "@/components/study/study.module.css";
@@ -13,7 +13,7 @@ import { usePlus } from "@/lib/plus";
 export function PlusCard({ feature, inline }: { feature?: PlusFeature; inline?: boolean }) {
   const { m } = useI18n();
   const t = m.plus;
-  const { plus, setPlus } = usePlus();
+  const { plan, setPlan } = usePlus();
   return (
     <div className={shell.card} style={{ borderColor: "var(--accent)" }}>
       <span className={shell.kicker}>{t.badge}</span>
@@ -21,6 +21,9 @@ export function PlusCard({ feature, inline }: { feature?: PlusFeature; inline?: 
       {feature ? <span className={shell.pill}>🔒 {t.features[feature]} · {t.locked}</span> : null}
       <p>{t.freeIncludes}</p>
       <p>{t.plusIncludes}</p>
+      <p>• {t.plusPlans}</p>
+      <p>• {t.unlimitedPlan}</p>
+      <p className={shell.muted}>{t.downloadsNeedActive}</p>
       <div className={shell.row}>
         <span className={shell.chip}>{t.monthly} · ${PLUS_PRICE.monthlyUsd} {t.perMonth}</span>
         <span className={shell.chip}>{t.yearly} · ${PLUS_PRICE.yearlyUsd} {t.perYear}</span>
@@ -32,7 +35,7 @@ export function PlusCard({ feature, inline }: { feature?: PlusFeature; inline?: 
         <a className={shell.btnGhost} href="/ios-simulator.zip">iOS</a>
         {!inline ? <Link className={shell.btnGhost} href="/">{t.notNow}</Link> : null}
       </div>
-      <label className={shell.row} style={{ gap: 8 }}><input type="checkbox" checked={plus} onChange={(e) => setPlus(e.target.checked)} /> <span className={shell.muted}>{t.previewPlus} · {t.previewHelp}</span></label>
+      <div className={shell.row}><span className={shell.muted}>{t.preview}:</span>{(["free", "plus", "unlimited"] as PlanId[]).map((p) => <button key={p} type="button" className={`${shell.chip} ${plan === p ? shell.chipActive : ""}`} onClick={() => setPlan(p)}>{p === "free" ? t.inactive : p === "plus" ? t.badge : t.unlimited}</button>)}<span className={shell.muted}>{t.previewHelp}</span></div>
     </div>
   );
 }
