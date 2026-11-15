@@ -100,6 +100,16 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
   const probe = new AudioContext();
   const buffers: AudioBuffer[] = [];
   for (let i = 0; i < input.pages.length; i++) { buffers.push(await fetchAudio(probe, input.pages[i].audioUrl, signal)); onProgress?.((i + 1) / input.pages.length, "audio"); }
+  // Word timings derived from the full-surah recording can sit a little off the per-ayah cut; align the
+  // first word to the audible onset of each file (bounded to ±600 ms).
+  const timings: [number, number, number][][] = input.pages.map((p, i) => {
+    if (!p.wordTimings.length) return [];
+    const b = buffers[i]; const ch = b.getChannelData(0); const step = Math.max(1, Math.floor(b.sampleRate / 1000));
+    let onset = 0; for (let k = 0; k < ch.length; k += step) { if (Math.abs(ch[k]) > 0.02) { onset = (k / b.sampleRate) * 1000; break; } }
+    const first = Math.min(...p.wordTimings.map(([, f]) => f));
+    const shift = Math.max(-600, Math.min(600, onset - first));
+    return p.wordTimings.map(([pos, f, t]) => [pos, f + shift, t + shift] as [number, number, number]);
+  });
   const sampleRate = 48000;
   const starts: number[] = []; let cursor = INTRO_MS;
   for (const b of buffers) { starts.push(cursor); cursor += b.duration * 1000 + GAP_MS; }
@@ -173,8 +183,9 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
     const top = Math.max(260 * S, (H - blockH) / 2 - 40 * S);
     ctx.font = `500 ${lay.size}px ${family}`; ctx.direction = "rtl"; ctx.textAlign = "right";
     ctx.shadowColor = light ? "rgba(0,0,0,0.4)" : "rgba(255,255,255,0.5)"; ctx.shadowBlur = 22 * S;
-    const activePos = input.highlightWords ? page.wordTimings.find(([, from, to]) => local + LEAD_MS >= from && local + LEAD_MS < to)?.[0] ?? null : null;
-    const donePos = input.highlightWords && activePos === null && local > 0 ? Math.max(0, ...page.wordTimings.filter(([, , to]) => local + LEAD_MS >= to).map(([p]) => p)) : 0;
+    const wt = timings[idx];
+    const activePos = input.highlightWords ? wt.find(([, from, to]) => local + LEAD_MS >= from && local + LEAD_MS < to)?.[0] ?? null : null;
+    const donePos = input.highlightWords && activePos === null && local > 0 ? Math.max(0, ...wt.filter(([, , to]) => local + LEAD_MS >= to).map(([p]) => p)) : 0;
     for (const w of lay.laid) {
       const y = top + (w.line + 1) * lineH - lineH * 0.35;
       const isActive = activePos === w.position;
@@ -209,14 +220,21 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
       const cfg: VideoEncoderConfig = { codec, width: W, height: H, bitrate: W >= 1080 ? 9_000_000 : 5_000_000, framerate: FPS, latencyMode: "quality", avc: { format: "avc" } } as VideoEncoderConfig;
       try { if ((await VideoEncoder.isConfigSupported(cfg)).supported) { vConfig = cfg; break; } } catch { /* try next */ }
     }
-    try { if (vConfig && !(await AudioEncoder.isConfigSupported({ codec: "mp4a.40.2", numberOfChannels: 2, sampleRate, bitrate: 160_000 })).supported) vConfig = null; } catch { vConfig = null; }
   }
+  // AAC where the platform has an encoder (Android, macOS, Windows, iOS); Opus otherwise (Linux Chromium).
+  let audioCodec: "aac" | "opus" | null = null;
   if (vConfig) {
-    const muxer = new Muxer({ target: new ArrayBufferTarget(), video: { codec: "avc", width: W, height: H }, audio: { codec: "aac", numberOfChannels: 2, sampleRate }, fastStart: "in-memory" });
+    for (const [name, codec] of [["aac", "mp4a.40.2"], ["opus", "opus"]] as const) {
+      try { if ((await AudioEncoder.isConfigSupported({ codec, numberOfChannels: 2, sampleRate, bitrate: 160_000 })).supported) { audioCodec = name; break; } } catch { /* try next */ }
+    }
+    if (!audioCodec) vConfig = null;
+  }
+  if (vConfig && audioCodec) {
+    const muxer = new Muxer({ target: new ArrayBufferTarget(), video: { codec: "avc", width: W, height: H }, audio: { codec: audioCodec, numberOfChannels: 2, sampleRate }, fastStart: "in-memory" });
     const videoEncoder = new VideoEncoder({ output: (chunk, meta) => muxer.addVideoChunk(chunk, meta), error: (e) => { throw e; } });
     videoEncoder.configure(vConfig);
     const audioEncoder = new AudioEncoder({ output: (chunk, meta) => muxer.addAudioChunk(chunk, meta), error: (e) => { throw e; } });
-    audioEncoder.configure({ codec: "mp4a.40.2", numberOfChannels: 2, sampleRate, bitrate: 160_000 });
+    audioEncoder.configure({ codec: audioCodec === "aac" ? "mp4a.40.2" : "opus", numberOfChannels: 2, sampleRate, bitrate: 160_000 });
     // audio: feed in 1 s slices
     const chunk = sampleRate;
     for (let off = 0; off < mixed.length; off += chunk) {

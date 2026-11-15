@@ -48,7 +48,8 @@ export default function StoryVideoPage() {
     fetch("/api/public/v1/reciters?profileGender=unspecified").then((r) => r.json()).then((j: { reciters: PlayerReciter[] }) => {
       const list = j.reciters.filter((r) => r.recitationId !== null);
       setReciters(list);
-      setReciterId((cur) => (cur && list.some((r) => r.id === cur || `a${r.recitationId}` === cur) ? cur : (prefs.reciter && list.some((r) => r.id === prefs.reciter) ? prefs.reciter : list[0]?.id ?? null)));
+      // Default to Mishari Alafasy (recitation 7): the catalogue carries word timings for every ayah of his.
+      setReciterId((cur) => (cur && list.some((r) => r.id === cur || `a${r.recitationId}` === cur) ? cur : (prefs.reciter && list.some((r) => r.id === prefs.reciter) ? prefs.reciter : (list.find((r) => r.recitationId === 7) ?? list[0])?.id ?? null)));
     }).catch(() => setError(m.common.unavailable));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -64,7 +65,10 @@ export default function StoryVideoPage() {
         const tr = ((await (await fetch("/api/public/v1/translations")).json()) as { translations: PlayerTranslation[] }).translations;
         const want = languageNameForLocale(locale);
         const translation = ar ? null : tr.find((x) => x.languageName?.toLowerCase() === want) ?? tr.find((x) => x.id === "85") ?? tr[0] ?? null;
-        const j = (await (await fetch(`/api/public/v1/player/surah/${surah}?reciter=a${reciter.recitationId}&translation=${translation?.id ?? "none"}`)).json()) as Payload;
+        // Ask for both engines ("c7:a7"): the per-ayah files carry no word timings upstream, so they are
+        // derived from the full-surah timeline of the same recording (see pages below).
+        const param = [reciter.chapterReciterId !== null ? `c${reciter.chapterReciterId}` : null, reciter.recitationId !== null ? `a${reciter.recitationId}` : null].filter(Boolean).join(":");
+        const j = (await (await fetch(`/api/public/v1/player/surah/${surah}?reciter=${encodeURIComponent(param)}&translation=${translation?.id ?? "none"}`)).json()) as Payload;
         if (!cancelled) setPayload(j);
       } catch { if (!cancelled) setError(m.common.unavailable); }
     })();
@@ -75,8 +79,13 @@ export default function StoryVideoPage() {
     if (!payload) return [];
     return payload.segments
       .filter((s): s is PlayerSegment & { ayah: PlayerAyah } => !!s.ayah && s.ayah.number >= from && s.ayah.number <= to && !!s.ayah.audioUrl)
-      .map((s) => ({ verseKey: s.ayah.key, arabic: s.ayah.arabic, words: s.ayah.words.map((w) => ({ position: w.position, text: w.text })), translation: s.ayah.translation, audioUrl: s.ayah.audioUrl!, wordTimings: s.ayah.ayahWordTimings }));
+      .map((s) => {
+        const own = s.ayah.ayahWordTimings;
+        const derived: [number, number, number][] = s.fromMs !== null && s.wordTimings.length ? s.wordTimings.map(([p, f, t]) => [p, f - (s.fromMs as number), t - (s.fromMs as number)] as [number, number, number]) : [];
+        return { verseKey: s.ayah.key, arabic: s.ayah.arabic, words: s.ayah.words.map((w) => ({ position: w.position, text: w.text })), translation: s.ayah.translation, audioUrl: s.ayah.audioUrl!, wordTimings: own.length ? own : derived };
+      });
   }, [payload, from, to]);
+  const hasTimings = pages.some((p) => p.wordTimings.length > 0);
   const estimateMs = pages.reduce((a, p) => a + ((payload?.segments.find((s) => s.ayah?.key === p.verseKey)?.ayah?.durationMs) ?? 6000), 0) + pages.length * 700 + 2400;
 
   const bgResolved = useMemo(() => resolveBg(prefs.bg, NATURE_WALLPAPERS[surah % NATURE_WALLPAPERS.length].id), [prefs.bg, surah]);
@@ -125,6 +134,7 @@ export default function StoryVideoPage() {
               <div className={styles.arabic} lang="ar" translate="no" style={{ fontFamily: STORY_FONTS[prefs.font].family, fontSize: `calc(1.4rem * ${prefs.size})` }}>{pages[0]?.arabic ?? (payload ? m.common.unavailable : m.common.loading)}</div>
               {pages.length > 1 ? <div className={styles.hint}>…</div> : null}
               <div className={styles.hint}>{t.videoHint}</div>
+              {payload && highlight && !hasTimings ? <div className={styles.hint}>⚠ {t.noWordTimings}</div> : null}
             </div>
           )}
 
