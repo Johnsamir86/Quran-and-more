@@ -63,6 +63,25 @@ first open, in a category where the best-known apps are free, will convert poorl
 * Keep **$4.99** only as a regional fallback: if a market does not allow subscriptions through
   the store account types we support, or for a "Classic" SKU with no cloud features.
 
+### 3.1 Exact Free / Plus matrix
+
+| Area | Free (no ads, no limits, no sign-in) | Plus ($1.99/mo · $14.99/yr · $29.99 once) |
+| --- | --- | --- |
+| Quran text | Whole mushaf, all layouts, word by word, search | — |
+| Listening | All reciters online, gapless word sync, repeat, speed, sleep timer, lock-screen and car Now Playing with ayah text | Offline downloads (any surah or whole reciter), archive and mujawwad reciters |
+| Study | One translation and one tafsir at a time, any language | Up to three tafsirs side by side, all translations at once, saved filters per profile |
+| Worship tools | Azan and prayer times, Qibla, Hijri calendar, adhkar with counters, tasbih, khatmah planner, 99 names, ayah of the day | Khatmah reminders, weekly reading summary, shared family khatmah |
+| Ayah story | Image, 720p video with a small app mark | 1080p, no mark, moving backgrounds, extra fonts and colours, unlimited exports |
+| Ask AI | 3 questions a day | Unlimited, longer answers, sources list |
+| Hifz | Hide, recall, self-grade | Microphone check, spaced-review schedule, progress charts, streak freeze |
+| Family | 2 profiles | Unlimited profiles, parent weekly report |
+| Sync | On this device | Cloud sync across devices (when accounts ship) |
+| Car and widgets | Now Playing in CarPlay / Android Auto | Early access to car browse screens and home-screen widgets |
+
+Never gated: the number of surahs, online reciters, prayer notifications, Qibla accuracy, any
+single tafsir or translation. Every Plus line either costs us money (audio bandwidth, AI tokens,
+sync storage) or is a power feature casual users do not miss, so the free app still feels complete.
+
 Why this beats $4.99 up front:
 * Expected revenue per 1 000 store visitors: $4.99 paid app at a ≈ 2–3 % paid conversion yields
   ≈ $100–150 (net ≈ $70–105 after store fees). Free with a 3–5 % conversion to a $14.99 year or
