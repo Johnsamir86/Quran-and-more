@@ -8,7 +8,7 @@ import { NATURE_WALLPAPERS, VIDEO_WALLPAPERS, languageNameForLocale, type Player
 
 import { useI18n } from "@/lib/i18n";
 import { SOLID_BACKGROUNDS, STORY_FONTS, ensureStoryFonts, loadStoryPrefs, localMedia, resolveBg, saveStoryPrefs, type StoryBg, type StoryFont, type StoryPrefs } from "@/lib/story-tools";
-import { canRenderVideo, canShareVideo, renderStoryVideo, shareVideoFile, videoHasAudio, type VideoPage, type VideoResult } from "@/lib/story-video";
+import { canRenderVideo, canShareVideo, probePlayback, renderCaps, renderStoryVideo, shareVideoFile, videoHasAudio, type RenderCaps, type VideoPage, type VideoResult } from "@/lib/story-video";
 
 import styles from "./story.module.css";
 
@@ -29,6 +29,10 @@ export default function StoryVideoPage() {
   const to = Math.max(from, Number(params.get("to") ?? from) || from);
   const embedded = params.get("embed") === "1"; // opened from the mobile app
   const auto = params.get("auto") === "1"; // start rendering as soon as the ayat are in
+  const debug = params.get("debug") === "1"; // show encoder capabilities and the playback probe
+  const [caps, setCaps] = useState<RenderCaps | null>(null);
+  const [probe, setProbe] = useState<string | null>(null);
+  useEffect(() => { if (debug) renderCaps().then(setCaps).catch(() => undefined); }, [debug]);
 
   const [prefs, setPrefs] = useState<StoryPrefs>(() => ({ ...loadStoryPrefsSafe(), ...fromParams(params) }));
   const [reciters, setReciters] = useState<PlayerReciter[]>([]);
@@ -106,8 +110,10 @@ export default function StoryVideoPage() {
       let r = await renderStoryVideo(opts);
       // Some Safari builds hand back a WebCodecs file without a usable audio track: check, and re-render by recording.
       let audible = await videoHasAudio(r.blob);
+      if (audible === false && r.audioCodec === "aac") { r = await renderStoryVideo({ ...opts, forceMp3: true }); audible = await videoHasAudio(r.blob); }
       if (audible === false && r.engine === "webcodecs") { r = await renderStoryVideo({ ...opts, forceRecorder: true }); audible = await videoHasAudio(r.blob); }
       setAudioOk(audible);
+      if (debug) probePlayback(r.blob).then((pr) => setProbe(`playback: audioTracks=${pr.audioTracks ?? "n/a"} decodedAudioBytes=${pr.decodedAudioBytes ?? "n/a"}${pr.error ? ` error=${pr.error}` : ""}`)).catch(() => undefined);
       setResult({ ...r, url: URL.createObjectURL(r.blob) });
     } catch (e) {
       if (!(e instanceof DOMException && e.name === "AbortError")) setError(t.videoUnsupported);
@@ -135,6 +141,7 @@ export default function StoryVideoPage() {
       <div className={styles.stage}>
         <div className={styles.studio}>
           {!supported ? <div className={styles.hint}>{t.videoUnsupported}</div> : null}
+          {debug ? <div className={styles.hint} style={{ textAlign: "start", fontFamily: "monospace", fontSize: "0.72rem", userSelect: "text" }}>{caps ? `caps: VideoEncoder=${caps.videoEncoder} AudioEncoder=${caps.audioEncoder} avc=${caps.avc} aac=${caps.aac} recorder=${caps.recorder}` : "caps: …"}{result ? ` | result: ${result.engine}/${result.audioCodec} ${(result.blob.size / 1e6).toFixed(1)}MB audible=${String(audioOk)}` : ""}{probe ? ` | ${probe}` : ""}</div> : null}
           {result ? (
             <video className={styles.videoPreview} src={result.url} controls playsInline />
           ) : (
@@ -159,7 +166,7 @@ export default function StoryVideoPage() {
             {!result ? <button className={`${styles.chip} ${styles.primaryBtn}`} onClick={render} disabled={!pages.length || !!progress || !supported}>🎬 {progress ? stageLabel : t.shareVideo}</button> : null}
             {progress ? <button className={styles.chip} onClick={() => abort.current?.abort()}>✕ {m.common.close}</button> : null}
             {result && canShareVideo(result.ext) ? <button className={`${styles.chip} ${styles.primaryBtn}`} onClick={share}>📤 {m.common.share}</button> : null}
-            {result ? <a className={styles.chip} href={result.url} download={`ayah-${reference.replace(":", "-")}.${result.ext}`}>⬇ {result.ext.toUpperCase()} · {(result.blob.size / 1_000_000).toFixed(1)} MB · {result.engine === "webcodecs" ? "H.264" : "rec"}{audioOk === false ? " · 🔇" : audioOk ? " · 🔊" : ""}</a> : null}
+            {result ? <a className={styles.chip} href={result.url} download={`ayah-${reference.replace(":", "-")}.${result.ext}`}>⬇ {result.ext.toUpperCase()} · {(result.blob.size / 1_000_000).toFixed(1)} MB · {result.engine === "webcodecs" ? "H.264" : "rec"} · {result.audioCodec.toUpperCase()}{audioOk === false ? " · 🔇" : audioOk ? " · 🔊" : " · 🔈?"}</a> : null}
             {result ? <button className={styles.chip} onClick={() => setResult(null)}>↺ {t.reset}</button> : null}
           </div>
 

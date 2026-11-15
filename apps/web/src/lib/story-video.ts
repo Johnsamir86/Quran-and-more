@@ -1,6 +1,6 @@
 "use client";
 
-import { ALL_FORMATS, BlobSource, BufferTarget, CanvasSink, CanvasSource, EncodedAudioPacketSource, EncodedPacket, EncodedPacketSink, Input, MP4, Mp4OutputFormat, Output, UrlSource, canEncodeVideo } from "mediabunny";
+import { ALL_FORMATS, AudioSample, AudioSampleSource, BlobSource, BufferTarget, CanvasSink, CanvasSource, EncodedAudioPacketSource, EncodedPacket, EncodedPacketSink, Input, MP4, Mp4OutputFormat, Output, UrlSource, canEncodeAudio, canEncodeVideo } from "mediabunny";
 
 import { STORY_FONTS, type ResolvedBg, type StoryFont } from "./story-tools";
 
@@ -41,9 +41,19 @@ export interface VideoInput {
   signal?: AbortSignal;
   /** Skip WebCodecs and record the canvas + audio stream instead (used when a WebCodecs result came back silent). */
   forceRecorder?: boolean;
+  /** Copy the MP3 frames instead of encoding AAC (used when an AAC result came back silent). */
+  forceMp3?: boolean;
 }
 
-export interface VideoResult { blob: Blob; mime: string; ext: "mp4" | "webm"; durationMs: number; engine: "webcodecs" | "recorder" }
+export interface VideoResult { blob: Blob; mime: string; ext: "mp4" | "webm"; durationMs: number; engine: "webcodecs" | "recorder"; audioCodec: "aac" | "mp3" | "recorder" }
+export interface RenderCaps { videoEncoder: boolean; audioEncoder: boolean; avc: boolean; aac: boolean; recorder: boolean }
+export const renderCaps = async (): Promise<RenderCaps> => ({
+  videoEncoder: typeof (window as unknown as { VideoEncoder?: unknown }).VideoEncoder === "function",
+  audioEncoder: typeof (window as unknown as { AudioEncoder?: unknown }).AudioEncoder === "function",
+  avc: await canEncodeVideo("avc", { width: 720, height: 1280 }).catch(() => false),
+  aac: await canEncodeAudio("aac", { numberOfChannels: 2, sampleRate: 48000 }).catch(() => false),
+  recorder: typeof (window as unknown as { MediaRecorder?: unknown }).MediaRecorder === "function",
+});
 
 /* The reciter's files are copied into the MP4 back to back (no re-encoding), so pages change exactly at file boundaries. */
 const GAP_MS = 0, INTRO_MS = 0, OUTRO_MS = 1500, FPS = 30, LEAD_MS = 90;
@@ -65,10 +75,6 @@ const loadVideo = (src: string) => new Promise<HTMLVideoElement>((resolve, rejec
   const clear = () => window.clearTimeout(timer); v.addEventListener("loadeddata", clear, { once: true }); v.addEventListener("error", clear, { once: true });
 });
 
-const fetchAudio = async (ctx: BaseAudioContext, url: string, signal?: AbortSignal): Promise<AudioBuffer> => {
-  const res = await fetch(url, { signal }); if (!res.ok) throw new Error(`audio ${res.status}`);
-  return ctx.decodeAudioData(await res.arrayBuffer());
-};
 
 /** Lay out words right-to-left into lines that fit `maxWidth`; returns per-word x (right edge) and line index. */
 interface Laid { position: number; text: string; line: number; x: number; width: number }
@@ -125,9 +131,13 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
   const durations = parsed.map((p) => p.durationMs);
   // Word timings derived from the full-surah recording can sit a little off the per-ayah cut; align the first
   // word to the audible onset of each file (bounded to ±600 ms). Decoding is optional: skip it where it fails.
-  const onsets: number[] = await Promise.all(blobs.map(async (b) => {
-    try { const ctx = new OfflineAudioContext(1, 1, 48000); const buf = await ctx.decodeAudioData(await b.arrayBuffer()); const ch = buf.getChannelData(0); const step = Math.max(1, Math.floor(buf.sampleRate / 1000)); for (let k = 0; k < ch.length; k += step) if (Math.abs(ch[k]) > 0.02) return (k / buf.sampleRate) * 1000; return 0; } catch { return -1; }
-  }));
+  const pcm: (AudioBuffer | null)[] = await Promise.all(blobs.map(async (b) => { try { const ctx = new OfflineAudioContext(1, 1, 48000); return await ctx.decodeAudioData(await b.arrayBuffer()); } catch { return null; } }));
+  const onsets: number[] = pcm.map((buf) => {
+    if (!buf) return -1;
+    const ch = buf.getChannelData(0); const step = Math.max(1, Math.floor(buf.sampleRate / 1000));
+    for (let k = 0; k < ch.length; k += step) if (Math.abs(ch[k]) > 0.02) return (k / buf.sampleRate) * 1000;
+    return 0;
+  });
   const timings: [number, number, number][][] = input.pages.map((p, i) => {
     if (!p.wordTimings.length) return [];
     if (onsets[i] < 0) return p.wordTimings;
@@ -252,7 +262,7 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
     if (!bgSink || !bgClipMs) return;
     const want = (tMs % bgClipMs) / 1000;
     try {
-      if (!bgIter || (bgCur && want < bgCur.timestamp)) { bgIter = bgSink.canvases(0) as typeof bgIter; bgCur = null; }
+      if (!bgIter || (bgCur && want < bgCur.timestamp)) { await bgIter?.return(); bgIter = bgSink.canvases(0) as typeof bgIter; bgCur = null; }
       while (!bgCur || bgCur.timestamp + bgCur.duration <= want) { const n = await bgIter!.next(); if (n.done) { bgIter = null; break; } bgCur = n.value; }
       if (bgCur) bgFrame = bgCur.canvas;
     } catch { /* keep the previous frame */ }
@@ -265,16 +275,35 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
     const output = new Output({ format, target: new BufferTarget() });
     const videoSource = new CanvasSource(canvas, { codec: "avc", bitrate: W >= 1080 ? 9_000_000 : 5_000_000, keyFrameInterval: 2 });
     output.addVideoTrack(videoSource, { frameRate: FPS });
-    const audioSource = new EncodedAudioPacketSource("mp3");
-    output.addAudioTrack(audioSource);
-    await output.start();
-    let seq = 0;
-    for (let i = 0; i < parsed.length; i++) {
-      const { packets, config } = parsed[i];
-      for (let k = 0; k < packets.length; k++) {
-        const pk = packets[k];
-        await audioSource.add(new EncodedPacket(pk.data, "key", pk.timestamp + starts[i] / 1000, pk.duration, seq++), k === 0 && i === 0 && config ? { decoderConfig: config } : undefined);
+    // Apple's players do not decode MP3 inside MP4, so encode AAC wherever an AAC encoder exists (iOS, macOS,
+    // Android, Windows); copy the MP3 frames untouched only where it does not (Linux Chromium).
+    const useAac = !input.forceMp3 && pcm.every(Boolean) && (await canEncodeAudio("aac", { numberOfChannels: 2, sampleRate: 48000 }).catch(() => false));
+    const audioCodec: "aac" | "mp3" = useAac ? "aac" : "mp3";
+    if (useAac) {
+      const aac = new AudioSampleSource({ codec: "aac", bitrate: 160_000 });
+      output.addAudioTrack(aac);
+      await output.start();
+      for (let i = 0; i < pcm.length; i++) {
+        const buf = pcm[i]!; const n = buf.length; const chs = Math.min(2, buf.numberOfChannels);
+        const data = new Float32Array(n * 2);
+        data.set(buf.getChannelData(0), 0); data.set(buf.getChannelData(chs > 1 ? 1 : 0), n);
+        const sample = new AudioSample({ format: "f32-planar", numberOfChannels: 2, sampleRate: buf.sampleRate, numberOfFrames: n, timestamp: starts[i] / 1000, data });
+        await aac.add(sample); sample.close();
       }
+      aac.close();
+    } else {
+      const audioSource = new EncodedAudioPacketSource("mp3");
+      output.addAudioTrack(audioSource);
+      await output.start();
+      let seq = 0;
+      for (let i = 0; i < parsed.length; i++) {
+        const { packets, config } = parsed[i];
+        for (let k = 0; k < packets.length; k++) {
+          const pk = packets[k];
+          await audioSource.add(new EncodedPacket(pk.data, "key", pk.timestamp + starts[i] / 1000, pk.duration, seq++), k === 0 && i === 0 && config ? { decoderConfig: config } : undefined);
+        }
+      }
+      audioSource.close();
     }
     const t0 = performance.now();
     for (let i = 0; i < frames; i++) {
@@ -290,7 +319,7 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
     await output.finalize();
     bgVideo?.pause();
     const buf = (output.target as BufferTarget).buffer!;
-    return { blob: new Blob([buf], { type: "video/mp4" }), mime: "video/mp4", ext: "mp4", durationMs: totalMs, engine: "webcodecs" };
+    return { blob: new Blob([buf], { type: "video/mp4" }), mime: "video/mp4", ext: "mp4", durationMs: totalMs, engine: "webcodecs", audioCodec };
   } catch (e) {
     if (e instanceof DOMException && e.name === "AbortError") throw e;
     // Encoder failed: record instead.
@@ -323,7 +352,7 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
   }
   rec.stop(); await done; src.disconnect(); await live.close().catch(() => undefined); bgVideo?.pause();
   const isMp4 = (rec.mimeType || mime).includes("mp4");
-  return { blob: new Blob(parts, { type: isMp4 ? "video/mp4" : "video/webm" }), mime: isMp4 ? "video/mp4" : "video/webm", ext: isMp4 ? "mp4" : "webm", durationMs: totalMs, engine: "recorder" };
+  return { blob: new Blob(parts, { type: isMp4 ? "video/mp4" : "video/webm" }), mime: isMp4 ? "video/mp4" : "video/webm", ext: isMp4 ? "mp4" : "webm", durationMs: totalMs, engine: "recorder", audioCodec: "recorder" };
 };
 
 export const canShareVideo = (ext: "mp4" | "webm"): boolean => typeof navigator !== "undefined" && typeof navigator.canShare === "function" && navigator.canShare({ files: [new File(["x"], `x.${ext}`, { type: ext === "mp4" ? "video/mp4" : "video/webm" })] });
@@ -348,3 +377,17 @@ export const videoHasAudio = async (blob: Blob): Promise<boolean | null> => {
     return peak > 0.01;
   } catch { return null; }
 };
+
+/** Loads the file in a muted <video> and asks the media stack whether it decoded any audio (Safari exposes the counter). */
+export const probePlayback = (blob: Blob): Promise<{ audioTracks: number | null; decodedAudioBytes: number | null; error: string | null }> => new Promise((resolve) => {
+  const v = document.createElement("video"); v.muted = true; v.playsInline = true; v.preload = "auto";
+  const url = URL.createObjectURL(blob);
+  const finish = (error: string | null) => {
+    const anyV = v as unknown as { audioTracks?: { length: number }; webkitAudioDecodedByteCount?: number };
+    resolve({ audioTracks: anyV.audioTracks ? anyV.audioTracks.length : null, decodedAudioBytes: typeof anyV.webkitAudioDecodedByteCount === "number" ? anyV.webkitAudioDecodedByteCount : null, error });
+    v.pause(); URL.revokeObjectURL(url);
+  };
+  v.onerror = () => finish(v.error?.message ?? "error");
+  v.src = url; v.load();
+  v.play().then(() => window.setTimeout(() => finish(null), 1800)).catch((e: Error) => window.setTimeout(() => finish(e.message), 1800));
+});

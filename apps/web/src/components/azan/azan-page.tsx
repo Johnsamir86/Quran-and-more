@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { AZAN_PRAYERS, CALC_METHODS, MUEZZINS, PRAYER_NAMES, asrForCountry, formatCountdown, formatPrayerTime, hijriDate, methodForCountry, muezzinById, prayerSchedule, resolveCalc, type AzanSettings, type PrayerName } from "@qam/core";
