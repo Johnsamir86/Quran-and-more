@@ -90,7 +90,8 @@ export default function PlayerScreen() {
         const reciter = r.find((x) => x.id === savedReciter) ?? r.find((x) => x.chapterReciterId === 7) ?? r[0];
         if (reciter) dispatch({ type: "reciter", reciter });
         const savedTr = await load<string | null>(PLAYER_STORAGE_KEYS.translation, null);
-        const langName = new Intl.DisplayNames(["en"], { type: "language" }).of(locale.split("-")[0])?.toLowerCase();
+        // Hermes has no Intl.DisplayNames; the core locale table gives the same English name.
+        const langName = languageNameForLocale(locale);
         const defaultTr = tr.find((x) => x.languageName?.toLowerCase() === langName) ?? tr.find((x) => x.id === "85") ?? tr[0] ?? NO_TRANSLATION;
         dispatch({ type: "translation", translation: savedTr === "none" ? NO_TRANSLATION : savedTr ? (tr.find((x) => x.id === savedTr) ?? defaultTr) : defaultTr });
         dispatch({ type: "textSize", size: await load<TextSize>(PLAYER_STORAGE_KEYS.textSize, "medium") });
