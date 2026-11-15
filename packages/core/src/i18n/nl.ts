@@ -8,7 +8,7 @@ export const nl: PartialMessages = {
     today: "vandaag", tomorrow: "morgen", days: "dagen", minutes: "min", done: "Klaar", start: "Starten", again: "Opnieuw", poweredBy: "Mogelijk gemaakt door de API's van Quran Foundation", privacy: "Privacy", terms: "Voorwaarden",
     offline: "De inhoudsdienst is niet bereikbaar. Controleer je verbinding en probeer het opnieuw.", noProfile: "Kies eerst een profiel op de gezinspagina", on: "Aan", off: "Uit", enable: "Inschakelen", disable: "Uitschakelen", chooseLanguage: "Kies de taal van de interface",
   },
-  nav: { home: "Home", search: "Zoeken", learn: "Leren", hifz: "Memoriseren", play: "Spelen", ask: "Vragen", player: "Speler", mushaf: "Mushaf", family: "Gezin", azan: "Adhan", story: "Vers van de dag", quran: "Koran", me: "Ik", study: "Studie" },
+  nav: { home: "Home", search: "Zoeken", learn: "Leren", hifz: "Memoriseren", play: "Spelen", ask: "Vragen", player: "Speler", mushaf: "Mushaf", family: "Gezin", azan: "Adhan", story: "Vers van de dag", quran: "Koran", me: "Ik", study: "Studie", adhkar: "Adhkar", qibla: "Qibla", khatmah: "Khatma", calendar: "Kalender", tasbih: "Tasbih" },
   home: {
     kicker: "De Edele Koran", title: "Koran en meer", sub: "Eén Koranervaring voor het hele gezin: naadloze recitatie met woordsynchronisatie, de mushaf in het officiële schrift, tafsir en vertalingen in elke taal en een profiel voor iedereen.",
     startListening: "Begin met luisteren", openMushaf: "Open de mushaf",
@@ -25,6 +25,11 @@ export const nl: PartialMessages = {
       azan: { title: "Adhan", sub: "Gebedstijden voor jouw stad, de adhan in de stem die jij kiest, een herinnering bij elk gebed" },
       story: { title: "Vers van de dag", sub: "Elke dag één vers op volledig scherm, met de betekenis en een moment van bezinning" },
       kahf: { title: "Soera Al-Kahf", sub: "Gelezen op vrijdag" },
+      adhkar: { title: "Adhkar", sub: "Smeekbeden voor ochtend, avond, na het gebed, voor het slapen en bij het ontwaken uit Hisn al-Muslim, met teller" },
+      qibla: { title: "Qibla", sub: "Een kompas dat vanaf jouw locatie naar de Kaäba wijst, met richting en afstand" },
+      calendar: { title: "Hijri-kalender", sub: "De hijri-datum van vandaag, komende islamitische dagen en de dagen tot Ramadan" },
+      tasbih: { title: "Tasbih", sub: "Een digitale teller met de bekende formules en trilling bij elke ronde" },
+      khatmah: { title: "Khatma", sub: "Plan om de Koran in 30, 60 of meer dagen uit te lezen en volg de pagina's van vandaag" },
     },
   },
   player: {
@@ -94,4 +99,26 @@ export const nl: PartialMessages = {
   },
   settings: { title: "Instellingen", appearance: "Weergave", theme: "Thema", themeHelp: "Vier stijlen, elk in licht en donker. De keuze wordt op dit apparaat bewaard.", schemeSystem: "Volg systeem", schemeLight: "Licht", schemeDark: "Donker", language: "Taal", notifications: "Meldingen", notifAzan: "Adhan op gebedstijden", notifDaily: "Vers van de dag", notifDailyTime: "Tijd voor het vers van de dag", notifHifz: "Herhaling memorisatie", notifFamily: "Gezinsactiviteit", notifStreak: "Reeksherinneringen", notifSound: "Geluid", notifSoundChime: "Zachte klank", notifSoundSilent: "Stil", notifTest: "Testmelding sturen", account: "Account", signIn: "Inloggen", signOut: "Uitloggen", signedInAs: "Ingelogd als", signInHelp: "Log in om gezinsprofielen, bladwijzers, notities en voortgang op al je apparaten te bewaren.", signInApple: "Doorgaan met Apple", signInGoogle: "Doorgaan met Google", signInEmail: "Doorgaan met e-mail", signInQuran: "Doorgaan met Quran.com", emailPlaceholder: "jij@voorbeeld.nl", magicLinkSent: "Kijk in je inbox voor de inloglink", signInUnavailable: "Accounts zijn in deze versie nog niet ingeschakeld", guest: "Gast (alleen dit apparaat)", purchases: "Aankopen", offlineAudio: "Offline audio", offlineAudioSub: "Download elke soera om offline te luisteren en ontgrendel alle archiefreciteurs.", monthly: "Maandelijks", yearly: "Jaarlijks", subscribe: "Abonneren", restore: "Aankopen herstellen", subscribed: "Actief", notSubscribed: "Niet geabonneerd", manage: "Abonnement beheren", trial: "7 dagen gratis proberen", about: "Over", version: "Versie", privacy: "Privacybeleid", terms: "Voorwaarden", sources: "Bronnen van de inhoud", rate: "App beoordelen", share: "App delen", support: "Ondersteuning", me: "Ik", profile: "Profiel", switchProfile: "Profiel wisselen", editProfile: "Profiel bewerken" },
   sources: { title: "Inhoud en bronnen", reviewPending: "Beoordeling in afwachting", reviewPendingHelp: "Vertalingen, tafsir en woordbetekenissen komen uit de catalogus van Quran Foundation / Quran.com zoals gepubliceerd door hun auteurs. AI-antwoorden citeren verzen letterlijk en wijzigen ze nooit. Een geleerde beoordeling van de keuzes in deze app heeft nog niet plaatsgevonden; deze badge verandert zodra dat gebeurd is.", quranText: "Korantekst", quranTextSrc: "Quran Foundation content-API (Oethmaanse schrijfwijze, KFGQPC-lettertypen)", audio: "Recitaties", audioSrc: "Audiocatalogus van Quran Foundation; archiefreciteurs van quranicaudio.com en mp3quran.net; woordtiming door onze automatische uitlijning", translations: "Vertalingen en tafsir", translationsSrc: "Quran.com-bronnen, elk met naam van de auteur", prayer: "Gebedstijden", prayerSrc: "Op het apparaat berekend met de standaard astronomische methode van je land (Aladhan-tabel)", azan: "Adhan-opnamen", azanSrc: "Collectie van Islamic Network (Aladhan)", report: "Een probleem met de inhoud melden" },
+  worship: {
+    adhkar: {
+      title: "Adhkar",
+      morning: "Ochtend",
+      evening: "Avond",
+      afterPrayer: "Na het gebed",
+      sleep: "Voor het slapen",
+      waking: "Bij het ontwaken",
+    },
+    qibla: {
+      title: "Qibla",
+    },
+    calendar: {
+      title: "Hijri-kalender",
+    },
+    tasbih: {
+      title: "Tasbih",
+    },
+    khatmah: {
+      title: "Khatma",
+    },
+  },
 };

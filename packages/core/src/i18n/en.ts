@@ -14,7 +14,7 @@ export const en = {
     offline: "Could not reach the content service. Check your connection and try again.", noProfile: "Choose a profile on the Family page first",
     on: "On", off: "Off", enable: "Enable", disable: "Disable", chooseLanguage: "Choose the interface language",
   },
-  nav: { home: "Home", search: "Search", learn: "Learn", hifz: "Memorise", play: "Play", ask: "Ask", player: "Player", mushaf: "Mushaf", family: "Family", azan: "Azan", story: "Ayah of the day", quran: "Quran", me: "Me", study: "Study" },
+  nav: { home: "Home", search: "Search", learn: "Learn", hifz: "Memorise", play: "Play", ask: "Ask", player: "Player", mushaf: "Mushaf", family: "Family", azan: "Azan", story: "Ayah of the day", quran: "Quran", me: "Me", study: "Study", adhkar: "Adhkar", qibla: "Qibla", khatmah: "Khatmah", calendar: "Calendar", tasbih: "Tasbih" },
   home: {
     kicker: "The Noble Quran", title: "Quran and More", sub: "One Quran experience for the whole family: gapless recitation with word sync, the mushaf in the official script, tafsir and translations in every language, and a profile for every member.",
     startListening: "Start listening", openMushaf: "Open the mushaf",
@@ -31,6 +31,11 @@ export const en = {
       azan: { title: "Azan", sub: "Prayer times for your city, the azan in the voice you choose, a reminder for each prayer" },
       story: { title: "Ayah of the day", sub: "One ayah a day, full screen, with its meaning and a moment to reflect" },
       kahf: { title: "Surah Al-Kahf", sub: "Read on Friday" },
+      adhkar: { title: "Adhkar", sub: "Morning, evening, after-prayer, sleep and waking remembrances from Hisn al-Muslim, with a counter for each" },
+      qibla: { title: "Qibla", sub: "A compass that points to the Kaaba from where you are, with the bearing and distance" },
+      calendar: { title: "Hijri calendar", sub: "Today's Hijri date, the coming Islamic dates and the days left to Ramadan" },
+      tasbih: { title: "Tasbih", sub: "A digital counter with the well-known formulas and a vibration at each round" },
+      khatmah: { title: "Khatmah", sub: "Plan to finish the Quran in 30, 60 or more days and follow today's pages" },
     },
   },
   player: {
@@ -153,6 +158,41 @@ export const en = {
     title: "Content and sources", reviewPending: "Review pending", reviewPendingHelp: "Translations, tafsir and word meanings come from the Quran Foundation / Quran.com catalogue as published by their authors. AI answers quote ayat verbatim and never alter them. A scholarly review of this app's selections has not taken place yet; this badge will change when it has.",
     quranText: "Quran text", quranTextSrc: "Quran Foundation content API (Uthmani script, KFGQPC fonts)", audio: "Recitations", audioSrc: "Quran Foundation audio catalogue; archive reciters from quranicaudio.com and mp3quran.net; word timings by our forced-alignment pipeline",
     translations: "Translations and tafsir", translationsSrc: "Quran.com resources, each credited to its author", prayer: "Prayer times", prayerSrc: "Computed on the device with the standard astronomical method of your country (Aladhan method table)", azan: "Azan recordings", azanSrc: "Islamic Network (Aladhan) collection", report: "Report a problem with content",
+  },
+  worship: {
+    title: "Worship", source: "Source", note: "Note",
+    adhkar: {
+      title: "Adhkar", morning: "Morning", evening: "Evening", afterPrayer: "After prayer", sleep: "Before sleep", waking: "On waking",
+      times: "times", once: "once", done: "Completed", reset: "Start again", tapToCount: "Tap the card to count", virtue: "Virtue", transliteration: "Transliteration",
+      translation: "Meaning", completed: "completed", allDone: "All done. May Allah accept it from you.", suggested: "Suggested now",
+      about: "From Hisn al-Muslim (Fortress of the Muslim) by Saʿid ibn Wahf al-Qahtani; each remembrance shows its source in the Sunnah. The Arabic text is authoritative; translations are for understanding.",
+    },
+    qibla: {
+      title: "Qibla", bearing: "Qibla bearing", distance: "Distance to the Kaaba", fromNorth: "from true north", heading: "Your heading", aligned: "You are facing the Qibla",
+      turnLeft: "Turn left", turnRight: "Turn right", needLocation: "Allow location access to compute the direction from where you are", useLocation: "Use my location",
+      enableCompass: "Start the compass", needCompass: "Allow motion and orientation access to use the compass", noCompass: "This device has no compass. Use the bearing with a physical compass or a map.",
+      calibrate: "If the needle drifts, move the phone in a figure of eight to calibrate the compass", km: "km", mi: "mi", locating: "Finding your location…",
+      note: "The bearing is the great-circle direction from your location to the Kaaba. Phone compasses are affected by metal and magnets; when in doubt confirm with your local mosque.",
+      city: "City", accuracy: "Compass accuracy", low: "low", good: "good",
+    },
+    calendar: {
+      title: "Hijri calendar", today: "Today", events: "Coming dates", inDays: "in {n} days", tomorrow: "tomorrow", todayIs: "today", fasting: "Recommended fast",
+      ramadanIn: "Ramadan begins in", daysToRamadan: "days", inRamadan: "Ramadan Mubarak", adjust: "Moon-sighting adjustment", adjustHelp: "Dates follow the Umm al-Qura calendar and can differ by one day from your country's moon-sighting announcement. Adjust here if your local date differs.",
+      month: "Month", prevMonth: "Previous month", nextMonth: "Next month", gregorian: "Gregorian",
+      eventNames: { newYear: "Islamic New Year (1 Muharram)", ashura: "Day of Ashura (10 Muharram)", ramadanStart: "First day of Ramadan", lastTenNights: "Last ten nights of Ramadan", eidFitr: "Eid al-Fitr", arafah: "Day of Arafah", eidAdha: "Eid al-Adha", tashriq: "Days of Tashriq", whiteDays: "The white days (13, 14, 15)" },
+      eventNotes: { ashura: "Fasting Ashura is a Sunnah; the Prophet ﷺ also encouraged fasting the 9th with it.", arafah: "Fasting the Day of Arafah (for those not on Hajj) expiates the sins of the previous and the coming year (Muslim).", whiteDays: "The Prophet ﷺ encouraged fasting three days a month, the 13th, 14th and 15th.", lastTenNights: "Laylat al-Qadr is sought in the odd nights of the last ten.", tashriq: "Days of eating, drinking and remembrance of Allah; fasting is not permitted." },
+    },
+    tasbih: {
+      title: "Tasbih", tap: "Tap to count", rounds: "Rounds", total: "Total", target: "Target", reset: "Reset", vibrate: "Vibrate", sound: "Sound", afterPrayer: "After-prayer sequence (33 · 33 · 34)",
+      formula: "Formula", custom: "Custom", roundDone: "Round complete", keepScreenOn: "Keep the screen on",
+    },
+    khatmah: {
+      title: "Khatmah", sub: "Finish the whole Quran on a plan", plan: "Plan a khatmah", days: "Days", startPage: "Start from page", pagesPerDay: "pages a day", today: "Today's portion", pages: "Pages", page: "Page", juz: "Juz",
+      readUpTo: "Read up to page", markRead: "Mark today's portion as read", behind: "pages behind schedule", onTrack: "On track", finished: "Khatmah complete. May Allah accept it from you.", daysLeft: "days left",
+      start: "Start the plan", restart: "New plan", beforeRamadan: "Finish before Ramadan", openMushaf: "Open the mushaf at today's page", percent: "complete", custom: "Custom",
+      noPlan: "No plan yet. Choose in how many days you want to complete the Quran; one juz a day finishes it in 30 days.", day: "Day", of: "of", lastRead: "Furthest page read", setPage: "Set page",
+      fromProgress: "Updated from your reading in the mushaf", pagesLeft: "pages left",
+    },
   },
 };
 

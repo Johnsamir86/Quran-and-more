@@ -62,6 +62,11 @@ function ThemedStack() {
         <Stack.Screen name="play" options={{ title: "" }} />
         <Stack.Screen name="hifz" options={{ title: "" }} />
         <Stack.Screen name="ask" options={{ title: "" }} />
+        <Stack.Screen name="adhkar" options={{ title: "" }} />
+        <Stack.Screen name="qibla" options={{ title: "" }} />
+        <Stack.Screen name="calendar" options={{ title: "" }} />
+        <Stack.Screen name="tasbih" options={{ title: "" }} />
+        <Stack.Screen name="khatmah" options={{ title: "" }} />
         <Stack.Screen name="story" options={{ title: "", headerShown: false }} />
       </Stack>
     </>

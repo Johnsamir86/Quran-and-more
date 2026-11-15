@@ -7,11 +7,16 @@ import { useI18n } from "@/lib/i18n";
 
 import styles from "./home.module.css";
 
-const TILES: { href: string; icon: string; key: "player" | "mushaf" | "family" | "search" | "study" | "learn" | "hifz" | "play" | "ask" | "azan" | "story" | "kahf" }[] = [
+const TILES: { href: string; icon: string; key: "player" | "mushaf" | "family" | "search" | "study" | "learn" | "hifz" | "play" | "ask" | "azan" | "story" | "kahf" | "adhkar" | "qibla" | "calendar" | "tasbih" | "khatmah" }[] = [
   { href: "/player", icon: "▶", key: "player" },
   { href: "/mushaf", icon: "📖", key: "mushaf" },
   { href: "/azan", icon: "🕌", key: "azan" },
   { href: "/story", icon: "✨", key: "story" },
+  { href: "/adhkar", icon: "📿", key: "adhkar" },
+  { href: "/qibla", icon: "🧭", key: "qibla" },
+  { href: "/khatmah", icon: "🗓️", key: "khatmah" },
+  { href: "/calendar", icon: "🌙", key: "calendar" },
+  { href: "/tasbih", icon: "🔢", key: "tasbih" },
   { href: "/family", icon: "👨‍👩‍👧", key: "family" },
   { href: "/search", icon: "🔎", key: "search" },
   { href: "/study/2:255", icon: "🧭", key: "study" },

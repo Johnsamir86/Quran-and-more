@@ -19,3 +19,8 @@ export * from "./azan";
 export * from "./theme";
 export * from "./sources";
 export * from "./voice-commands";
+export * from "./adhkar";
+export * from "./qibla";
+export * from "./hijri";
+export * from "./tasbih";
+export * from "./khatmah";

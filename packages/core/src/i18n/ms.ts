@@ -8,7 +8,7 @@ export const ms: PartialMessages = {
     unavailable: "tidak tersedia", today: "hari ini", tomorrow: "esok", days: "hari", minutes: "min", done: "Selesai", start: "Mula", again: "Lagi", poweredBy: "Dikuasakan API Quran Foundation", privacy: "Privasi", terms: "Terma",
     offline: "Tidak dapat mencapai perkhidmatan kandungan. Semak sambungan anda dan cuba lagi.", noProfile: "Pilih profil di halaman Keluarga dahulu", on: "Hidup", off: "Mati", enable: "Dayakan", disable: "Lumpuhkan", chooseLanguage: "Pilih bahasa antara muka",
   },
-  nav: { home: "Utama", search: "Cari", learn: "Belajar", hifz: "Hafaz", play: "Main", ask: "Tanya", player: "Pemain", mushaf: "Mushaf", family: "Keluarga", azan: "Azan", story: "Ayat hari ini", quran: "Al-Quran", me: "Saya", study: "Kajian" },
+  nav: { home: "Utama", search: "Cari", learn: "Belajar", hifz: "Hafaz", play: "Main", ask: "Tanya", player: "Pemain", mushaf: "Mushaf", family: "Keluarga", azan: "Azan", story: "Ayat hari ini", quran: "Al-Quran", me: "Saya", study: "Kajian", adhkar: "Zikir", qibla: "Kiblat", khatmah: "Khatam", calendar: "Kalendar", tasbih: "Tasbih" },
   home: {
     kicker: "Al-Quran Al-Karim", title: "Quran dan lagi", sub: "Satu pengalaman Al-Quran untuk seisi keluarga: bacaan tanpa jeda dengan penyegerakan perkataan, mushaf dalam khat rasmi, tafsir dan terjemahan dalam semua bahasa, dan profil untuk setiap ahli.",
     startListening: "Mula mendengar", openMushaf: "Buka mushaf",
@@ -25,6 +25,11 @@ export const ms: PartialMessages = {
       azan: { title: "Azan", sub: "Waktu solat bandar anda, azan dengan suara pilihan anda, peringatan pada setiap waktu" },
       story: { title: "Ayat hari ini", sub: "Satu ayat sehari, skrin penuh, dengan maknanya dan seketika untuk merenung" },
       kahf: { title: "Surah Al-Kahfi", sub: "Dibaca pada hari Jumaat" },
+      adhkar: { title: "Zikir", sub: "Zikir pagi, petang, selepas solat, sebelum tidur dan ketika bangun daripada Hisnul Muslim, dengan pembilang" },
+      qibla: { title: "Kiblat", sub: "Kompas yang menunjuk ke Kaabah dari lokasi anda, dengan arah dan jarak" },
+      calendar: { title: "Kalendar Hijrah", sub: "Tarikh Hijrah hari ini, tarikh Islam akan datang dan hari ke Ramadan" },
+      tasbih: { title: "Tasbih", sub: "Pembilang digital dengan lafaz zikir dan getaran setiap pusingan" },
+      khatmah: { title: "Khatam", sub: "Rancang khatam al-Quran dalam 30, 60 hari atau lebih dan ikuti halaman hari ini" },
     },
   },
   player: {
@@ -93,4 +98,26 @@ export const ms: PartialMessages = {
   },
   settings: { title: "Tetapan", appearance: "Penampilan", theme: "Tema", themeHelp: "Empat gaya, setiap satu dengan mod cerah dan gelap. Pilihan disimpan pada peranti ini.", schemeSystem: "Ikut sistem", schemeLight: "Cerah", schemeDark: "Gelap", language: "Bahasa", notifications: "Pemberitahuan", notifAzan: "Azan pada waktu solat", notifDaily: "Ayat hari ini", notifDailyTime: "Masa ayat hari ini", notifHifz: "Ulang kaji hafazan", notifFamily: "Aktiviti keluarga", notifStreak: "Peringatan rentetan", notifSound: "Bunyi", notifSoundChime: "Loceng lembut", notifSoundSilent: "Senyap", notifTest: "Hantar pemberitahuan ujian", account: "Akaun", signIn: "Log masuk", signOut: "Log keluar", signedInAs: "Log masuk sebagai", signInHelp: "Log masuk untuk menyimpan profil keluarga, penanda, nota dan kemajuan di semua peranti.", signInApple: "Teruskan dengan Apple", signInGoogle: "Teruskan dengan Google", signInEmail: "Teruskan dengan e-mel", signInQuran: "Teruskan dengan Quran.com", emailPlaceholder: "anda@contoh.com", magicLinkSent: "Semak peti masuk anda untuk pautan log masuk", signInUnavailable: "Akaun belum diaktifkan dalam binaan ini", guest: "Tetamu (peranti ini sahaja)", purchases: "Pembelian", offlineAudio: "Audio Luar Talian", offlineAudioSub: "Muat turun mana-mana surah untuk didengar luar talian dan buka semua qari arkib.", monthly: "Bulanan", yearly: "Tahunan", subscribe: "Langgan", restore: "Pulihkan pembelian", subscribed: "Aktif", notSubscribed: "Tidak melanggan", manage: "Urus langganan", trial: "Percubaan percuma 7 hari", about: "Perihal", version: "Versi", privacy: "Dasar privasi", terms: "Terma", sources: "Sumber kandungan", rate: "Nilai aplikasi", share: "Kongsi aplikasi", support: "Sokongan", me: "Saya", profile: "Profil", switchProfile: "Tukar profil", editProfile: "Sunting profil" },
   sources: { title: "Kandungan dan sumber", reviewPending: "Semakan belum selesai", reviewPendingHelp: "Terjemahan, tafsir dan makna perkataan datang daripada katalog Quran Foundation / Quran.com seperti yang diterbitkan oleh pengarangnya. Jawapan AI memetik ayat secara verbatim dan tidak pernah mengubahnya. Semakan ilmiah terhadap pilihan aplikasi ini belum dibuat; lencana ini akan berubah apabila selesai.", quranText: "Teks Al-Quran", quranTextSrc: "API kandungan Quran Foundation (rasm Uthmani, fon KFGQPC)", audio: "Bacaan", audioSrc: "Katalog audio Quran Foundation; qari arkib dari quranicaudio.com dan mp3quran.net; masa perkataan oleh penjajaran automatik kami", translations: "Terjemahan dan tafsir", translationsSrc: "Sumber Quran.com, setiap satu dikreditkan kepada pengarangnya", prayer: "Waktu solat", prayerSrc: "Dikira pada peranti dengan kaedah astronomi piawai negara anda (jadual Aladhan)", azan: "Rakaman azan", azanSrc: "Koleksi Islamic Network (Aladhan)", report: "Laporkan masalah kandungan" },
+  worship: {
+    adhkar: {
+      title: "Zikir",
+      morning: "Pagi",
+      evening: "Petang",
+      afterPrayer: "Selepas solat",
+      sleep: "Sebelum tidur",
+      waking: "Ketika bangun",
+    },
+    qibla: {
+      title: "Kiblat",
+    },
+    calendar: {
+      title: "Kalendar Hijrah",
+    },
+    tasbih: {
+      title: "Tasbih",
+    },
+    khatmah: {
+      title: "Khatam",
+    },
+  },
 };

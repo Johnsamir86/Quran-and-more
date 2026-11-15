@@ -8,7 +8,7 @@ export const zh: PartialMessages = {
     start: "开始", again: "再来", poweredBy: "由 Quran Foundation API 提供支持", privacy: "隐私", terms: "条款", offline: "无法连接内容服务。请检查网络后重试。", noProfile: "请先在家庭页面选择一个档案",
     on: "开", off: "关", enable: "启用", disable: "停用", chooseLanguage: "选择界面语言",
   },
-  nav: { home: "首页", search: "搜索", learn: "学习", hifz: "背诵", play: "游戏", ask: "提问", player: "播放器", mushaf: "经本", family: "家庭", azan: "宣礼", story: "每日一节", quran: "古兰经", me: "我", study: "研读" },
+  nav: { home: "首页", search: "搜索", learn: "学习", hifz: "背诵", play: "游戏", ask: "提问", player: "播放器", mushaf: "经本", family: "家庭", azan: "宣礼", story: "每日一节", quran: "古兰经", me: "我", study: "研读", adhkar: "赞念", qibla: "朝向", khatmah: "完读", calendar: "历法", tasbih: "念珠" },
   home: {
     kicker: "尊贵的古兰经", title: "古兰经与更多", sub: "全家共享的古兰经体验：逐词同步的无间断诵读、官方字体的经本、所有语言的注释与译文，以及每位成员的专属档案。",
     startListening: "开始聆听", openMushaf: "打开经本",
@@ -25,6 +25,11 @@ export const zh: PartialMessages = {
       azan: { title: "宣礼", sub: "所在城市的礼拜时间、自选嗓音的宣礼，以及每次礼拜的提醒" },
       story: { title: "每日一节", sub: "每天一节全屏呈现，附含义与片刻省思" },
       kahf: { title: "山洞章", sub: "主麻日诵读" },
+      adhkar: { title: "赞念", sub: "来自《穆斯林堡垒》的晨、昏、礼拜后、睡前与醒来赞念，每条带计数" },
+      qibla: { title: "朝向", sub: "从您所在位置指向天房的罗盘，含方位角和距离" },
+      calendar: { title: "伊斯兰历", sub: "今日伊历日期、即将到来的伊斯兰节日和距离斋月的天数" },
+      tasbih: { title: "念珠", sub: "带常用赞词的数字计数器，每轮震动提示" },
+      khatmah: { title: "完读计划", sub: "规划在30、60天或更长时间内读完《古兰经》，跟进当日页数" },
     },
   },
   player: {
@@ -88,4 +93,26 @@ export const zh: PartialMessages = {
   },
   settings: { title: "设置", appearance: "外观", theme: "主题", themeHelp: "四种风格，各有浅色和深色。选择保存在本设备上。", schemeSystem: "跟随系统", schemeLight: "浅色", schemeDark: "深色", language: "语言", notifications: "通知", notifAzan: "礼拜时间的宣礼", notifDaily: "每日一节", notifDailyTime: "每日一节的时间", notifHifz: "背诵复习提醒", notifFamily: "家庭动态", notifStreak: "连续天数提醒", notifSound: "声音", notifSoundChime: "柔和提示音", notifSoundSilent: "静音", notifTest: "发送测试通知", account: "账户", signIn: "登录", signOut: "退出登录", signedInAs: "当前登录：", signInHelp: "登录后，家庭成员的资料、书签、笔记和进度可在所有设备间同步。", signInApple: "通过 Apple 继续", signInGoogle: "通过 Google 继续", signInEmail: "通过邮箱继续", signInQuran: "通过 Quran.com 继续", emailPlaceholder: "you@example.com", magicLinkSent: "请查收邮箱中的登录链接", signInUnavailable: "此版本尚未启用账户功能", guest: "访客（仅限本设备）", purchases: "购买", offlineAudio: "离线音频", offlineAudioSub: "下载任意章节供离线收听，并解锁全部档案诵读者。", monthly: "按月", yearly: "按年", subscribe: "订阅", restore: "恢复购买", subscribed: "已生效", notSubscribed: "未订阅", manage: "管理订阅", trial: "7 天免费试用", about: "关于", version: "版本", privacy: "隐私政策", terms: "条款", sources: "内容来源", rate: "为应用评分", share: "分享应用", support: "支持", me: "我", profile: "个人资料", switchProfile: "切换资料", editProfile: "编辑资料" },
   sources: { title: "内容与来源", reviewPending: "待审阅", reviewPendingHelp: "译文、经注和词义均来自 Quran Foundation / Quran.com 目录，按作者原样发布。AI 回答逐字引用经文，绝不改动。本应用所选内容尚未经学者审阅；审阅完成后此标识将更新。", quranText: "古兰经原文", quranTextSrc: "Quran Foundation 内容 API（奥斯曼书写体，KFGQPC 字体）", audio: "诵读", audioSrc: "Quran Foundation 音频目录；档案诵读者来自 quranicaudio.com 和 mp3quran.net；逐词时间由我们的自动对齐生成", translations: "译文与经注", translationsSrc: "Quran.com 资源，均注明作者", prayer: "礼拜时间", prayerSrc: "按您所在国家的标准天文方法在设备上计算（Aladhan 方法表）", azan: "宣礼录音", azanSrc: "Islamic Network（Aladhan）合集", report: "报告内容问题" },
+  worship: {
+    adhkar: {
+      title: "赞念",
+      morning: "晨",
+      evening: "昏",
+      afterPrayer: "礼拜后",
+      sleep: "睡前",
+      waking: "醒来",
+    },
+    qibla: {
+      title: "朝向",
+    },
+    calendar: {
+      title: "伊斯兰历",
+    },
+    tasbih: {
+      title: "念珠",
+    },
+    khatmah: {
+      title: "完读",
+    },
+  },
 };

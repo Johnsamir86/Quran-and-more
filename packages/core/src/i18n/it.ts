@@ -8,7 +8,7 @@ export const it: PartialMessages = {
     tomorrow: "domani", days: "giorni", minutes: "min", done: "Fatto", start: "Inizia", again: "Ancora", poweredBy: "Basato sulle API di Quran Foundation", privacy: "Privacy", terms: "Termini",
     offline: "Impossibile raggiungere il servizio dei contenuti. Controlla la connessione e riprova.", noProfile: "Scegli prima un profilo nella pagina Famiglia", on: "Attivo", off: "Spento", enable: "Attiva", disable: "Disattiva", chooseLanguage: "Scegli la lingua dell'interfaccia",
   },
-  nav: { home: "Home", search: "Cerca", learn: "Impara", hifz: "Memorizza", play: "Gioca", ask: "Chiedi", player: "Lettore", mushaf: "Mushaf", family: "Famiglia", azan: "Adhan", story: "Versetto del giorno", quran: "Corano", me: "Io", study: "Studio" },
+  nav: { home: "Home", search: "Cerca", learn: "Impara", hifz: "Memorizza", play: "Gioca", ask: "Chiedi", player: "Lettore", mushaf: "Mushaf", family: "Famiglia", azan: "Adhan", story: "Versetto del giorno", quran: "Corano", me: "Io", study: "Studio", adhkar: "Adhkar", qibla: "Qibla", khatmah: "Khatma", calendar: "Calendario", tasbih: "Tasbih" },
   home: {
     kicker: "Il Nobile Corano", title: "Corano e altro", sub: "Un'unica esperienza del Corano per tutta la famiglia: recitazione continua con sincronizzazione delle parole, il mushaf nella scrittura ufficiale, tafsir e traduzioni in ogni lingua e un profilo per ciascuno.",
     startListening: "Inizia ad ascoltare", openMushaf: "Apri il mushaf",
@@ -25,6 +25,11 @@ export const it: PartialMessages = {
       azan: { title: "Adhan", sub: "Orari di preghiera della tua città, l'adhan con la voce che scegli, un promemoria a ogni preghiera" },
       story: { title: "Versetto del giorno", sub: "Un versetto al giorno a schermo intero, con il suo significato e un momento di riflessione" },
       kahf: { title: "Sura Al-Kahf", sub: "Si legge il venerdì" },
+      adhkar: { title: "Adhkar", sub: "Invocazioni del mattino, della sera, dopo la preghiera, prima di dormire e al risveglio da Hisn al-Muslim, con contatore" },
+      qibla: { title: "Qibla", sub: "Una bussola che indica la Kaaba dalla tua posizione, con direzione e distanza" },
+      calendar: { title: "Calendario egiriano", sub: "La data egiriana di oggi, le prossime date islamiche e i giorni al Ramadan" },
+      tasbih: { title: "Tasbih", sub: "Un contatore digitale con le formule note e vibrazione a ogni giro" },
+      khatmah: { title: "Khatma", sub: "Pianifica di finire il Corano in 30, 60 o più giorni e segui le pagine di oggi" },
     },
   },
   player: {
@@ -94,4 +99,26 @@ export const it: PartialMessages = {
   },
   settings: { title: "Impostazioni", appearance: "Aspetto", theme: "Tema", themeHelp: "Quattro stili, ciascuno in chiaro e scuro. La scelta è salvata su questo dispositivo.", schemeSystem: "Come il sistema", schemeLight: "Chiaro", schemeDark: "Scuro", language: "Lingua", notifications: "Notifiche", notifAzan: "Adhan agli orari di preghiera", notifDaily: "Versetto del giorno", notifDailyTime: "Ora del versetto del giorno", notifHifz: "Ripasso di memorizzazione in scadenza", notifFamily: "Attività della famiglia", notifStreak: "Promemoria della serie", notifSound: "Suono", notifSoundChime: "Campanella delicata", notifSoundSilent: "Silenzioso", notifTest: "Invia una notifica di prova", account: "Account", signIn: "Accedi", signOut: "Esci", signedInAs: "Accesso come", signInHelp: "Accedi per conservare profili, segnalibri, note e progressi della famiglia su tutti i dispositivi.", signInApple: "Continua con Apple", signInGoogle: "Continua con Google", signInEmail: "Continua con l'e-mail", signInQuran: "Continua con Quran.com", emailPlaceholder: "tu@esempio.com", magicLinkSent: "Controlla la posta per il link di accesso", signInUnavailable: "Gli account non sono ancora attivi in questa versione", guest: "Ospite (solo questo dispositivo)", purchases: "Acquisti", offlineAudio: "Audio offline", offlineAudioSub: "Scarica qualsiasi sura per ascoltarla offline e sblocca tutti i recitatori d'archivio.", monthly: "Mensile", yearly: "Annuale", subscribe: "Abbonati", restore: "Ripristina acquisti", subscribed: "Attivo", notSubscribed: "Non abbonato", manage: "Gestisci abbonamento", trial: "7 giorni di prova gratuita", about: "Informazioni", version: "Versione", privacy: "Informativa sulla privacy", terms: "Termini", sources: "Fonti dei contenuti", rate: "Valuta l'app", share: "Condividi l'app", support: "Assistenza", me: "Io", profile: "Profilo", switchProfile: "Cambia profilo", editProfile: "Modifica profilo" },
   sources: { title: "Contenuti e fonti", reviewPending: "Revisione in sospeso", reviewPendingHelp: "Traduzioni, tafsir e significati delle parole provengono dal catalogo Quran Foundation / Quran.com così come pubblicati dagli autori. Le risposte dell'IA citano i versetti alla lettera e non li modificano mai. La revisione da parte di studiosi delle scelte di questa app non è ancora avvenuta; questo badge cambierà quando sarà fatta.", quranText: "Testo del Corano", quranTextSrc: "API dei contenuti Quran Foundation (grafia othmanica, font KFGQPC)", audio: "Recitazioni", audioSrc: "Catalogo audio Quran Foundation; recitatori d'archivio da quranicaudio.com e mp3quran.net; sincronizzazione delle parole con il nostro allineamento automatico", translations: "Traduzioni e tafsir", translationsSrc: "Risorse Quran.com, ciascuna attribuita al suo autore", prayer: "Orari di preghiera", prayerSrc: "Calcolati sul dispositivo con il metodo astronomico standard del tuo paese (tabella Aladhan)", azan: "Registrazioni dell'adhan", azanSrc: "Collezione Islamic Network (Aladhan)", report: "Segnala un problema nei contenuti" },
+  worship: {
+    adhkar: {
+      title: "Adhkar",
+      morning: "Mattino",
+      evening: "Sera",
+      afterPrayer: "Dopo la preghiera",
+      sleep: "Prima di dormire",
+      waking: "Al risveglio",
+    },
+    qibla: {
+      title: "Qibla",
+    },
+    calendar: {
+      title: "Calendario egiriano",
+    },
+    tasbih: {
+      title: "Tasbih",
+    },
+    khatmah: {
+      title: "Khatma",
+    },
+  },
 };

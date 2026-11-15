@@ -8,7 +8,7 @@ export const bn: PartialMessages = {
     unavailable: "উপলব্ধ নয়", today: "আজ", tomorrow: "আগামীকাল", days: "দিন", minutes: "মিনিট", done: "সম্পন্ন", start: "শুরু", again: "আবার", poweredBy: "Quran Foundation API দ্বারা চালিত", privacy: "গোপনীয়তা", terms: "শর্তাবলী",
     offline: "কনটেন্ট সার্ভিসে পৌঁছানো যায়নি। সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।", noProfile: "প্রথমে পরিবার পাতা থেকে একটি প্রোফাইল বেছে নিন", on: "চালু", off: "বন্ধ", enable: "চালু করুন", disable: "বন্ধ করুন", chooseLanguage: "ইন্টারফেসের ভাষা বেছে নিন",
   },
-  nav: { home: "হোম", search: "অনুসন্ধান", learn: "শিখুন", hifz: "হিফজ", play: "খেলুন", ask: "জিজ্ঞাসা", player: "প্লেয়ার", mushaf: "মুসহাফ", family: "পরিবার", azan: "আযান", story: "আজকের আয়াত", quran: "কুরআন", me: "আমি", study: "অধ্যয়ন" },
+  nav: { home: "হোম", search: "অনুসন্ধান", learn: "শিখুন", hifz: "হিফজ", play: "খেলুন", ask: "জিজ্ঞাসা", player: "প্লেয়ার", mushaf: "মুসহাফ", family: "পরিবার", azan: "আযান", story: "আজকের আয়াত", quran: "কুরআন", me: "আমি", study: "অধ্যয়ন", adhkar: "আযকার", qibla: "কিবলা", khatmah: "খতম", calendar: "ক্যালেন্ডার", tasbih: "তাসবিহ" },
   home: {
     kicker: "আল-কুরআনুল কারীম", title: "কুরআন ও আরও", sub: "পুরো পরিবারের জন্য এক কুরআন অভিজ্ঞতা: শব্দ-সমন্বিত বিরতিহীন তিলাওয়াত, সরকারি লিপিতে মুসহাফ, সব ভাষায় তাফসীর ও অনুবাদ, আর প্রত্যেকের জন্য একটি প্রোফাইল।",
     startListening: "শোনা শুরু করুন", openMushaf: "মুসহাফ খুলুন",
@@ -25,6 +25,11 @@ export const bn: PartialMessages = {
       azan: { title: "আযান", sub: "আপনার শহরের নামাজের সময়, পছন্দের কণ্ঠে আযান, প্রতি ওয়াক্তে স্মরণ" },
       story: { title: "আজকের আয়াত", sub: "প্রতিদিন একটি আয়াত পূর্ণ পর্দায়, এর অর্থ ও একটু চিন্তার মুহূর্ত" },
       kahf: { title: "সূরা আল-কাহফ", sub: "শুক্রবারে পড়া হয়" },
+      adhkar: { title: "আযকার", sub: "হিসনুল মুসলিম থেকে সকাল, সন্ধ্যা, নামাজের পর, ঘুমের আগে ও জাগরণের যিকির, প্রতিটির জন্য গণনাসহ" },
+      qibla: { title: "কিবলা", sub: "আপনার অবস্থান থেকে কাবার দিক নির্দেশক কম্পাস, কোণ ও দূরত্বসহ" },
+      calendar: { title: "হিজরি ক্যালেন্ডার", sub: "আজকের হিজরি তারিখ, আসন্ন ইসলামি দিবস ও রমজানের বাকি দিন" },
+      tasbih: { title: "তাসবিহ", sub: "পরিচিত যিকিরসহ ডিজিটাল গণনা, প্রতি চক্রে কম্পন" },
+      khatmah: { title: "খতম", sub: "৩০, ৬০ বা তার বেশি দিনে কুরআন খতমের পরিকল্পনা করুন ও আজকের পৃষ্ঠা অনুসরণ করুন" },
     },
   },
   player: {
@@ -92,4 +97,26 @@ export const bn: PartialMessages = {
   },
   settings: { title: "সেটিংস", appearance: "চেহারা", theme: "থিম", themeHelp: "চারটি রূপ, প্রতিটি হালকা ও গাঢ়সহ। পছন্দ এই ডিভাইসে সংরক্ষিত থাকে।", schemeSystem: "সিস্টেম অনুযায়ী", schemeLight: "হালকা", schemeDark: "গাঢ়", language: "ভাষা", notifications: "বিজ্ঞপ্তি", notifAzan: "নামাজের সময়ে আজান", notifDaily: "আজকের আয়াত", notifDailyTime: "আজকের আয়াতের সময়", notifHifz: "হিফজ পুনরাবৃত্তির সময়", notifFamily: "পরিবারের কার্যকলাপ", notifStreak: "ধারাবাহিকতার স্মরণ", notifSound: "শব্দ", notifSoundChime: "মৃদু ঘণ্টা", notifSoundSilent: "নীরব", notifTest: "পরীক্ষামূলক বিজ্ঞপ্তি পাঠান", account: "অ্যাকাউন্ট", signIn: "সাইন ইন", signOut: "সাইন আউট", signedInAs: "সাইন ইন করা আছে", signInHelp: "পরিবারের প্রোফাইল, বুকমার্ক, নোট ও অগ্রগতি সব ডিভাইসে রাখতে সাইন ইন করুন।", signInApple: "Apple দিয়ে চালিয়ে যান", signInGoogle: "Google দিয়ে চালিয়ে যান", signInEmail: "ইমেইল দিয়ে চালিয়ে যান", signInQuran: "Quran.com দিয়ে চালিয়ে যান", emailPlaceholder: "you@example.com", magicLinkSent: "সাইন ইন লিংকের জন্য ইনবক্স দেখুন", signInUnavailable: "এই সংস্করণে অ্যাকাউন্ট এখনও চালু হয়নি", guest: "অতিথি (শুধু এই ডিভাইস)", purchases: "ক্রয়", offlineAudio: "অফলাইন অডিও", offlineAudioSub: "যেকোনো সূরা অফলাইনে শোনার জন্য ডাউনলোড করুন এবং সব আর্কাইভ ক্বারী খুলুন।", monthly: "মাসিক", yearly: "বার্ষিক", subscribe: "সাবস্ক্রাইব", restore: "ক্রয় পুনরুদ্ধার", subscribed: "সক্রিয়", notSubscribed: "সাবস্ক্রাইব নেই", manage: "সাবস্ক্রিপশন পরিচালনা", trial: "৭ দিন বিনামূল্যে", about: "সম্পর্কে", version: "সংস্করণ", privacy: "গোপনীয়তা নীতি", terms: "শর্তাবলি", sources: "বিষয়বস্তুর উৎস", rate: "অ্যাপ রেট করুন", share: "অ্যাপ শেয়ার করুন", support: "সহায়তা", me: "আমি", profile: "প্রোফাইল", switchProfile: "প্রোফাইল বদলান", editProfile: "প্রোফাইল সম্পাদনা" },
   sources: { title: "বিষয়বস্তু ও উৎস", reviewPending: "পর্যালোচনা বাকি", reviewPendingHelp: "অনুবাদ, তাফসির ও শব্দার্থ Quran Foundation / Quran.com-এর তালিকা থেকে, লেখকদের প্রকাশিত রূপে। AI-এর উত্তর আয়াত হুবহু উদ্ধৃত করে, কখনও বদলায় না। এই অ্যাপের নির্বাচনের আলেমি পর্যালোচনা এখনও হয়নি; হলে এই চিহ্ন বদলাবে।", quranText: "কুরআনের পাঠ", quranTextSrc: "Quran Foundation কনটেন্ট API (উসমানি রসম, KFGQPC ফন্ট)", audio: "তিলাওয়াত", audioSrc: "Quran Foundation অডিও তালিকা; আর্কাইভ ক্বারী quranicaudio.com ও mp3quran.net থেকে; শব্দের সময় আমাদের স্বয়ংক্রিয় সারিবদ্ধকরণে", translations: "অনুবাদ ও তাফসির", translationsSrc: "Quran.com-এর সম্পদ, প্রতিটি লেখকের নামে", prayer: "নামাজের সময়", prayerSrc: "আপনার দেশের মানক জ্যোতির্বৈজ্ঞানিক পদ্ধতিতে ডিভাইসে গণনা (Aladhan সারণি)", azan: "আজানের রেকর্ডিং", azanSrc: "Islamic Network (Aladhan) সংগ্রহ", report: "বিষয়বস্তুর সমস্যা জানান" },
+  worship: {
+    adhkar: {
+      title: "আযকার",
+      morning: "সকাল",
+      evening: "সন্ধ্যা",
+      afterPrayer: "নামাজের পর",
+      sleep: "ঘুমের আগে",
+      waking: "জাগরণে",
+    },
+    qibla: {
+      title: "কিবলা",
+    },
+    calendar: {
+      title: "হিজরি ক্যালেন্ডার",
+    },
+    tasbih: {
+      title: "তাসবিহ",
+    },
+    khatmah: {
+      title: "খতম",
+    },
+  },
 };

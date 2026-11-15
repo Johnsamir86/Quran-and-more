@@ -1,7 +1,8 @@
+import { Ionicons } from "@expo/vector-icons";
 import { Link, Stack } from "expo-router";
 import { useAudioPlayer } from "expo-audio";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Switch, TextInput, View } from "react-native";
+import { Pressable, Switch, Text, TextInput, View } from "react-native";
 
 import { AZAN_PRAYERS, CALC_METHODS, MUEZZINS, PRAYER_NAMES, asrForCountry, formatCountdown, formatPrayerTime, hijriDate, methodForCountry, muezzinById, prayerSchedule, resolveCalc, type AzanSettings, type PrayerName } from "@qam/core";
 
@@ -101,6 +102,15 @@ export default function AzanScreen() {
     <Screen>
       <Stack.Screen options={{ title: t.title }} />
       <StudyNav current="azan" />
+      <Row>
+        {([["/adhkar", m.nav.adhkar, "sparkles-outline"], ["/qibla", m.nav.qibla, "compass-outline"], ["/calendar", m.nav.calendar, "moon-outline"], ["/tasbih", m.nav.tasbih, "ellipse-outline"], ["/khatmah", m.nav.khatmah, "calendar-number-outline"]] as const).map(([href, label, icon]) => (
+          <Link key={href} href={href as never} asChild>
+            <Pressable accessibilityRole="button" style={{ flexDirection: "row", gap: 6, alignItems: "center", paddingVertical: 8, paddingHorizontal: 12, borderRadius: 999, borderWidth: 1, borderColor: c.line, backgroundColor: c.card }}>
+              <Ionicons name={icon} size={16} color={c.accent} /><Text style={{ color: c.ink, fontSize: 13 }}>{label}</Text>
+            </Pressable>
+          </Link>
+        ))}
+      </Row>
       <Card style={{ backgroundColor: "#146b57", borderColor: "#146b57" }}>
         <Kicker>{settings.city}{settings.countryCode ? ` · ${settings.countryCode}` : ""} · {hijriDate(now, locale, settings.timeZone)}</Kicker>
         {next ? <Body style={{ color: "#fff" }}>{t.nextPrayer}: {ICONS[next.name]} {t.prayers[next.name]} · {fmt(next.at)}</Body> : null}

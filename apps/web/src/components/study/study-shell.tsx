@@ -15,13 +15,16 @@ export { useUiLocale };
 
 export const useToday = () => useMemo(() => new Date().toISOString().slice(0, 10), []);
 
-const NAV: { href: string; key: "search" | "learn" | "hifz" | "play" | "ask" | "azan" | "player" | "mushaf" | "me"; icon: string }[] = [
+const NAV: { href: string; key: "search" | "learn" | "hifz" | "play" | "ask" | "azan" | "adhkar" | "qibla" | "khatmah" | "player" | "mushaf" | "me"; icon: string }[] = [
   { href: "/search", key: "search", icon: "🔎" },
   { href: "/learn", key: "learn", icon: "🎓" },
   { href: "/hifz", key: "hifz", icon: "🧠" },
   { href: "/play", key: "play", icon: "🎮" },
   { href: "/ask", key: "ask", icon: "💬" },
   { href: "/azan", key: "azan", icon: "🕌" },
+  { href: "/adhkar", key: "adhkar", icon: "📿" },
+  { href: "/qibla", key: "qibla", icon: "🧭" },
+  { href: "/khatmah", key: "khatmah", icon: "🗓️" },
   { href: "/player", key: "player", icon: "▶" },
   { href: "/mushaf", key: "mushaf", icon: "📖" },
   { href: "/me", key: "me", icon: "👤" },

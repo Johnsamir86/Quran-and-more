@@ -8,7 +8,7 @@ export const hi: PartialMessages = {
     unavailable: "उपलब्ध नहीं", today: "आज", tomorrow: "कल", days: "दिन", minutes: "मिनट", done: "हो गया", start: "शुरू करें", again: "फिर से", poweredBy: "Quran Foundation API द्वारा संचालित", privacy: "गोपनीयता", terms: "शर्तें",
     offline: "कंटेंट सेवा तक नहीं पहुँच सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।", noProfile: "पहले परिवार पृष्ठ से एक प्रोफ़ाइल चुनें", on: "चालू", off: "बंद", enable: "सक्षम करें", disable: "अक्षम करें", chooseLanguage: "इंटरफ़ेस की भाषा चुनें",
   },
-  nav: { home: "होम", search: "खोज", learn: "सीखें", hifz: "हिफ़्ज़", play: "खेलें", ask: "पूछें", player: "प्लेयर", mushaf: "मुसहफ़", family: "परिवार", azan: "अज़ान", story: "आज की आयत", quran: "क़ुरआन", me: "मैं", study: "अध्ययन" },
+  nav: { home: "होम", search: "खोज", learn: "सीखें", hifz: "हिफ़्ज़", play: "खेलें", ask: "पूछें", player: "प्लेयर", mushaf: "मुसहफ़", family: "परिवार", azan: "अज़ान", story: "आज की आयत", quran: "क़ुरआन", me: "मैं", study: "अध्ययन", adhkar: "अज़कार", qibla: "क़िबला", khatmah: "ख़त्म", calendar: "कैलेंडर", tasbih: "तस्बीह" },
   home: {
     kicker: "क़ुरआन-ए-करीम", title: "क़ुरआन और अधिक", sub: "पूरे परिवार के लिए एक क़ुरआन अनुभव: शब्द-समन्वय के साथ निरंतर तिलावत, आधिकारिक लिपि में मुसहफ़, हर भाषा में तफ़सीर और अनुवाद, और हर सदस्य के लिए एक प्रोफ़ाइल।",
     startListening: "सुनना शुरू करें", openMushaf: "मुसहफ़ खोलें",
@@ -25,6 +25,11 @@ export const hi: PartialMessages = {
       azan: { title: "अज़ान", sub: "आपके शहर के नमाज़ के समय, आपकी पसंद की आवाज़ में अज़ान, हर नमाज़ पर याद दिलाना" },
       story: { title: "आज की आयत", sub: "हर दिन एक आयत पूरी स्क्रीन पर, उसके अर्थ और चिंतन के एक पल के साथ" },
       kahf: { title: "सूरह अल-कहफ़", sub: "शुक्रवार को पढ़ी जाती है" },
+      adhkar: { title: "अज़कार", sub: "हिस्नुल मुस्लिम से सुबह, शाम, नमाज़ के बाद, सोने और जागने के अज़कार, हर एक के लिए गिनती के साथ" },
+      qibla: { title: "क़िबला", sub: "आपकी जगह से काबा की दिशा दिखाने वाला कम्पास, कोण और दूरी के साथ" },
+      calendar: { title: "हिजरी कैलेंडर", sub: "आज की हिजरी तारीख़, आने वाले इस्लामी दिन और रमज़ान तक बचे दिन" },
+      tasbih: { title: "तस्बीह", sub: "मशहूर ज़िक्र के साथ डिजिटल काउंटर, हर चक्र पर कंपन" },
+      khatmah: { title: "ख़त्म", sub: "30, 60 या अधिक दिनों में क़ुरआन पूरा करने की योजना बनाएँ और आज के पन्ने देखें" },
     },
   },
   player: {
@@ -89,4 +94,26 @@ export const hi: PartialMessages = {
   },
   settings: { title: "सेटिंग", appearance: "रूप", theme: "थीम", themeHelp: "चार रूप, हर एक हल्के और गहरे में। चुनाव इसी डिवाइस पर सहेजा जाता है।", schemeSystem: "सिस्टम के अनुसार", schemeLight: "हल्का", schemeDark: "गहरा", language: "भाषा", notifications: "सूचनाएँ", notifAzan: "नमाज़ के समय अज़ान", notifDaily: "आज की आयत", notifDailyTime: "आज की आयत का समय", notifHifz: "हिफ़्ज़ दोहराने का समय", notifFamily: "परिवार की गतिविधि", notifStreak: "सिलसिले की याद", notifSound: "ध्वनि", notifSoundChime: "मृदु घंटी", notifSoundSilent: "मौन", notifTest: "परीक्षण सूचना भेजें", account: "खाता", signIn: "साइन इन", signOut: "साइन आउट", signedInAs: "साइन इन:", signInHelp: "परिवार की प्रोफ़ाइल, बुकमार्क, नोट और प्रगति सभी डिवाइस पर रखने के लिए साइन इन करें।", signInApple: "Apple से जारी रखें", signInGoogle: "Google से जारी रखें", signInEmail: "ईमेल से जारी रखें", signInQuran: "Quran.com से जारी रखें", emailPlaceholder: "you@example.com", magicLinkSent: "साइन इन लिंक के लिए अपना इनबॉक्स देखें", signInUnavailable: "इस बिल्ड में खाते अभी चालू नहीं हैं", guest: "अतिथि (केवल यह डिवाइस)", purchases: "खरीद", offlineAudio: "ऑफ़लाइन ऑडियो", offlineAudioSub: "किसी भी सूरह को ऑफ़लाइन सुनने के लिए डाउनलोड करें और सभी अभिलेख क़ारी खोलें।", monthly: "मासिक", yearly: "वार्षिक", subscribe: "सदस्यता लें", restore: "खरीद पुनर्स्थापित करें", subscribed: "सक्रिय", notSubscribed: "सदस्यता नहीं", manage: "सदस्यता प्रबंधित करें", trial: "7 दिन मुफ़्त आज़माइश", about: "परिचय", version: "संस्करण", privacy: "गोपनीयता नीति", terms: "शर्तें", sources: "सामग्री के स्रोत", rate: "ऐप को रेट करें", share: "ऐप साझा करें", support: "सहायता", me: "मैं", profile: "प्रोफ़ाइल", switchProfile: "प्रोफ़ाइल बदलें", editProfile: "प्रोफ़ाइल संपादित करें" },
   sources: { title: "सामग्री और स्रोत", reviewPending: "समीक्षा लंबित", reviewPendingHelp: "अनुवाद, तफ़सीर और शब्दार्थ Quran Foundation / Quran.com सूची से हैं, जैसे उनके लेखकों ने प्रकाशित किए। AI उत्तर आयतों को ज्यों का त्यों उद्धृत करते हैं और कभी नहीं बदलते। इस ऐप के चयन की विद्वत समीक्षा अभी नहीं हुई है; होने पर यह चिह्न बदल जाएगा।", quranText: "क़ुरआन का पाठ", quranTextSrc: "Quran Foundation सामग्री API (उस्मानी लिपि, KFGQPC फ़ॉन्ट)", audio: "तिलावत", audioSrc: "Quran Foundation ऑडियो सूची; अभिलेख क़ारी quranicaudio.com और mp3quran.net से; शब्द समय हमारे स्वचालित संरेखण से", translations: "अनुवाद और तफ़सीर", translationsSrc: "Quran.com संसाधन, हर एक अपने लेखक के नाम से", prayer: "नमाज़ के समय", prayerSrc: "आपके देश की मानक खगोलीय पद्धति से डिवाइस पर गणना (Aladhan तालिका)", azan: "अज़ान की रिकॉर्डिंग", azanSrc: "Islamic Network (Aladhan) संग्रह", report: "सामग्री की समस्या की सूचना दें" },
+  worship: {
+    adhkar: {
+      title: "अज़कार",
+      morning: "सुबह",
+      evening: "शाम",
+      afterPrayer: "नमाज़ के बाद",
+      sleep: "सोने से पहले",
+      waking: "जागने पर",
+    },
+    qibla: {
+      title: "क़िबला",
+    },
+    calendar: {
+      title: "हिजरी कैलेंडर",
+    },
+    tasbih: {
+      title: "तस्बीह",
+    },
+    khatmah: {
+      title: "ख़त्म",
+    },
+  },
 };

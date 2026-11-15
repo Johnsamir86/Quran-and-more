@@ -8,7 +8,7 @@ export const pt: PartialMessages = {
     unavailable: "indisponível", today: "hoje", tomorrow: "amanhã", days: "dias", minutes: "min", done: "Concluído", start: "Começar", again: "Outra vez", poweredBy: "Com as APIs da Quran Foundation", privacy: "Privacidade", terms: "Termos",
     offline: "Não foi possível contactar o serviço de conteúdo. Verifique a ligação e tente de novo.", noProfile: "Escolha primeiro um perfil na página Família", on: "Ligado", off: "Desligado", enable: "Ativar", disable: "Desativar", chooseLanguage: "Escolha o idioma da interface",
   },
-  nav: { home: "Início", search: "Pesquisar", learn: "Aprender", hifz: "Memorizar", play: "Jogar", ask: "Perguntar", player: "Leitor", mushaf: "Mushaf", family: "Família", azan: "Adhan", story: "Versículo do dia", quran: "Alcorão", me: "Eu", study: "Estudo" },
+  nav: { home: "Início", search: "Pesquisar", learn: "Aprender", hifz: "Memorizar", play: "Jogar", ask: "Perguntar", player: "Leitor", mushaf: "Mushaf", family: "Família", azan: "Adhan", story: "Versículo do dia", quran: "Alcorão", me: "Eu", study: "Estudo", adhkar: "Adhkar", qibla: "Qibla", khatmah: "Khatma", calendar: "Calendário", tasbih: "Tasbih" },
   home: {
     kicker: "O Nobre Alcorão", title: "Alcorão e mais", sub: "Uma única experiência do Alcorão para toda a família: recitação contínua com sincronização de palavras, o mushaf na escrita oficial, tafsir e traduções em todos os idiomas e um perfil para cada membro.",
     startListening: "Começar a ouvir", openMushaf: "Abrir o mushaf",
@@ -25,6 +25,11 @@ export const pt: PartialMessages = {
       azan: { title: "Adhan", sub: "Horários de oração da sua cidade, o adhan na voz que escolher e um lembrete em cada oração" },
       story: { title: "Versículo do dia", sub: "Um versículo por dia, em ecrã inteiro, com o seu significado e um momento de reflexão" },
       kahf: { title: "Surata Al-Kahf", sub: "Lida à sexta-feira" },
+      adhkar: { title: "Adhkar", sub: "Lembranças da manhã, da tarde, após a oração, ao dormir e ao acordar de Hisn al-Muslim, com contador" },
+      qibla: { title: "Qibla", sub: "Uma bússola que aponta para a Caaba a partir da sua localização, com rumo e distância" },
+      calendar: { title: "Calendário hijri", sub: "A data hijri de hoje, as próximas datas islâmicas e os dias até o Ramadã" },
+      tasbih: { title: "Tasbih", sub: "Um contador digital com as fórmulas conhecidas e vibração a cada volta" },
+      khatmah: { title: "Khatma", sub: "Planeje terminar o Alcorão em 30, 60 ou mais dias e acompanhe as páginas de hoje" },
     },
   },
   player: {
@@ -94,4 +99,26 @@ export const pt: PartialMessages = {
   },
   settings: { title: "Definições", appearance: "Aparência", theme: "Tema", themeHelp: "Quatro estilos, cada um em claro e escuro. A escolha fica guardada neste dispositivo.", schemeSystem: "Seguir o sistema", schemeLight: "Claro", schemeDark: "Escuro", language: "Idioma", notifications: "Notificações", notifAzan: "Adhan nas horas da oração", notifDaily: "Versículo do dia", notifDailyTime: "Hora do versículo do dia", notifHifz: "Revisão de memorização pendente", notifFamily: "Atividade da família", notifStreak: "Lembretes de sequência", notifSound: "Som", notifSoundChime: "Toque suave", notifSoundSilent: "Silencioso", notifTest: "Enviar notificação de teste", account: "Conta", signIn: "Entrar", signOut: "Sair", signedInAs: "Sessão iniciada como", signInHelp: "Entre para manter os perfis da família, marcadores, notas e progresso em todos os dispositivos.", signInApple: "Continuar com a Apple", signInGoogle: "Continuar com o Google", signInEmail: "Continuar com e-mail", signInQuran: "Continuar com Quran.com", emailPlaceholder: "voce@exemplo.com", magicLinkSent: "Verifique o seu e-mail para o link de acesso", signInUnavailable: "As contas ainda não estão ativas nesta versão", guest: "Convidado (só este dispositivo)", purchases: "Compras", offlineAudio: "Áudio offline", offlineAudioSub: "Baixe qualquer surata para ouvir offline e desbloqueie todos os recitadores de arquivo.", monthly: "Mensal", yearly: "Anual", subscribe: "Assinar", restore: "Restaurar compras", subscribed: "Ativa", notSubscribed: "Sem assinatura", manage: "Gerir assinatura", trial: "7 dias grátis", about: "Sobre", version: "Versão", privacy: "Política de privacidade", terms: "Termos", sources: "Fontes do conteúdo", rate: "Avaliar a app", share: "Partilhar a app", support: "Suporte", me: "Eu", profile: "Perfil", switchProfile: "Mudar de perfil", editProfile: "Editar perfil" },
   sources: { title: "Conteúdo e fontes", reviewPending: "Revisão pendente", reviewPendingHelp: "Traduções, tafsir e significados das palavras vêm do catálogo Quran Foundation / Quran.com tal como publicados pelos autores. As respostas da IA citam os versículos literalmente e nunca os alteram. A revisão erudita das seleções desta app ainda não aconteceu; este selo mudará quando acontecer.", quranText: "Texto do Alcorão", quranTextSrc: "API de conteúdo da Quran Foundation (grafia otomânica, fontes KFGQPC)", audio: "Recitações", audioSrc: "Catálogo de áudio da Quran Foundation; recitadores de arquivo de quranicaudio.com e mp3quran.net; sincronização de palavras pelo nosso alinhamento automático", translations: "Traduções e tafsir", translationsSrc: "Recursos do Quran.com, cada um creditado ao autor", prayer: "Horas da oração", prayerSrc: "Calculadas no dispositivo com o método astronómico padrão do seu país (tabela Aladhan)", azan: "Gravações do adhan", azanSrc: "Coleção Islamic Network (Aladhan)", report: "Comunicar um problema de conteúdo" },
+  worship: {
+    adhkar: {
+      title: "Adhkar",
+      morning: "Manhã",
+      evening: "Tarde",
+      afterPrayer: "Após a oração",
+      sleep: "Antes de dormir",
+      waking: "Ao acordar",
+    },
+    qibla: {
+      title: "Qibla",
+    },
+    calendar: {
+      title: "Calendário hijri",
+    },
+    tasbih: {
+      title: "Tasbih",
+    },
+    khatmah: {
+      title: "Khatma",
+    },
+  },
 };
