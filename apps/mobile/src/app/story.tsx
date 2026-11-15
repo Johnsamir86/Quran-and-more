@@ -8,7 +8,7 @@ import { StatusBar } from "expo-status-bar";
 import { VideoView, useVideoPlayer } from "expo-video";
 import * as WebBrowser from "expo-web-browser";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Image, ImageBackground, Modal, Pressable, ScrollView, Share, Text, TextInput, View, useWindowDimensions } from "react-native";
+import { Image, ImageBackground, Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, Share, Text, TextInput, View, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { captureRef } from "react-native-view-shot";
 
@@ -165,7 +165,7 @@ export default function StoryScreen() {
     const q = `surah=${range?.surah ?? s}&from=${range?.from ?? a}&to=${range?.to ?? a}${bgId ? `&bg=${bgId}` : ""}${prefs.reciter ? `&reciter=${prefs.reciter}` : ""}&font=${prefs.font}&size=${prefs.size}&dim=${prefs.dim}&tone=${prefs.tone}&embed=1`;
     WebBrowser.openBrowserAsync(`${API_BASE_URL}/story/video?${q}`, { presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN }).catch(() => flash(m.common.unavailable));
   };
-  const applyRange = () => { const c = chapters.find((x) => x.id === pick.surah); const max = c?.versesCount ?? 286; const from = Math.min(max, Math.max(1, pick.from)); const to = Math.min(max, Math.max(from, pick.to)); setSheet("none"); router.push({ pathname: "/story", params: { surah: String(pick.surah), from: String(from), to: String(to) } } as never); };
+  const applyRange = () => { Keyboard.dismiss(); const c = chapters.find((x) => x.id === pick.surah); const max = c?.versesCount ?? 286; const from = Math.min(max, Math.max(1, pick.from)); const to = Math.min(max, Math.max(from, pick.to)); setSheet("none"); router.push({ pathname: "/story", params: { surah: String(pick.surah), from: String(from), to: String(to) } } as never); };
   const saveNote = () => {
     if (!ayah || !note.trim()) return;
     if (!profile) { flash(m.common.noProfile); return; }
@@ -209,8 +209,9 @@ export default function StoryScreen() {
 
   return (
     <View ref={shotRef} collapsable={false} style={{ flex: 1, backgroundColor: bg.color ?? "#0b1228" }}>
-      {bg.video ? <VideoView player={bgPlayer} style={{ position: "absolute", inset: 0 }} contentFit="cover" nativeControls={false} /> : null}
-      <ImageBackground source={bg.uri && !bg.video ? { uri: bg.uri } : undefined} style={{ flex: 1 }} resizeMode="cover">
+      {bg.video && !capturing ? <VideoView player={bgPlayer} style={{ position: "absolute", inset: 0 }} contentFit="cover" nativeControls={false} /> : null}
+      {/* The video layer is not part of a view capture, so the poster frame stands in for it while sharing as an image. */}
+      <ImageBackground source={bg.uri && (!bg.video || capturing) ? { uri: bg.uri } : undefined} style={{ flex: 1 }} resizeMode="cover">
         <Stack.Screen options={{ headerShown: false }} />
         <StatusBar style={light ? "dark" : "light"} />
         <View style={{ flex: 1, backgroundColor: light ? `rgba(255,255,255,${prefs.dim})` : `rgba(0,0,0,${prefs.dim})`, paddingTop: insets.top + 10, paddingBottom: insets.bottom + 10 }}>
@@ -294,7 +295,8 @@ export default function StoryScreen() {
       </ImageBackground>
 
       <Modal visible={sheet === "range"} transparent animationType="slide" onRequestClose={() => setSheet("none")}>
-        <Pressable style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.45)", justifyContent: "flex-end" }} onPress={() => setSheet("none")}>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
+        <Pressable style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.45)", justifyContent: "flex-end" }} onPress={() => { Keyboard.dismiss(); setSheet("none"); }}>
           <View style={{ backgroundColor: "#fffdf7", borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: 16, paddingBottom: insets.bottom + 16, maxHeight: "82%", gap: 12 }} onStartShouldSetResponder={() => true}>
             <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
               <Text style={{ fontWeight: "700", fontSize: 16, color: "#15201b" }}>📑 {t.chooseAyahs}</Text>
@@ -303,17 +305,29 @@ export default function StoryScreen() {
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
               {chapters.map((c) => <Opt key={c.id} label={`${c.id}. ${isAr ? c.nameArabic : c.nameSimple}`} on={pick.surah === c.id} onPress={() => setPick({ surah: c.id, from: 1, to: 1 })} />)}
             </ScrollView>
-            <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
-              <Text style={{ color: "#55625b" }}>{t.fromAyah}</Text>
-              <TextInput keyboardType="number-pad" value={String(pick.from)} onChangeText={(v) => setPick((p) => ({ ...p, from: Number(v) || 1 }))} style={{ width: 72, borderWidth: 1, borderColor: "rgba(0,0,0,0.15)", borderRadius: 10, padding: 8, textAlign: "center", color: "#15201b" }} />
-              <Text style={{ color: "#55625b" }}>{t.toAyah}</Text>
-              <TextInput keyboardType="number-pad" value={String(pick.to)} onChangeText={(v) => setPick((p) => ({ ...p, to: Number(v) || p.from }))} style={{ width: 72, borderWidth: 1, borderColor: "rgba(0,0,0,0.15)", borderRadius: 10, padding: 8, textAlign: "center", color: "#15201b" }} />
-              <Text style={{ color: "#55625b", fontSize: 12 }}>/ {chapters.find((c) => c.id === pick.surah)?.versesCount ?? ""}</Text>
+            {(["from", "to"] as const).map((field) => {
+              const max = chapters.find((c) => c.id === pick.surah)?.versesCount ?? 286;
+              const value = pick[field];
+              const set = (n: number) => setPick((p) => { const v = Math.min(max, Math.max(1, n || 1)); return field === "from" ? { ...p, from: v, to: Math.max(v, p.to) } : { ...p, to: Math.max(p.from, v) }; });
+              const Step = ({ label, d }: { label: string; d: number }) => <Pressable onPress={() => set(value + d)} style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: "#f0ece1", alignItems: "center", justifyContent: "center" }}><Text style={{ fontSize: 18, color: "#15201b" }}>{label}</Text></Pressable>;
+              return (
+                <View key={field} style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
+                  <Text style={{ color: "#55625b", width: 78 }}>{field === "from" ? t.fromAyah : t.toAyah}</Text>
+                  <Step label="−" d={-1} />
+                  <TextInput keyboardType="numbers-and-punctuation" returnKeyType="done" blurOnSubmit onSubmitEditing={Keyboard.dismiss} value={String(value)} onChangeText={(v) => set(Number(v.replace(/[^0-9]/g, "")))} selectTextOnFocus style={{ width: 70, borderWidth: 1, borderColor: "rgba(0,0,0,0.15)", borderRadius: 10, padding: 8, textAlign: "center", color: "#15201b", fontSize: 16 }} />
+                  <Step label="+" d={1} />
+                  <Text style={{ color: "#55625b", fontSize: 12 }}>/ {max}</Text>
+                </View>
+              );
+            })}
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              <Opt label={t.apply} on onPress={applyRange} />
+              <Opt label={m.common.close} on={false} onPress={() => { Keyboard.dismiss(); setSheet("none"); }} />
             </View>
-            <View style={{ flexDirection: "row" }}><Opt label={t.apply} on onPress={applyRange} /></View>
             <Text style={{ color: "#55625b", fontSize: 12 }}>{t.videoHint}</Text>
           </View>
         </Pressable>
+        </KeyboardAvoidingView>
       </Modal>
 
       <Modal visible={sheet === "edit"} transparent animationType="slide" onRequestClose={() => setSheet("none")}>

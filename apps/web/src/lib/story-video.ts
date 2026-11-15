@@ -40,7 +40,7 @@ export interface VideoInput {
   signal?: AbortSignal;
 }
 
-export interface VideoResult { blob: Blob; mime: string; ext: "mp4" | "webm"; durationMs: number }
+export interface VideoResult { blob: Blob; mime: string; ext: "mp4" | "webm"; durationMs: number; engine: "webcodecs" | "recorder" }
 
 const GAP_MS = 700, INTRO_MS = 900, OUTRO_MS = 1500, FPS = 30, LEAD_MS = 90;
 
@@ -50,10 +50,16 @@ const hasWebCodecs = () => typeof (window as unknown as { VideoEncoder?: unknown
 
 const loadImage = (src: string) => new Promise<HTMLImageElement>((resolve, reject) => { const i = new Image(); if (!src.startsWith("data:")) i.crossOrigin = "anonymous"; i.onload = () => resolve(i); i.onerror = reject; i.src = src; });
 
+/** Safari (iOS in particular) does not fire canplaythrough for a muted inline clip until it plays, so start it and settle on the first decoded frame; give up after 8 s and fall back to the poster. */
 const loadVideo = (src: string) => new Promise<HTMLVideoElement>((resolve, reject) => {
   const v = document.createElement("video");
-  v.crossOrigin = "anonymous"; v.muted = true; v.loop = true; v.playsInline = true; v.preload = "auto"; v.src = src;
-  v.oncanplaythrough = () => resolve(v); v.onerror = () => reject(new Error("video")); v.load();
+  v.crossOrigin = "anonymous"; v.muted = true; v.loop = true; v.playsInline = true; v.preload = "auto"; v.setAttribute("playsinline", ""); v.setAttribute("muted", ""); v.src = src;
+  let done = false; const ok = () => { if (!done && v.readyState >= 2) { done = true; resolve(v); } };
+  const fail = () => { if (!done) { done = true; reject(new Error("video")); } };
+  v.onloadeddata = ok; v.oncanplay = ok; v.oncanplaythrough = ok; v.onplaying = ok; v.onerror = fail;
+  const timer = window.setTimeout(fail, 8000);
+  v.load(); v.play().then(ok).catch(() => undefined);
+  const clear = () => window.clearTimeout(timer); v.addEventListener("loadeddata", clear, { once: true }); v.addEventListener("error", clear, { once: true });
 });
 
 const fetchAudio = async (ctx: BaseAudioContext, url: string, signal?: AbortSignal): Promise<AudioBuffer> => {
@@ -96,8 +102,10 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
   const { onProgress, signal } = input;
   const throwIfAborted = () => { if (signal?.aborted) throw new DOMException("aborted", "AbortError"); };
 
-  // 1. audio: decode every ayah, lay them on one timeline
+  // 1. audio: decode every ayah, lay them on one timeline. The context is created before the first await so
+  // Safari keeps the user activation (otherwise the recorder path records silence).
   const probe = new AudioContext();
+  await probe.resume().catch(() => undefined);
   const buffers: AudioBuffer[] = [];
   for (let i = 0; i < input.pages.length; i++) { buffers.push(await fetchAudio(probe, input.pages[i].audioUrl, signal)); onProgress?.((i + 1) / input.pages.length, "audio"); }
   // Word timings derived from the full-surah recording can sit a little off the per-ayah cut; align the
@@ -117,7 +125,6 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
   const offline = new OfflineAudioContext(2, Math.ceil((totalMs / 1000) * sampleRate), sampleRate);
   buffers.forEach((b, i) => { const src = offline.createBufferSource(); src.buffer = b; src.connect(offline.destination); src.start(starts[i] / 1000); });
   const mixed = await offline.startRendering();
-  await probe.close().catch(() => undefined);
   throwIfAborted();
 
   // 2. visuals
@@ -209,7 +216,11 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
     ctx.fillStyle = muted; ctx.font = `400 ${Math.round(24 * S)}px "Plus Jakarta Sans", system-ui, sans-serif`; ctx.fillText("quran-and-more.netlify.app", mx + 92 * S, my + 74 * S);
   };
 
-  if (bgVideo) { bgVideo.currentTime = 0; await bgVideo.play().catch(() => undefined); }
+  if (bgVideo) {
+    bgVideo.currentTime = 0;
+    const started = await bgVideo.play().then(() => true).catch(() => false);
+    if (!started && input.bg.url) { try { bgImage = await loadImage(input.bg.url); } catch { bgImage = null; } bgVideo = null; }
+  }
   const frames = Math.ceil((totalMs / 1000) * FPS);
 
   // H.264 + AAC through WebCodecs when the browser can encode them (Chrome, Edge, Android Chrome, recent Safari);
@@ -229,7 +240,7 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
     }
     if (!audioCodec) vConfig = null;
   }
-  if (vConfig && audioCodec) {
+  if (vConfig && audioCodec) try {
     const muxer = new Muxer({ target: new ArrayBufferTarget(), video: { codec: "avc", width: W, height: H }, audio: { codec: audioCodec, numberOfChannels: 2, sampleRate }, fastStart: "in-memory" });
     const videoEncoder = new VideoEncoder({ output: (chunk, meta) => muxer.addVideoChunk(chunk, meta), error: (e) => { throw e; } });
     videoEncoder.configure(vConfig);
@@ -261,11 +272,15 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
     muxer.finalize();
     bgVideo?.pause();
     const buf = (muxer.target as ArrayBufferTarget).buffer;
-    return { blob: new Blob([buf], { type: "video/mp4" }), mime: "video/mp4", ext: "mp4", durationMs: totalMs };
+    await probe.close().catch(() => undefined);
+    return { blob: new Blob([buf], { type: "video/mp4" }), mime: "video/mp4", ext: "mp4", durationMs: totalMs, engine: "webcodecs" };
+  } catch (e) {
+    if (e instanceof DOMException && e.name === "AbortError") throw e;
+    // Encoder failed mid-way (seen on some Safari builds): record instead.
   }
 
-  // Fallback: MediaRecorder with live audio playback
-  const live = new AudioContext({ sampleRate });
+  // Fallback: MediaRecorder with live audio playback through the same (activated) context
+  const live = probe;
   const dest = live.createMediaStreamDestination();
   const src = live.createBufferSource(); src.buffer = mixed; src.connect(dest);
   const stream = canvas.captureStream(FPS);
@@ -282,9 +297,9 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
     const wait = t0 + tMs - performance.now(); if (wait > 0) await new Promise((r) => setTimeout(r, wait));
     drawFrame(tMs); onProgress?.(i / frames, "render");
   }
-  rec.stop(); await done; await live.close().catch(() => undefined); bgVideo?.pause();
+  rec.stop(); await done; src.disconnect(); await live.close().catch(() => undefined); bgVideo?.pause();
   const isMp4 = (rec.mimeType || mime).includes("mp4");
-  return { blob: new Blob(parts, { type: isMp4 ? "video/mp4" : "video/webm" }), mime: isMp4 ? "video/mp4" : "video/webm", ext: isMp4 ? "mp4" : "webm", durationMs: totalMs };
+  return { blob: new Blob(parts, { type: isMp4 ? "video/mp4" : "video/webm" }), mime: isMp4 ? "video/mp4" : "video/webm", ext: isMp4 ? "mp4" : "webm", durationMs: totalMs, engine: "recorder" };
 };
 
 export const canShareVideo = (ext: "mp4" | "webm"): boolean => typeof navigator !== "undefined" && typeof navigator.canShare === "function" && navigator.canShare({ files: [new File(["x"], `x.${ext}`, { type: ext === "mp4" ? "video/mp4" : "video/webm" })] });

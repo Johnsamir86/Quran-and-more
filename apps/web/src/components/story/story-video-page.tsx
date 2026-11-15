@@ -150,7 +150,7 @@ export default function StoryVideoPage() {
             {!result ? <button className={`${styles.chip} ${styles.primaryBtn}`} onClick={render} disabled={!pages.length || !!progress || !supported}>🎬 {progress ? stageLabel : t.shareVideo}</button> : null}
             {progress ? <button className={styles.chip} onClick={() => abort.current?.abort()}>✕ {m.common.close}</button> : null}
             {result && canShareVideo(result.ext) ? <button className={`${styles.chip} ${styles.primaryBtn}`} onClick={share}>📤 {m.common.share}</button> : null}
-            {result ? <a className={styles.chip} href={result.url} download={`ayah-${reference.replace(":", "-")}.${result.ext}`}>⬇ {result.ext.toUpperCase()} · {(result.blob.size / 1_000_000).toFixed(1)} MB</a> : null}
+            {result ? <a className={styles.chip} href={result.url} download={`ayah-${reference.replace(":", "-")}.${result.ext}`}>⬇ {result.ext.toUpperCase()} · {(result.blob.size / 1_000_000).toFixed(1)} MB · {result.engine === "webcodecs" ? "H.264" : "rec"}</a> : null}
             {result ? <button className={styles.chip} onClick={() => setResult(null)}>↺ {t.reset}</button> : null}
           </div>
 
