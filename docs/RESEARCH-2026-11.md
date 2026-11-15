@@ -49,7 +49,7 @@ press), not audited data.
 | Offline audio downloads | ✓ (premium) | ✓ | ✓ | ✓ | ✓ (subscription) | ✓ |
 | 48+ interface languages | ◐ (≈ 20) | ◐ (≈ 10) | ◐ | ◐ (≈ 25) | ✓ | ✓ |
 | Zakat calculator | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ (deliberate, see §4) |
-| 99 names of Allah | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ (next) |
+| 99 names of Allah | ✓ | ✓ | ✗ | ✗ | ✗ | **✓** |
 | Home-screen widgets | ✓ | ✓ | ✓ | ✓ | ✗ | ✗ (next) |
 | Halal places / community | ✓ | ✗ | ✗ | ✓ (reflections) | ✗ | ✗ (out of scope) |
 
@@ -102,7 +102,12 @@ rest, like every other screen).
   the mushaf at today's page. Progress comes from the mushaf's own reading record for the active
   family profile or from "mark today's portion as read" / a manual page.
 
-### 3.6 Entry points
+### 3.6 The 99 names — `/names`, mobile `names`
+* Authored list in the Tirmidhi order with transliteration, a short English meaning and a short
+  Arabic gloss (no third-party dataset, so no licence question), a name of the day, and search by
+  Arabic, transliteration, meaning or number.
+
+### 3.7 Entry points
 * Web home tiles, the study-shell navigation chips, mobile home quick tiles and a row of chips on
   the Azan tab. Interface strings live in `worship.*` and `home.tiles.*` in the core dictionaries.
 
@@ -119,17 +124,17 @@ rest, like every other screen).
 * **Zakat was deliberately not built.** Nisab basis (gold vs silver), treatment of debts, salaries,
   shares and pensions differ between schools and fatwa councils, and a wrong number is a real
   harm. If added later it must be region-specific and reviewed.
-* **99 Names**: the common GPL-licensed dataset cannot be bundled with a proprietary app; a hand
-  authored list with references is a short follow-up.
+* **99 Names**: the common GPL-licensed dataset was not used; the list was authored for the app,
+  and the page says that the meanings are short glosses and that Allah's names are not limited to
+  the ninety-nine (the position of the scholars on the Tirmidhi narration).
 * **Licences**: the two datasets are MIT (attribution kept in the source file). No GPL code or
   data was used. Nothing was scraped from competitors.
 
 ## 5. Recommended next (priority order)
 1. Home-screen widgets (next prayer, ayah of the day, khatmah today) on iOS/Android.
-2. 99 Names with meanings and short explanations in all languages.
-3. Khatmah notifications and a weekly reading summary.
-4. Qibla "AR" view using the camera on mobile.
-5. Community reading circles (shared khatmah) once accounts are live.
+2. Khatmah notifications and a weekly reading summary.
+3. Qibla "AR" view using the camera on mobile.
+4. Community reading circles (shared khatmah) once accounts are live.
 
 ## 6. Sources consulted
 App Store and Google Play listings and "In-App Purchases" sections for Muslim Pro, Quran Majeed,

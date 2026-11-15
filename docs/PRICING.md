@@ -35,7 +35,7 @@ gapless word-synced recitation with 100+ reciters, the mushaf in the KFGQPC font
 translations in every language the Quran Foundation hosts, Ask AI that only quotes ayat and tafsir,
 memorisation with spaced review, lessons and games, family profiles, azan and prayer times, ayah
 story with video export and moving backgrounds, voice commands, lock-screen playback, and now
-adhkar, Qibla, Hijri calendar, tasbih and the khatmah planner, all in 48 languages, with no ads.
+adhkar, Qibla, Hijri calendar, tasbih, the 99 names and the khatmah planner, all in 48 languages, with no ads.
 
 The issue is not value but **discoverability and trust**: a new brand asking for money before the
 first open, in a category where the best-known apps are free, will convert poorly and collect
@@ -77,7 +77,7 @@ Why this beats $4.99 up front:
 2. **Accounts and sync** (Supabase keys): a subscription people cannot restore across devices
    generates refund requests.
 3. **Widgets** (next prayer, khatmah today, ayah of the day): the top request in competitor reviews.
-4. **99 Names** and **khatmah reminders**.
+4. **Khatmah reminders** and a weekly reading summary.
 5. **Content review badge** turned from "pending" to "reviewed" for at least the Arabic UI and the
    Ask AI sources, by a named scholar or institution.
 6. **A 7-day free trial** on the yearly plan and a Ramadan launch offer (Ramadan 1448 begins around
