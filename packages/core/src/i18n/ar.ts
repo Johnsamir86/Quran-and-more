@@ -57,7 +57,7 @@ export const ar: PartialMessages = {
     focusView: "شاشة واحدة", listView: "قائمة", language: "لغة الواجهة", wbwLanguage: "لغة معاني الكلمات", tafsirPick: "اختيار التفسير", nextUp: "التالية", credit: "الصورة",
     bookmark: "علامة", bookmarked: "محفوظة", notes: "ملاحظاتي", noteHint: "اكتب تدبّرك أو ملاحظتك على هذه الآية…", saveNote: "حفظ الملاحظة", deleteNote: "حذف",
     family: "العائلة", noProfile: "اختر ملفًا من صفحة العائلة لحفظ العلامات والملاحظات", library: "المحفوظات", repeatAyahShort: "تكرار",
-    voice: "قل اسم السورة", listening: "أستمع…", voiceHint: "جرّب: شغّل سورة الكهف · افتح يس الآية ٣٦", voiceHeard: "سمعت", voiceNotUnderstood: "لم أتبيّن اسم السورة. حاول مرة أخرى.", voiceUnsupported: "الأوامر الصوتية تحتاج إذن الميكروفون ومتصفحًا مدعومًا", lockScreen: "يستمر التشغيل في الخلفية مع أزرار شاشة القفل",
+    voice: "قل اسم السورة", listening: "أستمع…", voiceHint: "جرّب: شغّل سورة الكهف · افتح يس الآية ٣٦", voiceHeard: "سمعت", voiceNotUnderstood: "لم أتبيّن اسم السورة. حاول مرة أخرى.", voiceUnsupported: "الأوامر الصوتية تحتاج إذن الميكروفون ومتصفحًا مدعومًا", lockScreen: "يستمر التشغيل في الخلفية مع أزرار شاشة القفل", carText: "عرض نص الآية على شاشة القفل وفي السيارة (CarPlay وAndroid Auto)", car: "في السيارة", carHelp: "يظهر التشغيل في CarPlay وAndroid Auto ضمن «قيد التشغيل الآن» مع التشغيل والإيقاف والآية التالية والسابقة من عجلة القيادة؛ ومع تفعيل هذا الخيار يُعرض نص الآية أثناء تلاوتها.",
   },
   mushaf: {
     title: "المصحف", surah: "سورة", juz: "الجزء", player: "المشغّل", family: "العائلة", tryAgain: "إعادة المحاولة", listenFromHere: "استمع من هنا",

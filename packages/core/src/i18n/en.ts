@@ -60,7 +60,7 @@ export const en = {
     focusView: "One screen", listView: "List", language: "Interface language", wbwLanguage: "Word meanings language", tafsirPick: "Choose tafsir", nextUp: "Next", credit: "Photo",
     bookmark: "Bookmark", bookmarked: "Saved", notes: "My notes", noteHint: "Write your reflection or note on this ayah…", saveNote: "Save note", deleteNote: "Delete",
     family: "Family", noProfile: "Choose a profile on the Family page to save bookmarks and notes", library: "Saved", repeatAyahShort: "Repeat",
-    voice: "Say a surah", listening: "Listening…", voiceHint: "Try: play Surah Al-Kahf · open Ya-Sin ayah 36", voiceHeard: "Heard", voiceNotUnderstood: "Sorry, I did not catch a surah name. Try again.", voiceUnsupported: "Voice commands need microphone access and a supported browser", lockScreen: "Playback continues in the background with lock-screen controls",
+    voice: "Say a surah", listening: "Listening…", voiceHint: "Try: play Surah Al-Kahf · open Ya-Sin ayah 36", voiceHeard: "Heard", voiceNotUnderstood: "Sorry, I did not catch a surah name. Try again.", voiceUnsupported: "Voice commands need microphone access and a supported browser", lockScreen: "Playback continues in the background with lock-screen controls", carText: "Show the ayah text on the lock screen and in the car (CarPlay, Android Auto)", car: "In the car", carHelp: "Playback appears in CarPlay and Android Auto under Now Playing with play, pause, next and previous ayah on the steering wheel; with this on, the ayah text is shown while it is recited.",
   },
   mushaf: {
     title: "Mushaf", surah: "Surah", juz: "Juz", player: "Player", family: "Family", tryAgain: "Try again", listenFromHere: "Listen from here",

@@ -4,15 +4,16 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { NATURE_WALLPAPERS, VIDEO_WALLPAPERS, hashString, languageNameForLocale, muezzinById, wallpaperForSurah, type PlayerReciter, type PrayerName } from "@qam/core";
+import { NATURE_WALLPAPERS, VIDEO_WALLPAPERS, hashString, languageNameForLocale, muezzinById, wallpaperForSurah, type PlayerReciter, type PrayerName, isLightColor } from "@qam/core";
 
 import { useFamily } from "@/components/family/family-provider";
 import SourcesBadge from "@/components/sources-badge";
 import { loadAzanSettings } from "@/lib/azan-client";
 import { useI18n } from "@/lib/i18n";
-import { DEFAULT_STORY_PREFS, SOLID_BACKGROUNDS, STORY_FONTS, StoryVoice, canShareFiles, ensureStoryFonts, loadStoryPrefs, localMedia, readPhotoFile, renderStoryImage, resolveBg, saveStoryPrefs, shareImageFile, shareLinks, type StoryEffect, type StoryFont, type StoryPrefs } from "@/lib/story-tools";
+import { DEFAULT_STORY_PREFS, SOLID_BACKGROUNDS, STORY_FONTS, StoryVoice, canShareFiles, ensureStoryFonts, loadStoryPrefs, localMedia, readPhotoFile, renderStoryImage, resolveBg, saveStoryPrefs, shareImageFile, shareLinks, type StoryEffect, type StoryFont, type StoryPrefs, storyInk } from "@/lib/story-tools";
 
 import styles from "./story.module.css";
+import TextColorPicker from "./text-color-picker";
 
 interface Ayah { day: string; verseKey: string; text: string; translation: string | null; juz: number | null }
 interface Chapter { id: number; nameSimple: string; nameArabic: string; translatedName: string; versesCount: number }
@@ -126,6 +127,8 @@ export default function StoryPage() {
   }, [surah, ayah]);
   const bg = useMemo(() => resolveBg(prefs.bg, natureDefault), [prefs.bg, natureDefault]);
   const tone: "light" | "dark" = prefs.tone === "auto" ? bg.tone : prefs.tone;
+  const ink = storyInk(prefs, tone);
+  const lightText = isLightColor(ink);
   const fontFamily = STORY_FONTS[prefs.font].family;
 
   const next = () => setSlide((s) => Math.min(slides - 1, s + 1));
@@ -138,7 +141,7 @@ export default function StoryPage() {
   const flash = (text: string) => { setToast(text); window.setTimeout(() => setToast(null), 2200); };
   const studyUrl = ayah ? `${typeof window !== "undefined" ? window.location.origin : ""}/study/${ayah.verseKey}` : "";
   const bgParam = prefs.bg && prefs.bg.kind !== "photo" ? prefs.bg.id : "";
-  const videoHref = ayah ? `/story/video?surah=${range?.surah ?? ayah.verseKey.split(":")[0]}&from=${range?.from ?? ayah.verseKey.split(":")[1]}&to=${range?.to ?? ayah.verseKey.split(":")[1]}${bgParam ? `&bg=${bgParam}` : ""}${prefs.reciter ? `&reciter=${prefs.reciter}` : ""}&font=${prefs.font}&size=${prefs.size}&dim=${prefs.dim}&tone=${prefs.tone}&auto=1` : "/story/video";
+  const videoHref = ayah ? `/story/video?surah=${range?.surah ?? ayah.verseKey.split(":")[0]}&from=${range?.from ?? ayah.verseKey.split(":")[1]}&to=${range?.to ?? ayah.verseKey.split(":")[1]}${bgParam ? `&bg=${bgParam}` : ""}${prefs.reciter ? `&reciter=${prefs.reciter}` : ""}&font=${prefs.font}&size=${prefs.size}&dim=${prefs.dim}&tone=${prefs.tone}${prefs.color ? `&color=${prefs.color.replace("#", "")}` : ""}&auto=1` : "/story/video";
   const applyRange = () => { const c = chapters.find((x) => x.id === pick.surah); const max = c?.versesCount ?? 286; const from = Math.min(max, Math.max(1, pick.from)); const to = Math.min(max, Math.max(from, pick.to)); setSheet("none"); router.push(`/story?surah=${pick.surah}&from=${from}&to=${to}`); };
   const shareText = ayah ? `${ayah.text}\n${ayah.translation ?? ""}\n(${ayah.verseKey}) · ${t.shareText}` : t.shareText;
 
@@ -185,7 +188,7 @@ export default function StoryPage() {
     if (!ayah) return null;
     setRendering(true);
     try {
-      const blob = await renderStoryImage({ arabic: ayah.text, translation: ayah.translation, reference: ayah.verseKey, surahName: chapter ? (ar ? chapter.nameArabic : chapter.nameSimple) : "", font: prefs.font, size: prefs.size, bg, dim: prefs.dim, tone, brand: m.common.appName, brandArabic: "القرآن وأكثر" });
+      const blob = await renderStoryImage({ arabic: ayah.text, translation: ayah.translation, reference: ayah.verseKey, surahName: chapter ? (ar ? chapter.nameArabic : chapter.nameSimple) : "", font: prefs.font, size: prefs.size, bg, dim: prefs.dim, tone, color: prefs.color, brand: m.common.appName, brandArabic: "القرآن وأكثر" });
       const url = URL.createObjectURL(blob);
       setPreview((p) => { if (p) URL.revokeObjectURL(p.url); return { url, blob }; });
       return blob;
@@ -203,11 +206,12 @@ export default function StoryPage() {
   const hour = new Date().getHours();
   const greeting = prayer ? `${t.forPrayer} ${m.azan.prayers[prayer] ?? ""}` : hour < 12 ? t.goodMorning : t.goodEvening;
   const [sNum, aNum] = (ayah?.verseKey ?? "1:1").split(":");
-  const toneClass = tone === "dark" ? styles.light : "";
-  const rootStyle: React.CSSProperties = bg.url ? { backgroundImage: `url(${bg.url})` } : { backgroundImage: `linear-gradient(135deg, ${bg.colors?.[0]}, ${bg.colors?.[1]})` };
+  // Menus and inputs read against the background, whatever colour the ayah text has.
+  const toneClass = bg.tone === "dark" ? styles.onLight : "";
+  const rootStyle: React.CSSProperties = { color: ink, ...(bg.url ? { backgroundImage: `url(${bg.url})` } : { backgroundImage: `linear-gradient(135deg, ${bg.colors?.[0]}, ${bg.colors?.[1]})` }) };
   const rangeLabel = range ? (range.from === range.to ? `${range.surah}:${range.from}` : `${range.surah}:${range.from}-${range.to}`) : null;
   const arabicStyle: React.CSSProperties = { fontFamily, fontSize: `calc(clamp(1.7rem, 4.4vw, 3rem) * ${prefs.size})` };
-  const dimStyle: React.CSSProperties = { position: "absolute", inset: 0, background: tone === "light" ? `rgba(0,0,0,${prefs.dim})` : `rgba(255,255,255,${prefs.dim})`, pointerEvents: "none" };
+  const dimStyle: React.CSSProperties = { position: "absolute", inset: 0, background: lightText ? `rgba(0,0,0,${prefs.dim})` : `rgba(255,255,255,${prefs.dim})`, pointerEvents: "none" };
   const links = shareLinks(shareText, studyUrl);
 
   return (
@@ -322,7 +326,7 @@ export default function StoryPage() {
             </div>
             <div className={styles.group}>
               <div className={styles.label}>{t.textColor}</div>
-              <div className={styles.row}>{(["auto", "light", "dark"] as const).map((x) => <button key={x} className={`${styles.opt} ${prefs.tone === x ? styles.optOn : ""}`} onClick={() => update({ tone: x })}>{x === "auto" ? t.auto : x === "light" ? t.light : t.dark}</button>)}</div>
+              <TextColorPicker value={prefs.color} autoLabel={t.auto} onChange={(color) => update({ color, tone: "auto" })} />
             </div>
             <div className={styles.group}>
               <div className={styles.label}>{t.voice}</div>

@@ -71,7 +71,7 @@
           "yo"
         ]
       },
-      "buildNumber": "9",
+      "buildNumber": "10",
       "requireFullScreen": false,
       "config": {
         "usesNonExemptEncryption": false
@@ -87,7 +87,7 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "foundation.quranandmore.app",
-      "versionCode": 9
+      "versionCode": 10
     },
     "web": {
       "output": "single",
@@ -95,6 +95,7 @@
     },
     "plugins": [
       "expo-router",
+      "./plugins/with-android-auto",
       [
         "expo-speech-recognition",
         {

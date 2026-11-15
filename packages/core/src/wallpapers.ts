@@ -130,3 +130,14 @@ export const wallpaperForSurah = (surah: number, kind: Exclude<WallpaperKind, "p
 export type WallpaperMode = "auto-nature" | "auto-art" | "auto-live" | "fixed" | "plain";
 
 export const WALLPAPER_STORAGE_KEY = "qam.player.wallpaper";
+
+/** Text colours offered in the story editor; `null` in prefs means "auto" (white on dark grounds, ink on light). */
+export const STORY_TEXT_COLORS: { id: string; hex: string }[] = [
+  { id: "white", hex: "#ffffff" }, { id: "ink", hex: "#15201b" }, { id: "gold", hex: "#d8ad5c" }, { id: "emerald", hex: "#3dba91" },
+  { id: "cream", hex: "#f6e7c1" }, { id: "sky", hex: "#9ed2ff" }, { id: "rose", hex: "#f5b7b1" }, { id: "lavender", hex: "#c9b8ff" },
+];
+const hexRgb = (hex: string): [number, number, number] => { const h = hex.replace("#", ""); const v = h.length === 3 ? h.split("").map((c) => c + c).join("") : h; const n = parseInt(v, 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
+/** True when the colour is light (so it needs a dark ground and dark shadows). */
+export const isLightColor = (hex: string): boolean => { try { const [r, g, b] = hexRgb(hex); return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 > 0.55; } catch { return true; } };
+export const withAlpha = (hex: string, alpha: number): string => { try { const [r, g, b] = hexRgb(hex); return `rgba(${r},${g},${b},${alpha})`; } catch { return hex; } };
+export const normalizeHex = (v: string | null | undefined): string | null => { if (!v) return null; const h = v.startsWith("#") ? v : `#${v}`; return /^#[0-9a-fA-F]{6}$/.test(h) ? h.toLowerCase() : null; };

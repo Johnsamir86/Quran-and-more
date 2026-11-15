@@ -31,8 +31,7 @@ import {
   type WallpaperMode,
   wallpaperById,
   wallpaperForSurah,
-  parseVoiceCommand,
-} from "@qam/core";
+  parseVoiceCommand, nowPlayingInfo } from "@qam/core";
 
 import Link from "next/link";
 
@@ -131,6 +130,7 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
         dispatch({ type: "translation", translation: savedTranslation === "none" ? NO_TRANSLATION : savedTranslation ? (tr.find((x) => x.id === savedTranslation) ?? defaultTranslation) : defaultTranslation });
         dispatch({ type: "textSize", size: readStorage<TextSize>(PLAYER_STORAGE_KEYS.textSize, "medium") });
         dispatch({ type: "autoAdvance", value: readStorage<boolean>(PLAYER_STORAGE_KEYS.autoAdvance, true) });
+        setCarText(readStorage<boolean>(PLAYER_STORAGE_KEYS.carText, true));
         dispatch({ type: "motion", value: readStorage<boolean>(PLAYER_STORAGE_KEYS.motion, true) });
         dispatch({ type: "rate", rate: readStorage<number>("qam.player.rate", 1) });
         const resume = readStorage<{ surahNumber: number; segment: number } | null>(PLAYER_STORAGE_KEYS.resume, null);
@@ -311,15 +311,13 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
     return () => window.clearInterval(id);
   }, [state.sleepUntil]);
 
-  /* ---------- Media Session (lock screen, headset buttons, TV remotes) ---------- */
+  /* ---------- Media Session (lock screen, headset buttons, TV remotes, CarPlay / Android Auto Now Playing) ---------- */
+  const [carText, setCarText] = useState(true);
   useEffect(() => {
     if (typeof navigator === "undefined" || !("mediaSession" in navigator) || !state.surah) return;
     const ms = navigator.mediaSession;
-    ms.metadata = new MediaMetadata({
-      title: `${ar ? "سورة" : "Surah"} ${state.surah.arabicName}${segment?.ayah ? ` · ${t.ayah} ${num(segment.ayah.number)}` : ""}`,
-      artist: state.reciter ? (ar ? state.reciter.arabicName : state.reciter.latinName) : "",
-      album: "Quran and More",
-    });
+    const info = nowPlayingInfo({ surahArabic: state.surah.arabicName, surahLatin: state.surah.latinName, ayahNumber: segment?.ayah?.number, ayahText: segment?.ayah?.arabic, reciter: state.reciter ? (ar ? state.reciter.arabicName : state.reciter.latinName) : "", arabicUi: ar, ayahLabel: t.ayah, showAyahText: carText });
+    ms.metadata = new MediaMetadata({ ...info, artwork: [{ src: "/icon-512.png", sizes: "512x512", type: "image/png" }] });
     ms.setActionHandler("play", () => dispatch({ type: "play" }));
     ms.setActionHandler("pause", () => dispatch({ type: "pause" }));
     ms.setActionHandler("previoustrack", () => dispatch({ type: "prev" }));
@@ -331,7 +329,7 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
       ms.setActionHandler("stop", () => dispatch({ type: "pause" }));
     } catch { /* older browsers reject some actions */ }
     ms.playbackState = state.isPlaying ? "playing" : "paused";
-  }, [state.surah, state.reciter, segment, state.isPlaying, ar, t.ayah]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [state.surah, state.reciter, segment, state.isPlaying, ar, t.ayah, carText]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (typeof navigator === "undefined" || !("mediaSession" in navigator) || typeof navigator.mediaSession.setPositionState !== "function") return;
     const a = audioRef.current; if (!a || !Number.isFinite(a.duration) || a.duration <= 0) return;
@@ -598,6 +596,7 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
                     <span className={styles.segmented}>{(["small", "medium", "large"] as TextSize[]).map((sz) => <button key={sz} className={state.textSize === sz ? "on" : ""} onClick={() => dispatch({ type: "textSize", size: sz })}>{t[sz]}</button>)}</span>
                   </div>
                   <label className={styles.settingRow}><span>{t.autoAdvance}</span><input type="checkbox" checked={state.autoAdvance} onChange={(e) => dispatch({ type: "autoAdvance", value: e.target.checked })} /></label>
+                  <label className={styles.settingRow} title={t.carHelp}><span>🚗 {t.carText}</span><input type="checkbox" checked={carText} onChange={(e) => { setCarText(e.target.checked); writeStorage(PLAYER_STORAGE_KEYS.carText, e.target.checked); }} /></label>
                   <label className={styles.settingRow}><span>{t.motion}</span><input type="checkbox" checked={state.motion} onChange={(e) => dispatch({ type: "motion", value: e.target.checked })} /></label>
                   <div className={styles.settingRow}>
                     <span>{t.language}</span>

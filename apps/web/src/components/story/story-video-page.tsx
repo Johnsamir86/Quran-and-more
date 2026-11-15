@@ -4,13 +4,14 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { NATURE_WALLPAPERS, VIDEO_WALLPAPERS, languageNameForLocale, type PlayerAyah, type PlayerReciter, type PlayerSegment, type PlayerSurah, type PlayerTranslation } from "@qam/core";
+import { NATURE_WALLPAPERS, VIDEO_WALLPAPERS, languageNameForLocale, type PlayerAyah, type PlayerReciter, type PlayerSegment, type PlayerSurah, type PlayerTranslation, normalizeHex } from "@qam/core";
 
 import { useI18n } from "@/lib/i18n";
-import { SOLID_BACKGROUNDS, STORY_FONTS, ensureStoryFonts, loadStoryPrefs, localMedia, resolveBg, saveStoryPrefs, type StoryBg, type StoryFont, type StoryPrefs } from "@/lib/story-tools";
+import { SOLID_BACKGROUNDS, STORY_FONTS, ensureStoryFonts, loadStoryPrefs, localMedia, resolveBg, saveStoryPrefs, type StoryBg, type StoryFont, type StoryPrefs, storyInk } from "@/lib/story-tools";
 import { canRenderVideo, canShareVideo, probePlayback, renderCaps, renderStoryVideo, shareVideoFile, videoHasAudio, type RenderCaps, type VideoPage, type VideoResult } from "@/lib/story-video";
 
 import styles from "./story.module.css";
+import TextColorPicker from "./text-color-picker";
 
 interface Payload { surah: PlayerSurah; segments: PlayerSegment[] }
 
@@ -96,6 +97,7 @@ export default function StoryVideoPage() {
 
   const bgResolved = useMemo(() => resolveBg(prefs.bg, NATURE_WALLPAPERS[surah % NATURE_WALLPAPERS.length].id), [prefs.bg, surah]);
   const tone: "light" | "dark" = prefs.tone === "auto" ? bgResolved.tone : prefs.tone;
+  const ink = storyInk(prefs, tone);
   const surahName = payload ? (ar ? payload.surah.arabicName : payload.surah.latinName) : "";
   const reference = from === to ? `${surah}:${from}` : `${surah}:${from}-${to}`;
   const shareText = `${surahName} ${reference} · ${t.shareText}`;
@@ -106,7 +108,7 @@ export default function StoryVideoPage() {
     setError(null); setResult(null);
     abort.current?.abort(); abort.current = new AbortController();
     try {
-      const opts = { pages, bg: bgResolved, font: prefs.font, size: prefs.size, tone, dim: prefs.dim, surahName, reciterName: ar ? reciter.arabicName : reciter.latinName, brand: m.common.appName, highlightWords: highlight, quality, signal: abort.current.signal, onProgress: (fraction: number, stage: "audio" | "render" | "encode") => setProgress({ fraction, stage }) };
+      const opts = { pages, bg: bgResolved, font: prefs.font, size: prefs.size, tone, color: prefs.color, dim: prefs.dim, surahName, reciterName: ar ? reciter.arabicName : reciter.latinName, brand: m.common.appName, highlightWords: highlight, quality, signal: abort.current.signal, onProgress: (fraction: number, stage: "audio" | "render" | "encode") => setProgress({ fraction, stage }) };
       let r = await renderStoryVideo(opts);
       // Some Safari builds hand back a WebCodecs file without a usable audio track: check, and re-render by recording.
       let audible = await videoHasAudio(r.blob);
@@ -126,10 +128,10 @@ export default function StoryVideoPage() {
   const share = async () => { if (!result) return; const ok = await shareVideoFile(result, `ayah-${reference.replace(":", "-")}`, t.title, `${shareText}\n${studyUrl}`); if (!ok) setError(t.shareUnsupported); };
 
   const stageLabel = progress ? (progress.stage === "audio" ? m.common.loading : t.preparingVideo) : "";
-  const rootStyle: React.CSSProperties = bgResolved.url ? { backgroundImage: `url(${bgResolved.url})` } : { backgroundImage: `linear-gradient(135deg, ${bgResolved.colors?.[0]}, ${bgResolved.colors?.[1]})` };
+  const rootStyle: React.CSSProperties = { color: ink, ...(bgResolved.url ? { backgroundImage: `url(${bgResolved.url})` } : { backgroundImage: `linear-gradient(135deg, ${bgResolved.colors?.[0]}, ${bgResolved.colors?.[1]})` }) };
 
   return (
-    <div className={`${styles.root} ${tone === "dark" ? styles.light : ""}`} style={rootStyle} dir={isRtl ? "rtl" : "ltr"}>
+    <div className={`${styles.root} ${bgResolved.tone === "dark" ? styles.onLight : ""}`} style={rootStyle} dir={isRtl ? "rtl" : "ltr"}>
       {bgResolved.video ? <video className={styles.bgVideo} src={bgResolved.video} poster={bgResolved.url} autoPlay muted loop playsInline aria-hidden /> : null}
       <div className={styles.top}>
         <div className={styles.head}>
@@ -200,8 +202,8 @@ export default function StoryVideoPage() {
             <div className={styles.row}>
               <button className={`${styles.opt} ${highlight ? styles.optOn : ""}`} onClick={() => setHighlight((h) => !h)}>✨ {t.words}</button>
               {(["high", "medium"] as const).map((q) => <button key={q} className={`${styles.opt} ${quality === q ? styles.optOn : ""}`} onClick={() => setQuality(q)}>{q === "high" ? "1080p" : "720p"}</button>)}
-              {(["auto", "light", "dark"] as const).map((x) => <button key={x} className={`${styles.opt} ${prefs.tone === x ? styles.optOn : ""}`} onClick={() => update({ tone: x })}>{x === "auto" ? t.auto : x === "light" ? t.light : t.dark}</button>)}
             </div>
+            <TextColorPicker value={prefs.color} autoLabel={t.auto} onChange={(color) => update({ color, tone: "auto" })} />
           </div>
         </div>
       </div>
@@ -210,7 +212,7 @@ export default function StoryVideoPage() {
   );
 }
 
-const loadStoryPrefsSafe = (): StoryPrefs => (typeof window === "undefined" ? { font: "naskh", size: 1, bg: null, dim: 0.3, tone: "auto", reciter: null, effect: "none" } : loadStoryPrefs());
+const loadStoryPrefsSafe = (): StoryPrefs => (typeof window === "undefined" ? { font: "naskh", size: 1, bg: null, dim: 0.3, tone: "auto", color: null, reciter: null, effect: "none" } : loadStoryPrefs());
 
 /** Query-string overrides from the story page or the mobile app. */
 const fromParams = (p: URLSearchParams): Partial<StoryPrefs> => {
@@ -225,6 +227,7 @@ const fromParams = (p: URLSearchParams): Partial<StoryPrefs> => {
   const size = Number(p.get("size")); if (size >= 0.7 && size <= 1.6) out.size = size;
   const dim = Number(p.get("dim")); if (p.get("dim") !== null && dim >= 0 && dim <= 0.75) out.dim = dim;
   const tone = p.get("tone"); if (tone === "light" || tone === "dark" || tone === "auto") out.tone = tone;
+  const color = normalizeHex(p.get("color")); if (color) out.color = color;
   const reciter = p.get("reciter"); if (reciter) out.reciter = reciter;
   return out;
 };

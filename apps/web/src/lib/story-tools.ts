@@ -1,6 +1,6 @@
 "use client";
 
-import { MEDIA_ORIGIN, NATURE_WALLPAPERS, VIDEO_WALLPAPERS, wallpaperById } from "@qam/core";
+import { MEDIA_ORIGIN, NATURE_WALLPAPERS, VIDEO_WALLPAPERS, wallpaperById, isLightColor, withAlpha } from "@qam/core";
 
 /** The app's own media is addressed absolutely for the mobile apps; on the web use the same-origin path so canvas and video can read it anywhere (previews, local dev). */
 export const localMedia = (url?: string): string | undefined => (url && typeof window !== "undefined" ? url.replace(MEDIA_ORIGIN, "") : url);
@@ -25,8 +25,10 @@ export const ensureStoryFonts = () => {
 
 export type StoryBg = { kind: "nature"; id: string } | { kind: "video"; id: string } | { kind: "solid"; id: string } | { kind: "photo"; dataUrl: string };
 export type StoryEffect = "none" | "reverb" | "echo" | "slow";
-export interface StoryPrefs { font: StoryFont; size: number; bg: StoryBg | null; dim: number; tone: "auto" | "light" | "dark"; reciter: string | null; effect: StoryEffect }
-export const DEFAULT_STORY_PREFS: StoryPrefs = { font: "naskh", size: 1, bg: null, dim: 0.3, tone: "auto", reciter: null, effect: "none" };
+export interface StoryPrefs { font: StoryFont; size: number; bg: StoryBg | null; dim: number; tone: "auto" | "light" | "dark"; color: string | null; reciter: string | null; effect: StoryEffect }
+export const DEFAULT_STORY_PREFS: StoryPrefs = { font: "naskh", size: 1, bg: null, dim: 0.3, tone: "auto", color: null, reciter: null, effect: "none" };
+/** The ayah text colour: an explicit choice, else white on dark grounds and ink on light ones. */
+export const storyInk = (prefs: Pick<StoryPrefs, "color">, tone: "light" | "dark"): string => prefs.color ?? (tone === "light" ? "#ffffff" : "#15201b");
 const KEY = "qam.story.prefs.v1";
 
 export const loadStoryPrefs = (): StoryPrefs => {
@@ -85,7 +87,7 @@ const wrap = (ctx: CanvasRenderingContext2D, text: string, maxWidth: number): st
 
 const MARK_PATHS = ["M512 338 C438 298 318 290 196 322 L196 706 C318 674 438 682 512 722 Z", "M512 338 C586 298 706 290 828 322 L828 706 C706 674 586 682 512 722 Z", "M512 338 L512 722", "M152 760 C300 826 724 826 872 760", "M262 528 L330 528 L360 456 L394 598 L428 486 L458 566 L486 528 L540 528 L570 464 L606 592 L638 500 L668 556 L698 528 L742 528"];
 
-export interface RenderInput { arabic: string; translation: string | null; reference: string; surahName: string; font: StoryFont; size: number; bg: ResolvedBg; dim: number; tone: "light" | "dark"; brand: string; brandArabic: string }
+export interface RenderInput { arabic: string; translation: string | null; reference: string; surahName: string; font: StoryFont; size: number; bg: ResolvedBg; dim: number; tone: "light" | "dark"; color?: string | null; brand: string; brandArabic: string }
 
 export const renderStoryImage = async (input: RenderInput): Promise<Blob> => {
   const W = 1080, H = 1920;
@@ -101,11 +103,12 @@ export const renderStoryImage = async (input: RenderInput): Promise<Blob> => {
   } else {
     const g = ctx.createLinearGradient(0, 0, W, H); g.addColorStop(0, input.bg.colors?.[0] ?? "#0f5a4a"); g.addColorStop(1, input.bg.colors?.[1] ?? "#14805f"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
   }
-  const light = input.tone === "light"; // light text
+  const ink = input.color ?? (input.tone === "light" ? "#ffffff" : "#15201b");
+  const light = isLightColor(ink); // light text needs dark shading
   const shade = light ? `rgba(0,0,0,${input.dim})` : `rgba(255,255,255,${input.dim})`;
   ctx.fillStyle = shade; ctx.fillRect(0, 0, W, H);
   const grad = ctx.createLinearGradient(0, 0, 0, H); grad.addColorStop(0, light ? "rgba(0,0,0,0.45)" : "rgba(255,255,255,0.45)"); grad.addColorStop(0.3, "rgba(0,0,0,0)"); grad.addColorStop(0.7, "rgba(0,0,0,0)"); grad.addColorStop(1, light ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.6)"); ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
-  const ink = light ? "#ffffff" : "#15201b"; const muted = light ? "rgba(255,255,255,0.85)" : "rgba(21,32,27,0.8)";
+  const muted = withAlpha(ink, 0.85);
   const family = STORY_FONTS[input.font].family;
   let arSize = Math.round(64 * input.size);
   try { await document.fonts.load(`500 ${arSize}px ${family}`); await document.fonts.load(`400 34px "Plus Jakarta Sans"`); } catch { /* fallback faces */ }

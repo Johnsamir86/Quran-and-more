@@ -12,7 +12,7 @@ import { Image, ImageBackground, Keyboard, KeyboardAvoidingView, Modal, Platform
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { captureRef } from "react-native-view-shot";
 
-import { NATURE_WALLPAPERS, VIDEO_WALLPAPERS, hashString, languageNameForLocale, muezzinById, wallpaperById, wallpaperForSurah, type PlayerReciter, type PrayerName } from "@qam/core";
+import { NATURE_WALLPAPERS, VIDEO_WALLPAPERS, hashString, languageNameForLocale, muezzinById, wallpaperById, wallpaperForSurah, type PlayerReciter, type PrayerName, STORY_TEXT_COLORS, isLightColor } from "@qam/core";
 
 import { API_BASE_URL } from "@/lib/api";
 import { loadAzanSettings } from "@/lib/azan";
@@ -27,8 +27,8 @@ const PREFS_KEY = "qam.story.prefs.v1";
 type Font = "naskh" | "amiri" | "scheherazade";
 type Bg = { kind: "nature"; id: string } | { kind: "video"; id: string } | { kind: "solid"; id: string } | { kind: "photo"; uri: string };
 interface VerseRow { verseKey: string; verseNumber: number; text: { uthmani: string }; translations: { text: string }[] }
-interface Prefs { font: Font; size: number; bg: Bg | null; dim: number; tone: "auto" | "light" | "dark"; reciter: string | null; rate: number }
-const DEFAULT_PREFS: Prefs = { font: "naskh", size: 1, bg: null, dim: 0.3, tone: "auto", reciter: null, rate: 1 };
+interface Prefs { font: Font; size: number; bg: Bg | null; dim: number; tone: "auto" | "light" | "dark"; color: string | null; reciter: string | null; rate: number }
+const DEFAULT_PREFS: Prefs = { font: "naskh", size: 1, bg: null, dim: 0.3, tone: "auto", color: null, reciter: null, rate: 1 };
 const SOLIDS: { id: string; color: string; tone: "light" | "dark" }[] = [
   { id: "emerald", color: "#14805f", tone: "light" }, { id: "navy", color: "#121a33", tone: "light" }, { id: "ink", color: "#1d2a25", tone: "light" },
   { id: "terracotta", color: "#b4552f", tone: "light" }, { id: "parchment", color: "#efe6d2", tone: "dark" }, { id: "sand", color: "#f7e9dc", tone: "dark" },
@@ -142,9 +142,12 @@ export default function StoryScreen() {
   const bgPlayer = useVideoPlayer(bg.video ?? null, (p) => { p.loop = true; p.muted = true; p.play(); });
   useEffect(() => { if (bg.video) { bgPlayer.loop = true; bgPlayer.muted = true; bgPlayer.play(); } }, [bg.video, bgPlayer]);
   const tone = prefs.tone === "auto" ? bg.tone : prefs.tone;
-  const light = tone === "dark"; // dark text on light ground
-  const ink = light ? "#15201b" : "#ffffff";
-  const chipBg = light ? "rgba(255,255,255,0.65)" : "rgba(0,0,0,0.4)";
+  const ink = prefs.color ?? (tone === "dark" ? "#15201b" : "#ffffff");
+  const light = !isLightColor(ink); // dark text: lighten the ground and shadows
+  // Menus read against the background, whatever colour the ayah text has.
+  const onLightBg = bg.tone === "dark";
+  const chipBg = onLightBg ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.45)";
+  const chipInk = onLightBg ? "#15201b" : "#ffffff";
   const fontFamily = fontsLoaded ? FONT_FAMILY[prefs.font] : undefined;
   const arSize = Math.min(34, width / 12) * prefs.size;
 
@@ -171,7 +174,7 @@ export default function StoryScreen() {
     if (!ayah) return;
     const [s, a] = ayah.verseKey.split(":");
     const bgId = prefs.bg && prefs.bg.kind !== "photo" ? prefs.bg.id : "";
-    const q = `surah=${range?.surah ?? s}&from=${range?.from ?? a}&to=${range?.to ?? a}${bgId ? `&bg=${bgId}` : ""}${prefs.reciter ? `&reciter=${prefs.reciter}` : ""}&font=${prefs.font}&size=${prefs.size}&dim=${prefs.dim}&tone=${prefs.tone}&embed=1&auto=1`;
+    const q = `surah=${range?.surah ?? s}&from=${range?.from ?? a}&to=${range?.to ?? a}${bgId ? `&bg=${bgId}` : ""}${prefs.reciter ? `&reciter=${prefs.reciter}` : ""}&font=${prefs.font}&size=${prefs.size}&dim=${prefs.dim}&tone=${prefs.tone}${prefs.color ? `&color=${prefs.color.replace("#", "")}` : ""}&embed=1&auto=1`;
     WebBrowser.openBrowserAsync(`${API_BASE_URL}/story/video?${q}`, { presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN }).catch(() => flash(m.common.unavailable));
   };
   const applyRange = () => { Keyboard.dismiss(); const c = chapters.find((x) => x.id === pick.surah); const max = c?.versesCount ?? 286; const from = Math.min(max, Math.max(1, pick.from)); const to = Math.min(max, Math.max(from, pick.to)); setSheet("none"); router.push({ pathname: "/story", params: { surah: String(pick.surah), from: String(from), to: String(to) } } as never); };
@@ -207,8 +210,8 @@ export default function StoryScreen() {
   const greeting = prayer && m.azan.prayers[prayer] ? `${t.forPrayer} ${m.azan.prayers[prayer]}` : hour < 12 ? t.goodMorning : t.goodEvening;
   const [sNum, aNum] = (ayah?.verseKey ?? "1:1").split(":");
   const chip = (label: string, onPress: () => void, key?: string, primary = false) => (
-    <Pressable key={key ?? label} onPress={onPress} style={{ backgroundColor: primary ? "#14805f" : chipBg, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 9, borderWidth: 1, borderColor: primary ? "#14805f" : light ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.3)" }}>
-      <Text style={{ color: primary ? "#fff" : ink, fontSize: 13 }}>{label}</Text>
+    <Pressable key={key ?? label} onPress={onPress} style={{ backgroundColor: primary ? "#14805f" : chipBg, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 9, borderWidth: 1, borderColor: primary ? "#14805f" : onLightBg ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.3)" }}>
+      <Text style={{ color: primary ? "#fff" : chipInk, fontSize: 13 }}>{label}</Text>
     </Pressable>
   );
   const kicker = (txt: string) => <Text style={{ color: ink, textAlign: "center", letterSpacing: 2, textTransform: "uppercase", fontSize: 12 }}>{txt}</Text>;
@@ -375,7 +378,10 @@ export default function StoryScreen() {
               </View>
               <View style={{ gap: 8 }}>
                 <Text style={{ fontSize: 11, letterSpacing: 1, textTransform: "uppercase", color: "#55625b" }}>{t.textColor}</Text>
-                <View style={{ flexDirection: "row", gap: 8 }}>{(["auto", "light", "dark"] as const).map((x) => <Opt key={x} label={x === "auto" ? t.auto : x === "light" ? t.light : t.dark} on={prefs.tone === x} onPress={() => update({ tone: x })} />)}</View>
+                <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+                  <Opt label={t.auto} on={prefs.color === null} onPress={() => update({ color: null, tone: "auto" })} />
+                  {STORY_TEXT_COLORS.map((c) => <Pressable key={c.id} accessibilityRole="radio" accessibilityLabel={c.id} onPress={() => update({ color: c.hex, tone: "auto" })} style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: c.hex, borderWidth: 3, borderColor: prefs.color === c.hex ? "#14805f" : "rgba(0,0,0,0.12)" }} />)}
+                </View>
               </View>
               <View style={{ gap: 8 }}>
                 <Text style={{ fontSize: 11, letterSpacing: 1, textTransform: "uppercase", color: "#55625b" }}>{t.voice}</Text>

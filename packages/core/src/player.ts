@@ -467,7 +467,19 @@ export const PLAYER_STORAGE_KEYS = {
   autoAdvance: "qam.player.autoAdvance",
   motion: "qam.player.motion",
   resume: "qam.player.resume",
+  carText: "qam.player.carText",
 } as const;
+
+/**
+ * Now Playing text for the lock screen, CarPlay and Android Auto: the ayah itself as the title so the
+ * words are on the car screen while the voice plays, the surah and ayah number as the artist line.
+ */
+export const nowPlayingInfo = (p: { surahArabic: string; surahLatin: string; ayahNumber?: number | null; ayahText?: string | null; reciter: string; arabicUi: boolean; ayahLabel: string; showAyahText: boolean }): { title: string; artist: string; album: string } => {
+  const surah = `${p.arabicUi ? "سورة" : "Surah"} ${p.arabicUi ? p.surahArabic : p.surahLatin}${p.ayahNumber ? ` · ${p.ayahLabel} ${p.ayahNumber}` : ""}`;
+  const text = (p.ayahText ?? "").replace(/\s+/g, " ").trim();
+  if (p.showAyahText && text) return { title: text.length > 120 ? `${text.slice(0, 119)}…` : text, artist: surah, album: p.reciter || "Quran and More" };
+  return { title: surah, artist: p.reciter || "Quran and More", album: "Quran and More" };
+};
 
 /**
  * Split Uthmani ayah text into words whose positions match the official

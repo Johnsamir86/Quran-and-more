@@ -1,3 +1,4 @@
+import { isLightColor, withAlpha } from "@qam/core";
 "use client";
 
 import { ALL_FORMATS, AudioSample, AudioSampleSource, BlobSource, BufferTarget, CanvasSink, CanvasSource, EncodedAudioPacketSource, EncodedPacket, EncodedPacketSink, Input, MP4, Mp4OutputFormat, Output, UrlSource, canEncodeAudio, canEncodeVideo } from "mediabunny";
@@ -30,6 +31,7 @@ export interface VideoInput {
   font: StoryFont;
   size: number;
   tone: "light" | "dark";
+  color?: string | null;
   dim: number;
   surahName: string;
   reciterName: string;
@@ -168,8 +170,9 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
     if (!bgSink) { try { bgVideo = await loadVideo(input.bg.video); } catch { bgVideo = null; } }
   }
   if (!bgSink && !bgVideo && input.bg.url) { try { bgImage = await loadImage(input.bg.url); } catch { bgImage = null; } }
-  const light = input.tone === "light";
-  const ink = light ? "#ffffff" : "#15201b", muted = light ? "rgba(255,255,255,0.85)" : "rgba(21,32,27,0.8)", accent = "#d8ad5c";
+  const ink = input.color ?? (input.tone === "light" ? "#ffffff" : "#15201b");
+  const light = isLightColor(ink);
+  const muted = withAlpha(ink, 0.85), accent = ink.toLowerCase() === "#d8ad5c" ? "#ffffff" : "#d8ad5c";
 
   // Pre-layout each page (Arabic words + translation lines), shrinking when an ayah is long.
   const maxW = W - 160 * S;
@@ -230,7 +233,7 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
       const y = top + (w.line + 1) * lineH - lineH * 0.35;
       const isActive = activePos === w.position;
       if (isActive) { ctx.save(); ctx.shadowBlur = 0; ctx.fillStyle = light ? "rgba(216,173,92,0.28)" : "rgba(29,158,117,0.22)"; const pad = 10 * S; ctx.beginPath(); ctx.roundRect(w.x - w.width - pad, y - lay.size * 0.95, w.width + pad * 2, lay.size * 1.35, 14 * S); ctx.fill(); ctx.restore(); }
-      ctx.fillStyle = isActive ? accent : input.highlightWords && (w.position < (activePos ?? Infinity) || (activePos === null && w.position <= donePos)) ? ink : input.highlightWords && local > 0 ? (light ? "rgba(255,255,255,0.72)" : "rgba(21,32,27,0.6)") : ink;
+      ctx.fillStyle = isActive ? accent : input.highlightWords && (w.position < (activePos ?? Infinity) || (activePos === null && w.position <= donePos)) ? ink : input.highlightWords && local > 0 ? withAlpha(ink, 0.66) : ink;
       ctx.fillText(w.text, w.x, y);
     }
     ctx.shadowBlur = 0;

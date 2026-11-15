@@ -11,7 +11,7 @@ import { ActivityIndicator, BackHandler, FlatList, ImageBackground, Pressable, S
 import {
   NO_TRANSLATION, PLAYBACK_RATES, isBookmarked, notesFor, PLAYER_STORAGE_KEYS, STATIONS, TEXT_SIZE_SCALE, currentSegment, decideAtSegmentEnd, initialPlayerState,
   locateInAyah, locateInChapter, nextSurahNumber, playerReducer, WALLPAPERS, WALLPAPER_STORAGE_KEY, wallpaperById, wallpaperForSurah,
-  type PlayerPanel, type Wallpaper, type WallpaperMode, type PlayerReciter, type PlayerState, type PlayerSurah, type PlayerTranslation, type PlayerWord, type RepeatMode, type Station, type TextSize, languageNameForLocale , parseVoiceCommand } from "@qam/core";
+  type PlayerPanel, type Wallpaper, type WallpaperMode, type PlayerReciter, type PlayerState, type PlayerSurah, type PlayerTranslation, type PlayerWord, type RepeatMode, type Station, type TextSize, languageNameForLocale , parseVoiceCommand, nowPlayingInfo } from "@qam/core";
 
 import { useFamily, useProgressTicker } from "@/lib/family";
 import { useI18n } from "@/lib/i18n";
@@ -78,11 +78,14 @@ export default function PlayerScreen() {
   useEffect(() => { setAudioModeAsync({ playsInSilentMode: true, shouldPlayInBackground: true, interruptionMode: "doNotMix" }).catch(() => undefined); }, []);
 
   /* Lock screen / notification controls: title, reciter and artwork follow the ayah; play, pause, scrub and ±10 s work from the lock screen. */
+  const [carText, setCarText] = useState(true);
   useEffect(() => {
     if (!state.surah) return;
-    const metadata = { title: `${ar ? "سورة" : "Surah"} ${state.surah.arabicName}${segment?.ayah ? ` · ${T.ayah} ${segment.ayah.number}` : ""}`, artist: state.reciter ? (ar ? state.reciter.arabicName : state.reciter.latinName) : "Quran and More", albumTitle: "Quran and More", artworkUrl: `${API_BASE_URL}/icon-512.png` };
+    const info = nowPlayingInfo({ surahArabic: state.surah.arabicName, surahLatin: state.surah.latinName, ayahNumber: segment?.ayah?.number, ayahText: segment?.ayah?.arabic, reciter: state.reciter ? (ar ? state.reciter.arabicName : state.reciter.latinName) : "", arabicUi: ar, ayahLabel: T.ayah, showAyahText: carText });
+    const metadata = { title: info.title, artist: info.artist, albumTitle: info.album, artworkUrl: `${API_BASE_URL}/icon-512.png` };
+    // ±10 s on the lock screen, CarPlay and Android Auto; a single player has no track list for next/previous.
     try { player.setActiveForLockScreen(true, metadata, { showSeekForward: true, showSeekBackward: true, seekForwardIntervalSeconds: 10, seekBackwardIntervalSeconds: 10, showNextTrack: false, showPreviousTrack: false }); } catch { /* older runtime */ }
-  }, [state.surah, state.reciter, segment?.ayah?.number, ar, player, T.ayah]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [state.surah, state.reciter, segment?.ayah?.number, ar, player, T.ayah, carText]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => () => { try { player.clearLockScreenControls(); } catch { /* ignore */ } }, [player]);
 
   /* Voice commands: "play Surah Al-Kahf", "شغّل سورة يس الآية ٣٦". */
@@ -148,6 +151,7 @@ export default function PlayerScreen() {
         dispatch({ type: "translation", translation: savedTr === "none" ? NO_TRANSLATION : savedTr ? (tr.find((x) => x.id === savedTr) ?? defaultTr) : defaultTr });
         dispatch({ type: "textSize", size: await load<TextSize>(PLAYER_STORAGE_KEYS.textSize, "medium") });
         dispatch({ type: "autoAdvance", value: await load<boolean>(PLAYER_STORAGE_KEYS.autoAdvance, true) });
+        setCarText(await load<boolean>(PLAYER_STORAGE_KEYS.carText, true));
         dispatch({ type: "motion", value: await load<boolean>(PLAYER_STORAGE_KEYS.motion, true) });
         const resume = await load<{ surahNumber: number; segment: number } | null>(PLAYER_STORAGE_KEYS.resume, null);
         const wanted = surahParam ? Number(surahParam) : resume?.surahNumber;
@@ -524,6 +528,7 @@ export default function PlayerScreen() {
               </View>
               <View style={[st.setting, { borderColor: c.line }]}><Text style={{ color: c.ink, flex: 1 }}>{T.language}</Text><LanguagePicker /></View>
               <View style={[st.setting, { borderColor: c.line }]}><Text style={{ color: c.ink, flex: 1 }}>{T.autoAdvance}</Text><Switch value={state.autoAdvance} onValueChange={(v) => dispatch({ type: "autoAdvance", value: v })} /></View>
+              <View style={[st.setting, { borderColor: c.line }]}><Text style={{ color: c.ink, flex: 1 }}>🚗 {T.carText}</Text><Switch value={carText} onValueChange={(v) => { setCarText(v); save(PLAYER_STORAGE_KEYS.carText, v); }} /></View>
               <View style={[st.setting, { borderColor: c.line }]}><Text style={{ color: c.ink, flex: 1 }}>{T.motion}</Text><Switch value={state.motion} onValueChange={(v) => dispatch({ type: "motion", value: v })} /></View>
             </>)}
             </ScrollView>
