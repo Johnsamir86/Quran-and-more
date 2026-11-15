@@ -107,7 +107,6 @@ export default function AzanScreen() {
         {next ? <H1><Body style={{ color: "#fff", fontSize: 40, lineHeight: 48, fontWeight: "800" }}>{formatCountdown(next.at.getTime() - now.getTime())}</Body></H1> : null}
         <Row>
           <Chip label={playing ? `⏹ ${t.stop}` : `🔊 ${t.preview}`} onPress={playing ? stopAzan : playAzan} />
-          <Link href={{ pathname: "/story", params: next ? { prayer: next.name } : {} } as never} asChild><Chip label={`✨ ${t.openStory}`} /></Link>
         </Row>
       </Card>
 

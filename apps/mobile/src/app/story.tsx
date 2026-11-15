@@ -120,6 +120,15 @@ export default function StoryScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.azan]);
   useEffect(() => { if (status.didJustFinish) setVoice("idle"); }, [status.didJustFinish]);
+  /* The story recites itself: once the ayah is in (and no azan is playing), start the voice. */
+  const autoPlayedFor = useRef<string | null>(null);
+  useEffect(() => {
+    if (!ayah || params.azan === "1" || autoPlayedFor.current === (range ? `${range.surah}:${range.from}-${range.to}` : ayah.verseKey)) return;
+    autoPlayedFor.current = range ? `${range.surah}:${range.from}-${range.to}` : ayah.verseKey;
+    const id = setTimeout(() => { void playAyah(); }, 350);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ayah?.verseKey, pages.length]);
   useEffect(() => { if (sheet === "edit" && !reciters.length) fetchReciters(profile?.gender ?? "unspecified").then((l) => setReciters(l.filter((r) => r.recitationId !== null))).catch(() => undefined); }, [sheet, reciters.length, profile?.gender]);
 
   const surah = ayah ? Number(ayah.verseKey.split(":")[0]) : 1;

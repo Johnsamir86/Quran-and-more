@@ -132,7 +132,6 @@ export default function AzanPage() {
         ) : null}
         <div className={shell.row}>
           <button className={shell.chip} onClick={playing ? stopAzan : playAzan}>{playing ? `⏹ ${t.stop}` : `🔊 ${t.preview}`}</button>
-          <Link href={next ? `/story?prayer=${next.name}` : "/story"} className={shell.chip}>✨ {t.openStory}</Link>
         </div>
       </section>
 

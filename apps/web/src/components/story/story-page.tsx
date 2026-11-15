@@ -167,6 +167,18 @@ export default function StoryPage() {
     } catch { setVoiceState("idle"); flash(m.common.unavailable); }
   };
   useEffect(() => () => voice.current?.stop(), []);
+  /* Auto-play the recitation when the story opens; browsers that need a tap first just show the Play button. */
+  const autoPlayedFor = useRef<string | null>(null);
+  useEffect(() => {
+    if (!ayah || wantAzan) return;
+    const key = range ? `${range.surah}:${range.from}-${range.to}` : ayah.verseKey;
+    if (autoPlayedFor.current === key) return;
+    autoPlayedFor.current = key;
+    if (!reciters.length) { fetch(`/api/public/v1/reciters?profileGender=${profile?.gender ?? "unspecified"}`).then((r) => r.json()).then((j: { reciters: PlayerReciter[] }) => { setReciters(j.reciters.filter((r) => r.recitationId !== null)); autoPlayedFor.current = null; }).catch(() => undefined); return; }
+    const id = window.setTimeout(() => { void playVoice(); }, 300);
+    return () => window.clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ayah?.verseKey, pages.length, reciters.length, wantAzan]);
 
   // ---- share image ----
   const buildImage = async () => {

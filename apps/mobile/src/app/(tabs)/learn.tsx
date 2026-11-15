@@ -25,6 +25,7 @@ export default function LearnHub() {
     { href: "/study/1:1", icon: "layers-outline", title: m.home.tiles.study.title, sub: m.home.tiles.study.sub },
     { href: "/ask", icon: "chatbubble-ellipses-outline", title: m.home.tiles.ask.title, sub: m.home.tiles.ask.sub },
     { href: "/search", icon: "search-outline", title: m.home.tiles.search.title, sub: m.home.tiles.search.sub },
+    { href: "/story", icon: "sparkles-outline", title: m.home.tiles.story.title, sub: m.home.tiles.story.sub },
   ];
   return (
     <Screen>
