@@ -8,10 +8,11 @@ import { checkOrder, learnFor, levelForXp, type Exercise, type Lesson, type Less
 import { useFamily } from "@/lib/family";
 import { fetchChapterRows, fetchLesson, type ChapterRow } from "@/lib/study-api";
 import { useI18n } from "@/lib/i18n";
+import { PlusGate } from "@/lib/plus";
 import { Arabic, Button, Card, Chip, H1, H2, Kicker, Loading, Muted, Option, Pill, Progress, Row, Screen, StudyNav, todayIso, usePalette } from "@/lib/ui";
 
 
-export default function LearnScreen() {
+function LearnScreen() {
   const c = usePalette();
   const { m, locale, num } = useI18n();
   const T = m.learn;
@@ -146,4 +147,8 @@ export default function LearnScreen() {
       ) : null}
     </Screen>
   );
+}
+
+export default function LearnScreenGated() {
+  return <PlusGate feature="learn"><LearnScreen /></PlusGate>;
 }

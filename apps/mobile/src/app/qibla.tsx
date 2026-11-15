@@ -7,12 +7,13 @@ import { compassPoint, distanceToKaabaKm, qiblaBearing, qiblaOffset } from "@qam
 
 import { detectLocation, loadAzanSettings, saveAzanSettings } from "@/lib/azan";
 import { useI18n } from "@/lib/i18n";
+import { PlusGate } from "@/lib/plus";
 import { Button, Card, Kicker, Muted, Pill, Row, Screen, usePalette } from "@/lib/ui";
 
 const SIZE = 300;
 
 /** Qibla compass: bearing to the Kaaba from the saved or current location, dial driven by the device heading. */
-export default function QiblaScreen() {
+function QiblaScreen() {
   const c = usePalette();
   const { m, num } = useI18n();
   const t = m.worship.qibla;
@@ -110,4 +111,8 @@ export default function QiblaScreen() {
       <Card><Kicker>{m.worship.note}</Kicker><Muted>{t.note}</Muted></Card>
     </Screen>
   );
+}
+
+export default function QiblaScreenGated() {
+  return <PlusGate feature="worship"><QiblaScreen /></PlusGate>;
 }

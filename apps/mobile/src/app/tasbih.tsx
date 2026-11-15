@@ -5,11 +5,12 @@ import { Pressable, Switch, Text, TextInput, Vibration, View } from "react-nativ
 import { AFTER_PRAYER_SEQUENCE, TASBIH_PRESETS, TASBIH_STORAGE_KEY, tasbihTap, type TasbihState } from "@qam/core";
 
 import { useI18n } from "@/lib/i18n";
+import { PlusGate } from "@/lib/plus";
 import { useStored } from "@/lib/stored";
 import { Arabic, Body, Button, Card, Chip, Kicker, Muted, Row, Screen, usePalette } from "@/lib/ui";
 
 /** Digital tasbih: presets, rounds, vibration, optional 33/33/34 after-prayer sequence. */
-export default function TasbihScreen() {
+function TasbihScreen() {
   const c = usePalette();
   const { m, locale, num } = useI18n();
   const t = m.worship.tasbih;
@@ -62,4 +63,8 @@ export default function TasbihScreen() {
       </Card>
     </Screen>
   );
+}
+
+export default function TasbihScreenGated() {
+  return <PlusGate feature="worship"><TasbihScreen /></PlusGate>;
 }

@@ -6,13 +6,14 @@ import { KHATMAH_PRESETS, KHATMAH_STORAGE_KEY, MUSHAF_PAGES, daysToRamadan, isoD
 
 import { useFamily } from "@/lib/family";
 import { useI18n } from "@/lib/i18n";
+import { PlusGate } from "@/lib/plus";
 import { useStored } from "@/lib/stored";
 import { Body, Button, Card, Chip, Kicker, Muted, Pill, Progress, Row, Screen, usePalette } from "@/lib/ui";
 
 interface Stored { plan: KhatmahPlan | null; readPage: number }
 
 /** Khatmah planner: 604 pages over N days, today's portion, progress from the mushaf or manual. */
-export default function KhatmahScreen() {
+function KhatmahScreen() {
   const c = usePalette();
   const { m, num } = useI18n();
   const t = m.worship.khatmah;
@@ -83,4 +84,8 @@ export default function KhatmahScreen() {
       <View><Muted>{num(MUSHAF_PAGES)} {t.pages} · 30 {t.juz}</Muted></View>
     </Screen>
   );
+}
+
+export default function KhatmahScreenGated() {
+  return <PlusGate feature="worship"><KhatmahScreen /></PlusGate>;
 }

@@ -5,11 +5,12 @@ import { Pressable, Text, Vibration, View } from "react-native";
 import { ADHKAR_CATEGORIES, adhkarFor, adhkarProgress, emptyAdhkarDay, suggestedAdhkar, type AdhkarCategory, type AdhkarDayState } from "@qam/core";
 
 import { useI18n } from "@/lib/i18n";
+import { PlusGate } from "@/lib/plus";
 import { useStored } from "@/lib/stored";
 import { Arabic, Body, Button, Card, Chip, Kicker, Muted, Pill, Progress, Row, Screen, todayIso, usePalette } from "@/lib/ui";
 
 /** Adhkar from Hisn al-Muslim with a per-dhikr counter that resets daily. */
-export default function AdhkarScreen() {
+function AdhkarScreen() {
   const c = usePalette();
   const { m, locale, num } = useI18n();
   const t = m.worship.adhkar;
@@ -65,4 +66,8 @@ export default function AdhkarScreen() {
       <Muted>{t.about}</Muted>
     </Screen>
   );
+}
+
+export default function AdhkarScreenGated() {
+  return <PlusGate feature="worship"><AdhkarScreen /></PlusGate>;
 }

@@ -2,6 +2,30 @@
 
 Status: recommendation for the launch pricing of the iOS and Android apps. Written 16 Nov 2026.
 
+## 0. Decision (16 November 2026)
+
+The owner chose a tighter free tier than the recommendation below, and the apps now enforce it:
+
+| Free, no ads | Plus ($1.99 / month, $14.99 / year, $29.99 once) |
+| --- | --- |
+| The whole mushaf (all layouts), word by word, search | Everything else |
+| The player with three reciters: Mishari al-Afasy, Mahmoud Khalil al-Husary (murattal), Abdul Basit (murattal) | All reciters, offline audio, archive and mujawwad recordings |
+| One translation and one tafsir at a time | Several tafsirs side by side, all translations |
+| Plain background in the player | Wallpapers, moving backgrounds |
+| — | Ayah of the day, image and video sharing |
+| — | Ask, memorisation, lessons and games |
+| — | Family profiles, azan and prayer times |
+| — | Adhkar, Qibla, Hijri calendar, tasbih, khatmah, 99 names |
+| — | TV screens, screen mirroring and car browse screens (when built) |
+
+Implementation: `isFreeReciter` and `PLUS_PRICE` in `packages/core/src/subscriptions.ts`; the gate
+components `PlusGate` / `Paywall` on mobile (`apps/mobile/src/lib/plus.tsx`, RevenueCat
+entitlement, preview switch in test builds) and on web (`apps/web/src/components/plus-gate.tsx`,
+local flag until the web checkout exists; `NEXT_PUBLIC_PAYWALL=off` disables the web gates).
+Risk noted for the record: in this category the free download is the marketing, and paywalling
+prayer times and adhkar is what the harshest reviews are about. Watch the first weeks of ratings
+and be ready to move azan and adhkar back to free.
+
 ## 1. What the market charges (public store listings, Nov 2026)
 
 | App | Entry price | Recurring | One-time |

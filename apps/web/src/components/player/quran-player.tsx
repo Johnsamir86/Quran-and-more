@@ -31,12 +31,14 @@ import {
   type WallpaperMode,
   wallpaperById,
   wallpaperForSurah,
-  parseVoiceCommand, nowPlayingInfo } from "@qam/core";
+  parseVoiceCommand, nowPlayingInfo, isFreeReciter, type PlusFeature } from "@qam/core";
 
 import Link from "next/link";
 
 import { useFamily, useProgressTicker } from "@/components/family/family-provider";
 import { setUiLocale, useI18n } from "@/lib/i18n";
+import { usePlus } from "@/lib/plus";
+import { PlusCard } from "@/components/plus-gate";
 import { fetchPlayerSurah, fetchReciters, fetchSurahs, fetchTafsir, fetchTafsirs, fetchTranslations, fetchWallpapers, fetchWords, type TafsirResource } from "@/lib/player-client";
 
 import WallpaperLayer from "./wallpaper";
@@ -313,6 +315,8 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
 
   /* ---------- Media Session (lock screen, headset buttons, TV remotes, CarPlay / Android Auto Now Playing) ---------- */
   const [carText, setCarText] = useState(true);
+  const { plus } = usePlus();
+  const [plusWall, setPlusWall] = useState<PlusFeature | null>(null);
   useEffect(() => {
     if (typeof navigator === "undefined" || !("mediaSession" in navigator) || !state.surah) return;
     const ms = navigator.mediaSession;
@@ -393,11 +397,11 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
   }, [state.surah]);
   const wallpaper: Wallpaper = useMemo(() => {
     const n = state.surah?.number ?? 1;
-    if (wallpaperMode === "plain") return wallpaperById(typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches ? "p-night" : "p-paper")!;
+    if (wallpaperMode === "plain" || !plus) return wallpaperById(typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches ? "p-night" : "p-paper")!;
     if (wallpaperMode === "fixed") return wallpaperById(fixedWallpaper) ?? internetWallpapers.find((w) => w.id === fixedWallpaper) ?? wallpaperForSurah(n, "nature");
     if (wallpaperMode === "auto-nature" && internetWallpapers.length) return internetWallpapers[n % internetWallpapers.length];
     return wallpaperForSurah(n, wallpaperMode === "auto-art" ? "art" : wallpaperMode === "auto-live" ? "live" : "nature");
-  }, [wallpaperMode, fixedWallpaper, state.surah, internetWallpapers]);
+  }, [wallpaperMode, fixedWallpaper, state.surah, internetWallpapers, plus]);
   useEffect(() => {
     if (panel !== "tafsir" || !segment?.ayah || state.tafsir?.key === segment.key) return;
     let cancelled = false;
@@ -513,14 +517,14 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
                     </span>
                   )}
                   <div className={styles.rowSub}>{num(filteredReciters.length)} {t.reciter}</div>
-                  {filteredReciters.map((r) => (
-                    <button key={r.id} className={`${styles.row} ${state.reciter?.id === r.id ? styles.rowActive : ""}`} onClick={() => dispatch({ type: "reciter", reciter: r })}>
+                  {filteredReciters.map((r) => { const locked = !plus && !isFreeReciter(r); return (
+                    <button key={r.id} className={`${styles.row} ${state.reciter?.id === r.id ? styles.rowActive : ""}`} onClick={() => (locked ? setPlusWall("reciters") : dispatch({ type: "reciter", reciter: r }))} title={locked ? m.plus.lockedReciter : undefined}>
                       <span className={styles.rowMain}>
-                        <span>{ar ? r.arabicName : r.latinName}</span>
+                        <span>{locked ? "🔒 " : ""}{ar ? r.arabicName : r.latinName}{locked ? ` · ${m.plus.badge}` : ""}</span>
                         <span className={styles.rowSub}>{t.riwayah} {r.riwayah} · {styleLabel(r.style)} · {capability(r)}</span>
                       </span>
                     </button>
-                  ))}
+                  ); })}
                 </>)}
 
                 {tab === "translation" && (<>
@@ -616,7 +620,7 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
                   <div className={styles.kicker}>{t.wallpaper}</div>
                   <div className={styles.modeGrid}>
                     {([["auto-nature", `🌿 ${t.autoNature}`], ["auto-art", `✦ ${t.autoArt}`], ["auto-live", `✨ ${t.autoLive}`], ["plain", `▭ ${t.plainBg}`]] as [WallpaperMode, string][]).map(([m, label]) => (
-                      <button key={m} className={`${styles.chip} ${wallpaperMode === m ? styles.chipActive : ""}`} onClick={() => setWallpaperMode(m)}>{label}</button>
+                      <button key={m} className={`${styles.chip} ${wallpaperMode === m ? styles.chipActive : ""}`} onClick={() => (!plus && m !== "plain" ? setPlusWall("wallpapers") : setWallpaperMode(m))}>{!plus && m !== "plain" ? "🔒 " : ""}{label}</button>
                     ))}
                   </div>
                   <div className={styles.rowSub}>{t.fixedBg}</div>
@@ -810,6 +814,11 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
         </div>
       </footer>
       {toast && <div className={styles.toast} role="status">{toast}</div>}
+      {plusWall && (
+        <div role="dialog" aria-modal="true" onClick={() => setPlusWall(null)} style={{ position: "fixed", inset: 0, zIndex: 30, background: "rgba(0,0,0,0.55)", display: "grid", placeItems: "center", padding: 16, overflow: "auto" }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ width: "min(640px, 100%)" }}><PlusCard feature={plusWall} inline /><p style={{ textAlign: "center", marginTop: 8 }}><button className={styles.chip} onClick={() => setPlusWall(null)}>{m.plus.notNow}</button></p></div>
+        </div>
+      )}
     </div>
   );
 }

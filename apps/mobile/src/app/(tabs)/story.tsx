@@ -18,6 +18,7 @@ import { API_BASE_URL } from "@/lib/api";
 import { loadAzanSettings } from "@/lib/azan";
 import { useFamily } from "@/lib/family";
 import { useI18n } from "@/lib/i18n";
+import { PlusGate } from "@/lib/plus";
 import { fetchPlayerSurah, fetchReciters, fetchTafsirs } from "@/lib/player-api";
 import { fetchAyahOfDay, fetchChapterRows, fetchTafsirText, type AyahOfDay, type ChapterRow } from "@/lib/study-api";
 import { SourcesBadge } from "@/lib/ui";
@@ -41,7 +42,7 @@ const FONT_FAMILY: Record<Font, string | undefined> = { naskh: undefined, amiri:
  * reciter and speed. Share renders the story view to an image for the system share sheet
  * (Instagram, WhatsApp, X, …); sound effects exist on the web app only.
  */
-export default function StoryScreen() {
+function StoryScreen() {
   const { m, locale, isAr, isRtl } = useI18n();
   const t = m.story;
   const insets = useSafeAreaInsets();
@@ -401,4 +402,8 @@ export default function StoryScreen() {
       </Modal>
     </View>
   );
+}
+
+export default function StoryScreenGated() {
+  return <PlusGate feature="story"><StoryScreen /></PlusGate>;
 }

@@ -11,6 +11,7 @@ import { useI18n } from "@/lib/i18n";
 import { requestNotificationPermission } from "@/lib/azan";
 import { sendTestNotification } from "@/lib/notifications";
 import { useNotificationPrefs } from "@/lib/prefs";
+import { Paywall, usePlus } from "@/lib/plus";
 import { useEntitlements } from "@/lib/purchases";
 import { Body, Button, Card, Chip, H1, H2, Kicker, LanguagePicker, Muted, Pill, Row, Screen, SourcesBadge, ThemePicker, usePalette } from "@/lib/ui";
 
@@ -25,6 +26,7 @@ export default function MeScreen() {
   const auth = useAuth();
   const { prefs, update } = useNotificationPrefs();
   const ent = useEntitlements();
+  const plusState = usePlus();
   const [email, setEmail] = useState("");
   const [authMsg, setAuthMsg] = useState<string | null>(null);
   const version = Constants.expoConfig?.version ?? "1.0.0";
@@ -103,17 +105,9 @@ export default function MeScreen() {
         )}
       </Section>
 
-      <Section icon="cloud-download-outline" title={t.purchases}>
-        <H2>{t.offlineAudio}</H2>
-        <Muted>{t.offlineAudioSub}</Muted>
-        <Row style={{ justifyContent: "space-between" }}><Pill>{ent.entitlements.offlineAudio ? t.subscribed : t.notSubscribed}</Pill>{ent.enabled ? <Muted>{t.trial}</Muted> : null}</Row>
-        {!ent.entitlements.offlineAudio ? (
-          <Row>
-            <Button label={`${t.monthly} · $1.99`} onPress={() => ent.purchase("monthly")} disabled={!ent.enabled || ent.busy} />
-            <Button label={`${t.yearly} · $14.99`} onPress={() => ent.purchase("yearly")} disabled={!ent.enabled || ent.busy} />
-          </Row>
-        ) : null}
-        <Row><Button label={t.restore} ghost onPress={ent.restore} disabled={!ent.enabled || ent.busy} /></Row>
+      <Section icon="star-outline" title={m.plus.title}>
+        <Row style={{ justifyContent: "space-between" }}><Pill>{plusState.plus ? m.plus.active : m.plus.inactive}</Pill>{ent.enabled ? <Muted>{t.trial}</Muted> : null}</Row>
+        <Paywall inline />
       </Section>
 
       <Section icon="information-circle-outline" title={t.about}>

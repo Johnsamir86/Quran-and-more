@@ -6,9 +6,10 @@ import { AVATARS, bookmarksFor, notesFor, type AgeBand, type Gender, type Profil
 
 import { useFamily } from "@/lib/family";
 import { useI18n } from "@/lib/i18n";
+import { PlusGate } from "@/lib/plus";
 import { LanguagePicker, usePalette } from "@/lib/ui";
 
-export default function FamilyScreen() {
+function FamilyScreen() {
   const { state, dispatch, profile } = useFamily();
   const { m, locale } = useI18n();
   const T = m.family;
@@ -101,3 +102,7 @@ const st = StyleSheet.create({
   stat: { borderWidth: 1, borderRadius: 12, padding: 10, minWidth: 78, alignItems: "center" },
   item: { borderWidth: 1, borderRadius: 12, padding: 10, flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 8 },
 });
+
+export default function FamilyScreenGated() {
+  return <PlusGate feature="family"><FamilyScreen /></PlusGate>;
+}

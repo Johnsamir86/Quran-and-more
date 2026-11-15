@@ -7,11 +7,12 @@ import { GAME_LABELS, bestScores, scoreAnswer, type GameKind, type GameRound } f
 import { useFamily } from "@/lib/family";
 import { fetchRound } from "@/lib/study-api";
 import { useI18n } from "@/lib/i18n";
+import { PlusGate } from "@/lib/plus";
 import { Arabic, Body, Button, Card, Chip, H1, H2, Kicker, Loading, Muted, Option, Pill, Progress, Row, Screen, StudyNav, usePalette } from "@/lib/ui";
 
 const KINDS: GameKind[] = ["guess-surah", "next-ayah", "missing-word", "which-juz"];
 
-export default function PlayScreen() {
+function PlayScreen() {
   const c = usePalette();
   const { m, locale, isAr, num } = useI18n();
   const T = m.play;
@@ -113,4 +114,8 @@ export default function PlayScreen() {
       ) : null}
     </Screen>
   );
+}
+
+export default function PlayScreenGated() {
+  return <PlusGate feature="play"><PlayScreen /></PlusGate>;
 }

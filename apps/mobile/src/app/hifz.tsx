@@ -6,6 +6,7 @@ import { Pressable, View } from "react-native";
 
 import { fetchChapterRows, fetchHifzAyahs, type ChapterRow, type HifzAyah } from "@/lib/study-api";
 import { useI18n } from "@/lib/i18n";
+import { PlusGate } from "@/lib/plus";
 import { Arabic, Button, Card, Chip, H1, H2, Kicker, Loading, Muted, Pill, Progress, Row, Screen, StudyNav, todayIso, usePalette } from "@/lib/ui";
 
 /**
@@ -21,7 +22,7 @@ const INTERVALS: Record<Grade, number> = { forgot: 0, hard: 1, good: 4, easy: 9 
 
 const addDays = (day: string, n: number) => { const d = new Date(`${day}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
 
-export default function HifzScreen() {
+function HifzScreen() {
   const c = usePalette();
   const { m, locale, isAr, num } = useI18n();
   const T = { ...m.hifz, note: m.hifz.noProfile };
@@ -149,4 +150,8 @@ function Stepper({ value, min, max, onChange }: { value: number; min: number; ma
       <Pressable onPress={() => onChange(Math.min(max, value + 1))} style={{ borderWidth: 1, borderColor: c.line, borderRadius: 999, width: 34, height: 34, alignItems: "center", justifyContent: "center" }}><H2>+</H2></Pressable>
     </Row>
   );
+}
+
+export default function HifzScreenGated() {
+  return <PlusGate feature="hifz"><HifzScreen /></PlusGate>;
 }

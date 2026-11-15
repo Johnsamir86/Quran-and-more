@@ -11,11 +11,12 @@ import { ActivityIndicator, BackHandler, FlatList, ImageBackground, Pressable, S
 import {
   NO_TRANSLATION, PLAYBACK_RATES, isBookmarked, notesFor, PLAYER_STORAGE_KEYS, STATIONS, TEXT_SIZE_SCALE, currentSegment, decideAtSegmentEnd, initialPlayerState,
   locateInAyah, locateInChapter, nextSurahNumber, playerReducer, WALLPAPERS, WALLPAPER_STORAGE_KEY, wallpaperById, wallpaperForSurah,
-  type PlayerPanel, type Wallpaper, type WallpaperMode, type PlayerReciter, type PlayerState, type PlayerSurah, type PlayerTranslation, type PlayerWord, type RepeatMode, type Station, type TextSize, languageNameForLocale , parseVoiceCommand, nowPlayingInfo } from "@qam/core";
+  type PlayerPanel, type Wallpaper, type WallpaperMode, type PlayerReciter, type PlayerState, type PlayerSurah, type PlayerTranslation, type PlayerWord, type RepeatMode, type Station, type TextSize, languageNameForLocale , parseVoiceCommand, nowPlayingInfo, isFreeReciter } from "@qam/core";
 
 import { useFamily, useProgressTicker } from "@/lib/family";
 import { useI18n } from "@/lib/i18n";
 import { useOfflineSurah } from "@/lib/offline";
+import { usePlus } from "@/lib/plus";
 import { useEntitlements } from "@/lib/purchases";
 import { fetchPlayerSurah, fetchReciters, fetchSurahs, fetchTafsir, fetchTafsirs, fetchTranslations, type TafsirResource } from "@/lib/player-api";
 import { LanguagePicker, usePalette } from "@/lib/ui";
@@ -178,12 +179,14 @@ export default function PlayerScreen() {
     save("qam.player.tafsir", tafsirChoice);
   }, [hydrated, state.reciter, state.translation, state.textSize, state.autoAdvance, state.motion, state.resume, view, wallpaperMode, fixedWallpaper, tafsirChoice]);
 
+  const { plus } = usePlus();
   const wallpaper: Wallpaper = useMemo(() => {
     const n = state.surah?.number ?? 1;
+    if (!plus) return wallpaperById(dark ? "p-night" : "p-paper") ?? WALLPAPERS[0];
     if (wallpaperMode === "fixed") return wallpaperById(fixedWallpaper) ?? wallpaperForSurah(n, "nature");
     if (wallpaperMode === "plain") return wallpaperById(dark ? "p-night" : "p-paper") ?? WALLPAPERS[0];
     return wallpaperForSurah(n, wallpaperMode === "auto-art" ? "art" : wallpaperMode === "auto-live" ? "live" : "nature");
-  }, [wallpaperMode, fixedWallpaper, state.surah?.number, dark]);
+  }, [wallpaperMode, fixedWallpaper, state.surah?.number, dark, plus]);
   const focus = view === "focus";
   const fc = focus ? (wallpaper.tone === "light" ? { ...c, ink: "#f7f5ee", muted: "rgba(247,245,238,0.8)", card: "rgba(10,16,14,0.5)", line: "rgba(255,255,255,0.2)" } : { ...c, ink: "#15201b", muted: "rgba(21,32,27,0.7)", card: "rgba(255,253,247,0.65)", line: "rgba(21,32,27,0.14)" }) : c;
 
@@ -427,7 +430,7 @@ export default function PlayerScreen() {
               {panel === "wallpaper" ? (<>
             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
               {([["auto-nature", `🌿 ${T.autoNature}`], ["auto-art", `✦ ${T.autoArt}`], ["auto-live", `✨ ${T.autoLive}`], ["plain", `▭ ${T.plainBg}`]] as [WallpaperMode, string][]).map(([m, label]) => (
-                <Pressable key={m} onPress={() => setWallpaperMode(m)} style={[st.chip, { borderColor: c.line, backgroundColor: wallpaperMode === m ? c.accent : "transparent" }]}><Text style={{ color: wallpaperMode === m ? "#fff" : c.ink, fontSize: 13 }}>{label}</Text></Pressable>
+                <Pressable key={m} onPress={() => (!plus && m !== "plain" ? router.push("/plus?feature=wallpapers" as never) : setWallpaperMode(m))} style={[st.chip, { borderColor: c.line, backgroundColor: wallpaperMode === m ? c.accent : "transparent" }]}><Text style={{ color: wallpaperMode === m ? "#fff" : c.ink, fontSize: 13 }}>{!plus && m !== "plain" ? "🔒 " : ""}{label}</Text></Pressable>
               ))}
             </View>
             <Text style={{ color: c.muted, fontSize: 12 }}>{T.fixedBg}</Text>
@@ -461,8 +464,8 @@ export default function PlayerScreen() {
             </>)}
             {panel === "reciter" && reciters.map((r) => {
               const archive = Boolean(r.source && r.source !== "qf");
-              const locked = archive && entitlements.enabled && !canOffline;
-              return <Row key={r.id} c={c} active={state.reciter?.id === r.id} title={`${locked ? "🔒 " : ""}${ar ? r.arabicName : r.latinName}`} sub={`${r.riwayah}${r.style ? ` · ${r.style}` : ""} · ${archive ? `${T.noSync}${locked ? ` · ${m.settings.offlineAudio}` : ""}` : r.chapterReciterId ? T.gapless : T.perAyah}`} onPress={() => (locked ? router.push("/me" as never) : dispatch({ type: "reciter", reciter: r }))} />;
+              const locked = !plus && !isFreeReciter(r);
+              return <Row key={r.id} c={c} active={state.reciter?.id === r.id} title={`${locked ? "🔒 " : ""}${ar ? r.arabicName : r.latinName}`} sub={`${r.riwayah}${r.style ? ` · ${r.style}` : ""} · ${archive ? `${T.noSync}${locked ? ` · ${m.settings.offlineAudio}` : ""}` : r.chapterReciterId ? T.gapless : T.perAyah}`} onPress={() => (locked ? router.push("/plus?feature=reciters" as never) : dispatch({ type: "reciter", reciter: r }))} />;
             })}
             {panel === "reciter" && gapless && state.chapterAudio?.url ? (
               <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, alignItems: "center", paddingTop: 8 }}>

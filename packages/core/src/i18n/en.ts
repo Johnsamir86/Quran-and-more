@@ -160,6 +160,17 @@ export const en = {
     quranText: "Quran text", quranTextSrc: "Quran Foundation content API (Uthmani script, KFGQPC fonts)", audio: "Recitations", audioSrc: "Quran Foundation audio catalogue; archive reciters from quranicaudio.com and mp3quran.net; word timings by our forced-alignment pipeline",
     translations: "Translations and tafsir", translationsSrc: "Quran.com resources, each credited to its author", prayer: "Prayer times", prayerSrc: "Computed on the device with the standard astronomical method of your country (Aladhan method table)", azan: "Azan recordings", azanSrc: "Islamic Network (Aladhan) collection", report: "Report a problem with content",
   },
+  plus: {
+    title: "Quran and More Plus", badge: "Plus", locked: "This is part of Plus",
+    freeIncludes: "Free, always and without ads: the whole mushaf, and the player with three reciters (Mishari al-Afasy, Al-Husary, Abdul Basit), one translation and one tafsir at a time.",
+    plusIncludes: "Plus unlocks everything else: all reciters and offline audio, wallpapers and moving backgrounds, the ayah of the day with image and video sharing, Ask, memorisation, lessons and games, family profiles, azan and prayer times, adhkar, Qibla, Hijri calendar, tasbih, khatmah and the 99 names, and TV and car screens.",
+    monthly: "Monthly", yearly: "Yearly", lifetime: "Lifetime", perMonth: "per month", perYear: "per year", once: "one payment", trial: "7-day free trial on the yearly plan",
+    unlock: "Unlock Plus", restore: "Restore purchases", notNow: "Not now", active: "Plus is active", inactive: "Free",
+    webSoon: "Buying Plus on the web is coming soon. Plus bought in the iPhone or Android app will unlock here once accounts are connected.",
+    preview: "Preview", previewFree: "Preview the app as Free", previewPlus: "Preview the app as Plus", previewHelp: "Test builds have no store connection; use this switch to see both experiences.",
+    lockedReciter: "This reciter is part of Plus", lockedWallpaper: "Wallpapers are part of Plus",
+    features: { reciters: "All reciters", wallpapers: "Wallpapers and moving backgrounds", story: "Ayah of the day", video: "Share as video", ask: "Ask", hifz: "Memorise", learn: "Lessons", play: "Games", family: "Family profiles", azan: "Azan and prayer times", worship: "Adhkar, Qibla, calendar, tasbih and khatmah", names: "The 99 names", offline: "Offline audio", tafsirMulti: "Several tafsirs side by side", tv: "TV and car screens" },
+  },
   worship: {
     title: "Worship", source: "Source", note: "Note",
     adhkar: {

@@ -5,10 +5,11 @@ import { TextInput, View } from "react-native";
 import { DIVINE_NAMES, nameOfDay } from "@qam/core";
 
 import { useI18n } from "@/lib/i18n";
+import { PlusGate } from "@/lib/plus";
 import { Arabic, Body, Card, Kicker, Muted, Screen, usePalette } from "@/lib/ui";
 
 /** The 99 names with a name of the day and search. */
-export default function NamesScreen() {
+function NamesScreen() {
   const c = usePalette();
   const { m, locale, num } = useI18n();
   const t = m.worship.names;
@@ -42,4 +43,8 @@ export default function NamesScreen() {
       <Muted>{t.about}</Muted>
     </Screen>
   );
+}
+
+export default function NamesScreenGated() {
+  return <PlusGate feature="names"><NamesScreen /></PlusGate>;
 }

@@ -8,11 +8,12 @@ import { AZAN_PRAYERS, CALC_METHODS, MUEZZINS, PRAYER_NAMES, asrForCountry, form
 
 import { configureNotifications, detectLocation, geocodeCity, hasSavedAzanSettings, loadAzanSettings, requestNotificationPermission, saveAzanSettings, scheduleAzanNotifications, type CityHit } from "@/lib/azan";
 import { useI18n } from "@/lib/i18n";
+import { PlusGate } from "@/lib/plus";
 import { Body, Button, Card, Chip, H1, H2, Kicker, Loading, Muted, Pill, Row, Screen, StudyNav, usePalette } from "@/lib/ui";
 
 const ICONS: Record<PrayerName, string> = { fajr: "🌄", sunrise: "🌅", dhuhr: "☀️", asr: "🌤️", maghrib: "🌇", isha: "🌙" };
 
-export default function AzanScreen() {
+function AzanScreen() {
   const c = usePalette();
   const { m, locale } = useI18n();
   const t = m.azan;
@@ -175,4 +176,8 @@ export default function AzanScreen() {
       </Card>
     </Screen>
   );
+}
+
+export default function AzanScreenGated() {
+  return <PlusGate feature="azan"><AzanScreen /></PlusGate>;
 }

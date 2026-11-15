@@ -8,7 +8,7 @@ import { useCallback, useEffect, useState } from "react";
  * `enabled: false` and nothing is gated in test builds.
  */
 export const OFFLINE_AUDIO_ENTITLEMENT = "offline_audio";
-export const PRODUCT_IDS = { monthly: "offline_audio_monthly", yearly: "offline_audio_yearly" } as const;
+export const PRODUCT_IDS = { monthly: "offline_audio_monthly", yearly: "offline_audio_yearly", lifetime: "plus_lifetime" } as const;
 export const PURCHASES_ENABLED = Boolean(process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY || process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY);
 
 export interface Entitlements { offlineAudio: boolean; expiresAt: string | null }

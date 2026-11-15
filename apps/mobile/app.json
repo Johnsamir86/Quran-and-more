@@ -71,7 +71,7 @@
           "yo"
         ]
       },
-      "buildNumber": "10",
+      "buildNumber": "11",
       "requireFullScreen": false,
       "config": {
         "usesNonExemptEncryption": false
@@ -87,7 +87,7 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "foundation.quranandmore.app",
-      "versionCode": 10
+      "versionCode": 11
     },
     "web": {
       "output": "single",

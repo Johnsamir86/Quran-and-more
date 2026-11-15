@@ -4,10 +4,11 @@ import { Pressable, TextInput, View } from "react-native";
 
 import { ask, fetchAyahOfDay, type AskResult, type AyahOfDay } from "@/lib/study-api";
 import { useI18n } from "@/lib/i18n";
+import { PlusGate } from "@/lib/plus";
 import { Arabic, Body, Button, Card, Chip, ErrorBox, H1, H2, Kicker, Loading, Muted, Pill, Row, Screen, StudyNav, usePalette, SourcesBadge } from "@/lib/ui";
 
 
-export default function AskScreen() {
+function AskScreen() {
   const c = usePalette();
   const { m, locale } = useI18n();
   const T = { ...m.ask, hint: m.ask.placeholder, send: m.ask.ask };
@@ -65,4 +66,8 @@ export default function AskScreen() {
       ))}
     </Screen>
   );
+}
+
+export default function AskScreenGated() {
+  return <PlusGate feature="ask"><AskScreen /></PlusGate>;
 }

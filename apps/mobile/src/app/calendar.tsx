@@ -5,6 +5,7 @@ import { Pressable, Text, View } from "react-native";
 import { daysToRamadan, hijriDate, hijriMonthGrid, toHijri, upcomingEvents, type UpcomingEvent } from "@qam/core";
 
 import { useI18n } from "@/lib/i18n";
+import { PlusGate } from "@/lib/plus";
 import { fmt, useStored } from "@/lib/stored";
 import { Body, Button, Card, H1, H2, Kicker, Muted, Pill, Row, Screen, usePalette } from "@/lib/ui";
 
@@ -13,7 +14,7 @@ const gDay = (d: Date, locale: string) => { try { return new Intl.DateTimeFormat
 const gFull = (d: Date, locale: string) => { try { return new Intl.DateTimeFormat(locale, { weekday: "short", day: "numeric", month: "long", year: "numeric" }).format(d); } catch { return d.toDateString(); } };
 
 /** Hijri calendar (Umm al-Qura via Intl) with upcoming dates and a Ramadan countdown. */
-export default function CalendarScreen() {
+function CalendarScreen() {
   const c = usePalette();
   const { m, locale, num } = useI18n();
   const t = m.worship.calendar;
@@ -80,4 +81,8 @@ export default function CalendarScreen() {
       </Card>
     </Screen>
   );
+}
+
+export default function CalendarScreenGated() {
+  return <PlusGate feature="worship"><CalendarScreen /></PlusGate>;
 }

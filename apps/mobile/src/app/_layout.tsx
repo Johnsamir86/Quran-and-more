@@ -68,6 +68,7 @@ function ThemedStack() {
         <Stack.Screen name="tasbih" options={{ title: "" }} />
         <Stack.Screen name="khatmah" options={{ title: "" }} />
         <Stack.Screen name="names" options={{ title: "" }} />
+        <Stack.Screen name="plus" options={{ title: "" }} />
         <Stack.Screen name="story" options={{ title: "", headerShown: false }} />
       </Stack>
     </>
