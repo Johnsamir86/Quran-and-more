@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Link, Stack } from "expo-router";
+import { Link, Stack, useLocalSearchParams } from "expo-router";
 import { useAudioPlayer } from "expo-audio";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, Switch, Text, TextInput, View } from "react-native";
@@ -26,6 +26,8 @@ function AzanScreen() {
   const player = useAudioPlayer(null);
   const [playing, setPlaying] = useState(false);
   const announced = useRef<string | null>(null);
+  const params = useLocalSearchParams<{ prayer?: string; azan?: string }>();
+  const opened = useRef<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -73,6 +75,16 @@ function AzanScreen() {
     if (age >= 0 && age < 90_000 && announced.current !== key) { announced.current = key; playAzan(); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [schedule?.current?.name, schedule?.current?.day]);
+
+  /* Opened from an azan notification (/azan?prayer=fajr&azan=1): play the azan here, once per notification. */
+  useEffect(() => {
+    if (!settings || params.azan !== "1") return;
+    const key = params.prayer ?? "azan";
+    if (opened.current === key) return;
+    opened.current = key;
+    if (!playing) playAzan();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settings !== null, params.azan, params.prayer]);
 
   const locate = async () => {
     setBusy(true); setStatus(t.locating);

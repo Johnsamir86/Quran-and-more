@@ -17,14 +17,15 @@ if (localeDir(deviceLocale) === "rtl" && !I18nManager.isRTL) {
   I18nManager.allowRTL(true);
 }
 
-/** On launch: make sure the azan channel exists, top up scheduled azan notifications, and open the story when one is tapped. */
+/** On launch: make sure the azan channel exists, top up scheduled azan notifications, and open its screen when one is tapped. */
 function AzanBoot() {
   const { locale } = useI18n();
   useEffect(() => {
     configureNotifications().then(() => refreshAllNotifications(locale)).catch(() => undefined);
     const open = (response: Notifications.NotificationResponse) => {
       const url = response.notification.request.content.data?.url;
-      if (typeof url === "string") router.push(url as never);
+      // Azan notifications scheduled by an older build still point at the story; the azan now plays on the Azan screen.
+      if (typeof url === "string") router.push((url.startsWith("/story?") && url.includes("azan=1") ? url.replace("/story?", "/azan?") : url) as never);
     };
     // CI smoke tests set this with `xcrun simctl spawn <udid> defaults write foundation.quranandmore.app qamSmokeRoute /azan`.
     if (Platform.OS === "ios") {

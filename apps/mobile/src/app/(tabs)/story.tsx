@@ -13,10 +13,9 @@ import { Image, ImageBackground, Keyboard, KeyboardAvoidingView, Modal, Platform
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { captureRef } from "react-native-view-shot";
 
-import { NATURE_WALLPAPERS, VIDEO_WALLPAPERS, languageNameForLocale, muezzinById, wallpaperById, wallpaperForSurah, type PlayerReciter, type PrayerName, STORY_TEXT_COLORS, isLightColor } from "@qam/core";
+import { NATURE_WALLPAPERS, VIDEO_WALLPAPERS, languageNameForLocale, wallpaperById, wallpaperForSurah, type PlayerReciter, STORY_TEXT_COLORS, isLightColor } from "@qam/core";
 
 import { API_BASE_URL } from "@/lib/api";
-import { loadAzanSettings } from "@/lib/azan";
 import { useFamily } from "@/lib/family";
 import { useI18n } from "@/lib/i18n";
 import { PlusGate } from "@/lib/plus";
@@ -41,7 +40,7 @@ const FONT_FAMILY: Record<Font, string | undefined> = { naskh: undefined, amiri:
 
 /**
  * Ayah of the day as a full-screen story: background, ayah, meaning, tafsir, reflection.
- * The screen stands alone: it links to no other part of the app. The ayah recites itself (mute in the action bar),
+ * The screen stands alone: it links to no other part of the app, and the azan plays on the Azan screen, not here. The ayah recites itself (mute in the action bar),
  * and a chosen range of ayahs plays through, one page per ayah, advancing as each recitation ends.
  * Actions sit in one row of icons with a label under each. Moving backgrounds are the default.
  * Customise sheet: Arabic font, size, background (moving, nature, colour, own photo), dim, text colour,
@@ -53,8 +52,7 @@ function StoryScreen() {
   const t = m.story;
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
-  const params = useLocalSearchParams<{ prayer?: string; azan?: string; surah?: string; from?: string; to?: string }>();
-  const prayer = params.prayer as PrayerName | undefined;
+  const params = useLocalSearchParams<{ surah?: string; from?: string; to?: string }>();
   // Ayah range: each ayah is its own page. Held in state so choosing a range never depends on navigation;
   // a link such as /story?surah=2&from=255&to=257 only seeds it.
   const [range, setRange] = useState<Range | null>(null);
@@ -78,14 +76,12 @@ function StoryScreen() {
   const [slide, setSlide] = useState(0);
   const [note, setNote] = useState("");
   const [toast, setToast] = useState<string | null>(null);
-  const [azanOn, setAzanOn] = useState(false);
   const [prefs, setPrefs] = useState<Prefs>(DEFAULT_PREFS);
   const [sheet, setSheet] = useState<"none" | "edit" | "range">("none");
   const [reciters, setReciters] = useState<PlayerReciter[]>([]);
-  const [voice, setVoice] = useState<"idle" | "loading" | "azan" | "ayah">("idle");
+  const [voice, setVoice] = useState<"idle" | "loading" | "ayah">("idle");
   const [capturing, setCapturing] = useState(false);
   const shotRef = useRef<React.ElementRef<typeof View>>(null);
-  const started = useRef(false);
   const playedKey = useRef<string | null>(null);
   const playToken = useRef(0);
   const loadToken = useRef(0);
@@ -140,13 +136,6 @@ function StoryScreen() {
     })();
   }, [ayah, locale, isAr]);
 
-  useEffect(() => {
-    if (params.azan !== "1" || started.current) return;
-    started.current = true;
-    loadAzanSettings().then((s) => { player.replace({ uri: muezzinById(s.muezzin).url }); player.play(); setAzanOn(true); setVoice("azan"); }).catch(() => undefined);
-    return () => { player.pause(); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params.azan]);
   /* When an ayah of a range finishes, turn to the next one; its recitation starts from the effect below. */
   useEffect(() => {
     if (!status.didJustFinish) return;
@@ -154,9 +143,9 @@ function StoryScreen() {
     setVoice("idle");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status.didJustFinish]);
-  /* The story recites itself: every ayah that comes on screen is recited once (unless the azan is playing). */
+  /* The story recites itself: every ayah that comes on screen is recited once. */
   useEffect(() => {
-    if (!ayah || params.azan === "1" || playedKey.current === ayah.verseKey) return;
+    if (!ayah || playedKey.current === ayah.verseKey) return;
     playedKey.current = ayah.verseKey;
     const target = ayah.verseKey;
     const id = setTimeout(() => { void playAyah(target); }, 350);
@@ -252,7 +241,7 @@ function StoryScreen() {
       if (token !== playToken.current) return;
       const url = audioCache.current.urls.get(verseKey);
       if (!url) { setVoice("idle"); flash(m.common.unavailable); return; }
-      player.replace({ uri: url }); player.setPlaybackRate(prefs.rate); player.muted = prefs.muted; player.play(); setVoice("ayah"); setAzanOn(false);
+      player.replace({ uri: url }); player.setPlaybackRate(prefs.rate); player.muted = prefs.muted; player.play(); setVoice("ayah");
     } catch { if (token === playToken.current) { setVoice("idle"); flash(m.common.unavailable); } }
   };
   const nextBackground = () => {
@@ -263,7 +252,7 @@ function StoryScreen() {
   const openRange = () => { const [s, a] = (ayah?.verseKey ?? "1:1").split(":").map(Number); setPick(range ?? { surah: s, from: a, to: a }); setSheet("range"); };
 
   const hour = new Date().getHours();
-  const greeting = prayer && m.azan.prayers[prayer] ? `${t.forPrayer} ${m.azan.prayers[prayer]}` : hour < 12 ? t.goodMorning : t.goodEvening;
+  const greeting = hour < 12 ? t.goodMorning : t.goodEvening;
   const [sNum, aNum] = (ayah?.verseKey ?? "1:1").split(":");
   const chip = (label: string, onPress: () => void, key?: string, primary = false) => (
     <Pressable key={key ?? label} onPress={onPress} style={{ backgroundColor: primary ? "#14805f" : chipBg, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 9, borderWidth: 1, borderColor: primary ? "#14805f" : onLightBg ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.3)" }}>
@@ -298,7 +287,6 @@ function StoryScreen() {
                 <Text style={{ color: ink, fontSize: 13, flex: 1 }} numberOfLines={1}>✨ {range ? `${chapter ? (isAr ? chapter.nameArabic : chapter.nameSimple) : t.ayahRange} ${range.surah}:${range.from}${range.to !== range.from ? `-${range.to}` : ""}` : `${t.title} · ${greeting}`}</Text>
                 <Pressable onPress={() => router.replace("/" as never)} style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: chipBg, alignItems: "center", justifyContent: "center" }}><Text style={{ color: ink, fontSize: 16 }}>✕</Text></Pressable>
               </View>
-              {azanOn ? <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: "rgba(29,158,117,0.9)", borderRadius: 14, padding: 10 }}><Text style={{ color: "#fff" }}>🕌 {m.azan.title}</Text>{chip(`⏹ ${m.azan.stop}`, () => { player.pause(); setAzanOn(false); setVoice("idle"); })}</View> : null}
             </View>
           ) : <View style={{ paddingHorizontal: 16 }}>{kicker(`${chapter ? (isAr ? chapter.nameArabic : chapter.nameSimple) : ""} · ${ayah?.verseKey ?? ""}`)}</View>}
 

@@ -93,9 +93,9 @@ export const scheduleAzanNotifications = async (s: AzanSettings, locale: string)
       await Notifications.scheduleNotificationAsync({
         content: {
           title: `${m.azan.prayers[p]} · ${s.city}`,
-          body: m.story.title,
+          body: m.azan.title,
           sound: "azan.wav",
-          data: { url: `/story?prayer=${p}&azan=1`, prayer: p },
+          data: { url: `/azan?prayer=${p}&azan=1`, prayer: p },
           ...(Platform.OS === "android" ? { channelId: AZAN_CHANNEL } : {}),
         },
         trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: times[p], channelId: AZAN_CHANNEL },
