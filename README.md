@@ -1,5 +1,5 @@
 # Android test builds
 
-Latest: quran-and-more-android.apk (versionCode 12, arm64: Free / Plus / Unlimited paywall, worship tools, 99 names, story colours, Now Playing ayah text, Android Auto).
+Latest: quran-and-more-android.apk (versionCode 13, arm64: standalone story with an icon action bar, ayah ranges that play through, moving backgrounds by default, azan plays on the Azan screen).
 
 Direct download: https://github.com/Johnsamir86/Quran-and-more/raw/apk-builds/quran-and-more-android.apk
