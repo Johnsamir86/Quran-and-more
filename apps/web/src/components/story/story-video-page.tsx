@@ -23,6 +23,16 @@ interface Payload { surah: PlayerSurah; segments: PlayerSegment[] }
  * system share sheet (Instagram, TikTok, WhatsApp, Reels) or downloads it. The mobile apps
  * open this page in their in-app browser, so one renderer serves every platform.
  */
+
+/** Catalogue lists change rarely: keep them for a day in localStorage so the studio opens without waiting for them. */
+const cachedJson = async <T,>(url: string): Promise<T> => {
+  const key = `qam.cache:${url}`;
+  try { const raw = window.localStorage.getItem(key); if (raw) { const { at, v } = JSON.parse(raw) as { at: number; v: T }; if (Date.now() - at < 86_400_000) { void fetch(url).then((r) => r.json()).then((v2) => window.localStorage.setItem(key, JSON.stringify({ at: Date.now(), v: v2 }))).catch(() => undefined); return v; } } } catch { /* ignore */ }
+  const v = (await (await fetch(url)).json()) as T;
+  try { window.localStorage.setItem(key, JSON.stringify({ at: Date.now(), v })); } catch { /* ignore */ }
+  return v;
+};
+
 export default function StoryVideoPage() {
   const { locale, m, isRtl, ar } = useI18n();
   const t = m.story;
@@ -57,7 +67,7 @@ export default function StoryVideoPage() {
   const update = (patch: Partial<StoryPrefs>) => setPrefs((p) => { const next = { ...p, ...patch }; saveStoryPrefs(next); return next; });
 
   useEffect(() => {
-    fetch("/api/public/v1/reciters?profileGender=unspecified").then((r) => r.json()).then((j: { reciters: PlayerReciter[] }) => {
+    cachedJson<{ reciters: PlayerReciter[] }>("/api/public/v1/reciters?profileGender=unspecified").then((j) => {
       const list = j.reciters.filter((r) => r.recitationId !== null);
       setReciters(list);
       // Default to Mishari Alafasy (recitation 7): the catalogue carries word timings for every ayah of his.
@@ -74,7 +84,7 @@ export default function StoryVideoPage() {
     setPayload(null); setResult(null);
     (async () => {
       try {
-        const tr = ((await (await fetch("/api/public/v1/translations")).json()) as { translations: PlayerTranslation[] }).translations;
+        const tr = (await cachedJson<{ translations: PlayerTranslation[] }>("/api/public/v1/translations")).translations;
         const want = languageNameForLocale(locale);
         const translation = ar ? null : tr.find((x) => x.languageName?.toLowerCase() === want) ?? tr.find((x) => x.id === "85") ?? tr[0] ?? null;
         // Ask for both engines ("c7:a7"): the per-ayah files carry no word timings upstream, so they are
