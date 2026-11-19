@@ -1,0 +1,89 @@
+"use client";
+
+import Link from "next/link";
+import { useRef, useState } from "react";
+
+import SourcesBadge from "@/components/sources-badge";
+import { useI18n } from "@/lib/i18n";
+import { useUsage } from "@/lib/plus";
+import { PlusCard } from "@/components/plus-gate";
+
+import StudyShell from "./study-shell";
+import styles from "./study.module.css";
+
+interface Source { verseKey: string; text: string; translation: string | null; tafsir: { name: string; text: string } | null }
+interface Answer { question: string; mode: "retrieval" | "model"; answer: string | null; sources: Source[]; disclaimer: string; model: string | null }
+
+export default function AskPage() {
+  const { locale, m } = useI18n();
+  const t = m.ask;
+  const [q, setQ] = useState("");
+  const [items, setItems] = useState<Answer[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [reported, setReported] = useState<Set<string>>(new Set());
+  const usage = useUsage();
+  const [limitHit, setLimitHit] = useState(false);
+  // Voice: Web Speech API in the interface language; the recognised text is asked as typed.
+  const [listening, setListening] = useState(false);
+  const recognitionRef = useRef<{ stop: () => void } | null>(null);
+  const speak = () => {
+    if (listening) { recognitionRef.current?.stop(); return; }
+    type SR = { lang: string; continuous: boolean; interimResults: boolean; maxAlternatives: number; onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null; onend: (() => void) | null; onerror: (() => void) | null; start: () => void; stop: () => void };
+    const Ctor = ((window as unknown as { SpeechRecognition?: new () => SR }).SpeechRecognition ?? (window as unknown as { webkitSpeechRecognition?: new () => SR }).webkitSpeechRecognition);
+    if (!Ctor) { setQ(m.player.voiceUnsupported); return; }
+    const r = new Ctor(); recognitionRef.current = r;
+    r.lang = locale === "ar" ? "ar-SA" : locale; r.continuous = false; r.interimResults = false; r.maxAlternatives = 1;
+    r.onend = () => setListening(false); r.onerror = () => setListening(false);
+    r.onresult = (e) => { const text = e.results[0]?.[0]?.transcript ?? ""; if (text.trim().length >= 3) { setQ(text); void ask(text); } };
+    try { r.start(); setListening(true); } catch { setListening(false); }
+  };
+
+  const ask = async (question: string) => {
+    if (question.trim().length < 3) return;
+    if (!usage.allowed("ask")) { setLimitHit(true); return; }
+    setLoading(true); setQ("");
+    try {
+      const res = await fetch("/api/ask", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ question, language: locale }) });
+      const json = (await res.json()) as Answer & { error?: { message: string } };
+      usage.bump("ask");
+      setItems((list) => [...list, json.error ? { question, mode: "retrieval", answer: json.error.message, sources: [], disclaimer: "", model: null } : json]);
+    } finally { setLoading(false); }
+  };
+
+  return (
+    <StudyShell title={t.title}>
+      {limitHit ? <><p className={styles.card}>{m.plus.limitReached}</p><PlusCard feature="ask" inline /></> : null}
+      <section className={styles.card}>
+        <div className={styles.row}><div className={styles.kicker}>Quran AI · {t.pending}</div><SourcesBadge compact /></div>
+        <p className={styles.muted}>{t.intro}</p>
+        <div className={styles.row}>{t.examples.map((e) => <button key={e} className={styles.chip} onClick={() => ask(e)}>{e}</button>)}</div>
+      </section>
+      <section className={styles.chat}>
+        {items.map((a, i) => (
+          <div key={i} style={{ display: "grid", gap: 8 }}>
+            <div className={styles.bubbleQ}>{a.question}</div>
+            <div className={styles.bubbleA}>
+              <span className={styles.pill}>{a.mode === "model" ? `🤖 ${t.model}` : `📚 ${t.retrieval}`}</span>
+              {a.answer ? <div dir="auto">{a.answer}</div> : null}
+              {a.mode === "retrieval" && a.sources.length ? <p className={styles.muted}>{t.nokey}</p> : null}
+              {a.sources.length ? <div className={styles.kicker}>{t.sources}</div> : null}
+              {a.sources.map((s) => (
+                <div key={s.verseKey} className={styles.source}>
+                  <p className={styles.arabic} lang="ar" translate="no" style={{ fontSize: "1.4em" }}>{s.text} <Link href={`/study/${s.verseKey}`} className={styles.resultKey}>({s.verseKey})</Link></p>
+                  {s.translation ? <p className={styles.translation}>{s.translation}</p> : null}
+                  {s.tafsir ? <details><summary className={styles.muted}>{t.tafsir}: {s.tafsir.name}</summary><p className={styles.translation} dir="auto">{s.tafsir.text}</p></details> : null}
+                </div>
+              ))}
+              {a.disclaimer ? <p className={styles.muted}>{a.disclaimer}</p> : null}
+              <div className={styles.row}><button className={styles.chip} disabled={reported.has(a.question)} onClick={() => setReported((r) => new Set(r).add(a.question))}>🚩 {reported.has(a.question) ? t.reported : t.report}</button></div>
+            </div>
+          </div>
+        ))}
+      </section>
+      <form className={styles.card} onSubmit={(e) => { e.preventDefault(); void ask(q); }}>
+        <div className={styles.row}><button type="button" className={styles.btnGhost} onClick={speak} aria-pressed={listening} title={t.speak} style={listening ? { borderColor: "var(--bad)", color: "var(--bad)" } : undefined}>{listening ? `⏹ ${t.listening}` : "🎙"}</button><input className={styles.input} value={q} onChange={(e) => setQ(e.target.value)} placeholder={listening ? t.listening : t.placeholder} /><button className={styles.btn} disabled={loading}>{loading ? "…" : t.ask}</button></div>
+        <p className={styles.muted}>{t.speakHint}</p>
+      </form>
+    </StudyShell>
+  );
+}

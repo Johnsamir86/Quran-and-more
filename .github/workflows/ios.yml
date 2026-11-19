@@ -1,0 +1,111 @@
+name: iOS build
+
+# Builds the iOS app on a macOS runner without Apple signing: a Simulator .app
+# (installable on any iPhone simulator, including iPhone 18 Pro / Pro Max and
+# iPhone Duo when the runner's Xcode ships them) and an unsigned device archive.
+# Signed TestFlight / App Store builds go through EAS (see README → iOS).
+
+on:
+  push:
+    branches: [feat/quran-player, main]
+    paths: [apps/mobile/**, packages/core/**, .github/workflows/ios.yml, package.json, package-lock.json]
+  workflow_dispatch:
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  simulator:
+    name: Simulator app and device archive
+    runs-on: macos-latest
+    timeout-minutes: 90
+    env:
+      EXPO_PUBLIC_API_BASE_URL: https://quran-and-more.netlify.app
+      CI: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Select the newest stable Xcode on the runner
+        run: |
+          ls /Applications | grep -i xcode || true
+          XC=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
+          sudo xcode-select -s "$XC"
+          xcodebuild -version
+          xcrun simctl list runtimes | grep -i ios || true
+      - run: npm ci
+      - name: Prebuild the native iOS project
+        working-directory: apps/mobile
+        run: npx expo prebuild -p ios --no-install
+      - name: Install CocoaPods
+        working-directory: apps/mobile/ios
+        run: pod install --repo-update
+      - name: Build for the iOS Simulator (arm64 + x86_64)
+        working-directory: apps/mobile/ios
+        run: |
+          set -o pipefail
+          xcodebuild -workspace QuranandMore.xcworkspace -scheme QuranandMore -configuration Release \
+            -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build/sim ONLY_ACTIVE_ARCH=NO CODE_SIGNING_ALLOWED=NO \
+            build | tail -200
+          ls build/sim/Build/Products/Release-iphonesimulator/
+      - name: Smoke test on the newest iPhone simulator (screenshots)
+        continue-on-error: true
+        working-directory: apps/mobile/ios
+        run: |
+          mkdir -p ../../../dist/ios-screens
+          xcrun simctl list devices available | grep -i iphone || true
+          for NAME in "iPhone Duo" "iPhone 18 Pro Max" "iPhone 18 Pro" "iPhone 18" "iPhone 17 Pro Max" "iPhone 17" "iPhone 16 Pro"; do
+            UDID=$(xcrun simctl list devices available | grep -F "$NAME (" | head -1 | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')
+            [ -z "$UDID" ] && continue
+            echo "== $NAME $UDID"
+            xcrun simctl boot "$UDID" || true
+            xcrun simctl bootstatus "$UDID" -b || true
+            xcrun simctl install "$UDID" build/sim/Build/Products/Release-iphonesimulator/QuranandMore.app
+            xcrun simctl privacy "$UDID" grant location foundation.quranandmore.app || true
+            xcrun simctl privacy "$UDID" grant notifications foundation.quranandmore.app 2>/dev/null || true
+            SAFE=$(echo "$NAME" | tr ' ' '-')
+            for ROUTE in / /azan /story /player?surah=18 /me; do
+              xcrun simctl spawn "$UDID" defaults write foundation.quranandmore.app qamSmokeRoute "$ROUTE"
+              xcrun simctl terminate "$UDID" foundation.quranandmore.app 2>/dev/null || true
+              xcrun simctl launch "$UDID" foundation.quranandmore.app
+              sleep 12
+              xcrun simctl io "$UDID" screenshot "../../../dist/ios-screens/$SAFE-$(echo "$ROUTE" | tr -c 'a-z0-9\n' '-' | sed 's/^-*//;s/-*$//;s/^$/home/').png"
+            done
+            xcrun simctl spawn "$UDID" defaults delete foundation.quranandmore.app qamSmokeRoute || true
+            xcrun simctl shutdown "$UDID" || true
+          done
+          ls -la ../../../dist/ios-screens || true
+      - name: Zip the Simulator app
+        working-directory: apps/mobile/ios/build/sim/Build/Products/Release-iphonesimulator
+        run: ditto -c -k --sequesterRsrc --keepParent QuranandMore.app QuranandMore-simulator.app.zip
+      - name: Unsigned device archive (for Xcode re-signing on a Mac)
+        continue-on-error: true
+        working-directory: apps/mobile/ios
+        run: |
+          set -o pipefail
+          xcodebuild -workspace QuranandMore.xcworkspace -scheme QuranandMore -configuration Release \
+            -sdk iphoneos -destination 'generic/platform=iOS' -archivePath build/QuranandMore.xcarchive \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            archive | tail -120
+          ditto -c -k --sequesterRsrc --keepParent build/QuranandMore.xcarchive build/QuranandMore-unsigned.xcarchive.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-simulator-app
+          path: apps/mobile/ios/build/sim/Build/Products/Release-iphonesimulator/QuranandMore-simulator.app.zip
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-simulator-screenshots
+          path: dist/ios-screens
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-unsigned-archive
+          path: apps/mobile/ios/build/QuranandMore-unsigned.xcarchive.zip
+          if-no-files-found: ignore

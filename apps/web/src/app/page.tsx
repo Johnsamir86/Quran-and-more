@@ -1,3 +1,62 @@
+"use client";
+
+import Link from "next/link";
+
+import LanguageSelect from "@/components/language-select";
+import { useI18n } from "@/lib/i18n";
+
+import styles from "./home.module.css";
+
+const TILES: { href: string; icon: string; key: "player" | "mushaf" | "family" | "search" | "study" | "learn" | "hifz" | "play" | "ask" | "azan" | "story" | "kahf" | "adhkar" | "qibla" | "calendar" | "tasbih" | "khatmah" | "names" }[] = [
+  { href: "/player", icon: "▶", key: "player" },
+  { href: "/mushaf", icon: "📖", key: "mushaf" },
+  { href: "/azan", icon: "🕌", key: "azan" },
+  { href: "/story", icon: "✨", key: "story" },
+  { href: "/adhkar", icon: "📿", key: "adhkar" },
+  { href: "/qibla", icon: "🧭", key: "qibla" },
+  { href: "/khatmah", icon: "🗓️", key: "khatmah" },
+  { href: "/calendar", icon: "🌙", key: "calendar" },
+  { href: "/tasbih", icon: "🔢", key: "tasbih" },
+  { href: "/names", icon: "✨", key: "names" },
+  { href: "/family", icon: "👨‍👩‍👧", key: "family" },
+  { href: "/search", icon: "🔎", key: "search" },
+  { href: "/study/2:255", icon: "🧭", key: "study" },
+  { href: "/learn", icon: "🎓", key: "learn" },
+  { href: "/hifz", icon: "🧠", key: "hifz" },
+  { href: "/play", icon: "🎮", key: "play" },
+  { href: "/ask", icon: "💬", key: "ask" },
+  { href: "/player?surah=18", icon: "🕋", key: "kahf" },
+];
+
 export default function HomePage() {
-  return null;
+  const { m, dir, locale } = useI18n();
+  const h = m.home;
+  return (
+    <main className={styles.root} dir={dir}>
+      <section className={styles.hero}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className={styles.mark} src="/icon-512.png" alt="" width={96} height={96} />
+        <p className={styles.kicker}>{h.kicker} · {locale === "ar" ? "Quran and More" : "القرآن الكريم"}</p>
+        <h1 className={styles.title} lang="ar">{m.common.appNameArabic}</h1>
+        <p className={styles.sub}>{h.sub}</p>
+        <div className={styles.cta}>
+          <Link className={styles.primary} href="/player">▶ {h.startListening}</Link>
+          <Link className={styles.secondary} href="/mushaf">📖 {h.openMushaf}</Link>
+          <LanguageSelect className={styles.secondary} />
+        </div>
+      </section>
+      <section className={styles.grid}>
+        {TILES.map((t) => (
+          <Link key={t.href} href={t.href} className={styles.tile}>
+            <span className={styles.iconPlate} aria-hidden><span className={styles.icon}>{t.icon}</span></span>
+            <span className={styles.tileTitle}>{h.tiles[t.key].title}</span>
+            <span className={styles.tileSub}>{h.tiles[t.key].sub}</span>
+          </Link>
+        ))}
+      </section>
+      <footer className={styles.footer}>
+        <Link href="/privacy">{m.common.privacy}</Link> · <Link href="/terms">{m.common.terms}</Link> · <a href="https://quran.foundation" target="_blank" rel="noreferrer">{m.common.poweredBy}</a>
+      </footer>
+    </main>
+  );
 }

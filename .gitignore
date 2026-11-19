@@ -43,3 +43,4 @@ apps/mobile/web-build/
 *.key
 *.mobileprovision
 *.orig.*
+deploy-*.zip

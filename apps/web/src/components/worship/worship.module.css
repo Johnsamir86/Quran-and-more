@@ -1,0 +1,32 @@
+.tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.dhikr { display: grid; gap: 10px; padding: 18px 20px; border-radius: 18px; border: 1px solid var(--line); background: var(--card); color: inherit; font: inherit; text-align: start; cursor: pointer; width: 100%; transition: border-color 150ms ease, transform 80ms ease; }
+.dhikr:hover { border-color: var(--accent); }
+.dhikr:active { transform: scale(0.995); }
+.dhikrDone { border-color: var(--accent); background: var(--accentSoft); }
+.dhikrTop { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.counter { min-width: 56px; height: 56px; border-radius: 999px; display: grid; place-items: center; font-weight: 700; font-size: 1.1em; background: var(--accent); color: var(--onAccent, #fff); padding: 0 10px; }
+.counterDone { background: var(--ok, #16a34a); }
+.arabic { font-family: var(--font-noto-arabic), "KFGQPC Uthmanic Script HAFS", serif; font-size: 1.6em; line-height: 2; direction: rtl; text-align: right; margin: 0; }
+.small { font-size: 0.88em; line-height: 1.6; color: var(--ink); }
+.compassWrap { display: grid; place-items: center; gap: 12px; }
+.compass { position: relative; width: min(320px, 80vw); aspect-ratio: 1; border-radius: 50%; border: 2px solid var(--line); background: radial-gradient(circle at center, var(--card) 0 58%, var(--accentSoft) 58% 100%); transition: transform 120ms ease-out; }
+.tick { position: absolute; left: 50%; top: 4px; width: 2px; height: 14px; background: var(--muted); transform-origin: 50% calc(min(320px, 80vw) / 2 - 4px); }
+.cardinal { position: absolute; left: 50%; top: 22px; transform: translateX(-50%); font-weight: 700; font-size: 0.9em; color: var(--muted); transform-origin: 50% calc(min(320px, 80vw) / 2 - 22px); }
+.needle { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-origin: 0 0; }
+.needleArm { position: absolute; left: -4px; bottom: 0; width: 8px; height: calc(min(320px, 80vw) / 2 - 36px); border-radius: 8px 8px 2px 2px; background: var(--accent); }
+.kaaba { position: absolute; left: -16px; bottom: calc(min(320px, 80vw) / 2 - 36px); font-size: 26px; line-height: 1; }
+.center { position: absolute; left: 50%; top: 50%; width: 16px; height: 16px; border-radius: 50%; background: var(--ink); transform: translate(-50%, -50%); }
+.aligned { box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 35%, transparent); }
+.bigNum { font-size: 2.6em; font-weight: 800; line-height: 1; }
+.tasbihBtn { width: min(300px, 78vw); aspect-ratio: 1; border-radius: 50%; border: 10px solid var(--accentSoft); background: var(--accent); color: var(--onAccent, #fff); font: inherit; cursor: pointer; display: grid; place-items: center; gap: 4px; user-select: none; -webkit-tap-highlight-color: transparent; transition: transform 70ms ease; margin: 0 auto; }
+.tasbihBtn:active { transform: scale(0.97); }
+.tasbihCount { font-size: 4em; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+.calGrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.calCell { display: grid; gap: 2px; justify-items: center; padding: 8px 4px; border-radius: 12px; border: 1px solid var(--line); font-size: 0.9em; }
+.calToday { border-color: var(--accent); background: var(--accentSoft); font-weight: 700; }
+.calEvent { border-color: var(--accent); }
+.calG { font-size: 0.7em; color: var(--muted); }
+.eventRow { display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.eventRow:last-child { border-bottom: 0; }
+.stepper { display: inline-flex; align-items: center; gap: 6px; }
+.stepBtn { width: 36px; height: 36px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: inherit; font: inherit; font-size: 1.1em; cursor: pointer; }

@@ -1,0 +1,14 @@
+.badge { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--card); color: var(--muted); border-radius: 999px; padding: 4px 10px; font: inherit; font-size: 0.8em; cursor: pointer; }
+.compact { padding: 3px 8px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--warn); }
+.scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: grid; place-items: end center; z-index: 50; }
+.sheet { background: var(--card); color: var(--ink); width: min(680px, 100%); max-height: 85dvh; overflow: auto; border-radius: var(--r-lg, 22px) var(--r-lg, 22px) 0 0; padding: 18px; display: grid; gap: 12px; }
+@media (min-width: 720px) { .scrim { place-items: center; } .sheet { border-radius: var(--r-lg, 22px); } }
+.head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.pill { background: var(--accentSoft); color: var(--accent); border-radius: 999px; padding: 3px 10px; font-size: 0.8em; font-weight: 600; }
+.muted { color: var(--muted); line-height: 1.5; margin: 0; }
+.list { display: grid; gap: 10px; margin: 0; }
+.list dt { font-weight: 700; }
+.list dd { margin: 0; color: var(--muted); }
+.row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.chip { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; cursor: pointer; text-decoration: none; }

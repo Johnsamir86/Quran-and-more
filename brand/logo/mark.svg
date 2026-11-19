@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" fill="none" stroke="currentColor" stroke-width="44" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Quran and More mark: an open book whose text line is a sound wave (read + listen), with the ayah marker dot. -->
+  <path d="M512 338 C438 298 318 290 196 322 L196 706 C318 674 438 682 512 722 Z"/>
+  <path d="M512 338 C586 298 706 290 828 322 L828 706 C706 674 586 682 512 722 Z"/>
+  <path d="M512 338 L512 722"/>
+  <path d="M152 760 C300 826 724 826 872 760"/>
+  <path d="M262 528 L330 528 L360 456 L394 598 L428 486 L458 566 L486 528 L540 528 L570 464 L606 592 L638 500 L668 556 L698 528 L742 528" stroke-width="34"/>
+  <circle cx="792" cy="528" r="26" fill="var(--dot, #d8ad5c)" stroke="none"/>
+</svg>

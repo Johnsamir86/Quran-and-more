@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 
-import { getContentClient, parseLanguage, publicError, publicJson } from "@/lib/public-api";
+import { contentGet } from "@/lib/content";
+import { parseLanguage, publicError, publicJson } from "@/lib/public-api";
 
 export const dynamic = "force-dynamic";
 
@@ -20,8 +21,7 @@ interface ChapterLike {
 export async function GET(request: NextRequest) {
   const language = parseLanguage(request.nextUrl.searchParams.get("language"));
   try {
-    const client = await getContentClient();
-    const raw = (await client.content.v4.chapters.list({ language } as never)) as unknown;
+    const raw = await contentGet("chapters", { language }, 24 * 3600 * 1000);
     const chapters = (Array.isArray(raw) ? raw : (raw as { chapters?: ChapterLike[] }).chapters ?? []) as ChapterLike[];
     return publicJson({
       language,

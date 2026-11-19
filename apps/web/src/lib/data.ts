@@ -413,7 +413,7 @@ export const loadContentPreviewData = async (
   session: StoredSession,
 ): Promise<{ error: string | null; items: ContentPreviewItem[]; previewReaderUrl: string }> => {
   const config = getConfig();
-  const { serverClient } = await createClients(session);
+  const { contentClient } = await createClients(session);
 
   const payload: {
     error: string | null;
@@ -426,7 +426,7 @@ export const loadContentPreviewData = async (
   };
 
   try {
-    const chapters = await serverClient.content.v4.chapters.list();
+    const chapters = await contentClient.content.v4.chapters.list();
     const items = toArray(chapters, ["data", "chapters"]).slice(0, 6);
 
     payload.items = items.map((chapter) => ({
@@ -463,11 +463,11 @@ export const loadSearchData = async (
     };
   }
 
-  const { serverClient } = await createClients(session);
+  const { contentClient } = await createClients(session);
   const mode = await getSearchModeQuick();
 
   try {
-    const response = await serverClient.search.v1.query({
+    const response = await contentClient.search.v1.query({
       mode,
       query: normalizedQuery,
     });
@@ -488,9 +488,9 @@ export const loadReaderData = async (
   chapterId: string,
 ): Promise<ReaderPayload> => {
   const config = getConfig();
-  const { serverClient } = await createClients(session);
+  const { contentClient } = await createClients(session);
 
-  const chapterResponse = await serverClient.content.v4.chapters.get(chapterId);
+  const chapterResponse = await contentClient.content.v4.chapters.get(chapterId as never);
   const chapterPayload = asObject(chapterResponse);
   const chapter = asObject(chapterPayload.chapter ?? chapterPayload);
   const versesCount = asNullableNumber(chapter.versesCount);
@@ -500,7 +500,7 @@ export const loadReaderData = async (
   );
   const versePageResponses = await Promise.all(
     Array.from({ length: totalVersePages }, (_value, index) =>
-      serverClient.content.v4.verses.byChapter(chapterId, {
+      contentClient.content.v4.verses.byChapter(chapterId as never, {
         fields: {
           textUthmani: true,
         },

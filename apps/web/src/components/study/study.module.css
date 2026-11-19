@@ -1,0 +1,57 @@
+.root { color: var(--ink); background: var(--bg); min-height: 100dvh; font-size: calc(16px * var(--profile-scale, 1)); }
+@media (prefers-color-scheme: dark) { .root { } }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--bg); z-index: 3; flex-wrap: wrap; }
+.brand { font-weight: 700; text-decoration: none; color: inherit; }
+.nav { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 7px 12px; font: inherit; font-size: 0.85em; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+.chip:hover { border-color: var(--accent); }
+.chipActive { background: var(--accent); color: var(--onAccent, #fff); border-color: var(--accent); }
+.main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 80px; display: grid; gap: 18px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px 20px; display: grid; gap: 12px; }
+.kicker { font-size: 0.75em; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.h1 { margin: 0; font-size: 1.4em; }
+.h2 { margin: 0; font-size: 1.05em; }
+.arabic { font-family: var(--font-noto-arabic), "KFGQPC Uthmanic Script HAFS", serif; font-size: 2em; line-height: 2.1; direction: rtl; text-align: right; margin: 0; }
+.arabicBig { font-size: 2.4em; text-align: center; }
+.words { display: flex; flex-wrap: wrap; gap: 8px; direction: rtl; }
+.word { display: grid; justify-items: center; gap: 2px; padding: 8px 10px; border-radius: 12px; border: 1px solid var(--line); background: transparent; color: inherit; font: inherit; cursor: pointer; min-width: 64px; }
+.word:hover { border-color: var(--accent); }
+.wordAr { font-family: var(--font-noto-arabic), serif; font-size: 1.5em; line-height: 1.6; }
+.wordMeaning { font-size: 0.75em; color: var(--muted); max-width: 120px; text-align: center; }
+.muted { color: var(--muted); font-size: 0.9em; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.tafsirText { font-family: var(--font-noto-arabic), "Noto Naskh Arabic", serif; line-height: 1.9; white-space: pre-wrap; max-height: 420px; overflow: auto; padding-inline-end: 6px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.input { padding: 12px 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--card); color: inherit; font: inherit; width: 100%; }
+.row .input { flex: 1 1 240px; width: auto; }
+.select { padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: inherit; font: inherit; }
+.btn { border: 1px solid var(--accent); background: var(--accent); color: var(--onAccent, #fff); border-radius: 999px; padding: 10px 18px; font: inherit; cursor: pointer; }
+.btn:disabled { opacity: 0.5; cursor: default; }
+.btnGhost { border: 1px solid var(--line); background: transparent; color: inherit; border-radius: 999px; padding: 10px 18px; font: inherit; cursor: pointer; }
+.result { display: grid; gap: 6px; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line); text-decoration: none; color: inherit; }
+.result:hover { border-color: var(--accent); }
+.resultKey { font-size: 0.8em; color: var(--accent); font-weight: 600; }
+.translation { color: var(--muted); line-height: 1.7; }
+.hl { background: var(--accentSoft); border-radius: 4px; }
+.progress { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
+.progressBar { height: 100%; background: var(--accent); transition: width 200ms ease; }
+.options { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+.option { padding: 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--card); color: inherit; font: inherit; cursor: pointer; text-align: center; }
+.option:hover { border-color: var(--accent); }
+.optionOk { border-color: var(--accent); background: var(--accentSoft); }
+.optionBad { border-color: var(--bad); background: rgba(185,28,28,0.12); }
+.optionAr { font-family: var(--font-noto-arabic), serif; font-size: 1.4em; }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--accentSoft); color: var(--accent); font-size: 0.8em; font-weight: 600; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.tile { display: grid; gap: 6px; padding: 16px; border-radius: 16px; border: 1px solid var(--line); background: var(--card); color: inherit; text-decoration: none; font: inherit; cursor: pointer; text-align: start; }
+.tile:hover { border-color: var(--accent); }
+.tileIcon { font-size: 1.6em; }
+.big { font-size: 2em; font-weight: 700; }
+.verdictOk { color: var(--accent); } .verdictClose { color: var(--warn); } .verdictMissed { color: var(--bad); text-decoration: underline dotted; }
+.hidden { filter: blur(8px); user-select: none; }
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 999px; font-size: 0.85em; z-index: 10; }
+.chat { display: grid; gap: 12px; }
+.bubbleQ { justify-self: end; background: var(--accent); color: var(--onAccent, #fff); padding: 10px 14px; border-radius: 16px 16px 4px 16px; max-width: 80%; }
+.bubbleA { justify-self: start; background: var(--card); border: 1px solid var(--line); padding: 12px 16px; border-radius: 16px 16px 16px 4px; max-width: 95%; display: grid; gap: 10px; white-space: pre-wrap; line-height: 1.7; }
+.source { border-inline-start: 3px solid var(--accent); padding: 6px 12px; display: grid; gap: 4px; }
+@media (max-width: 640px) { .arabic { font-size: 1.6em; } .arabicBig { font-size: 1.8em; } .main { padding: 14px 12px 80px; } }

@@ -40,17 +40,15 @@ export interface Tier {
   features: FeatureKey[];
 }
 
-const FREE: FeatureKey[] = [
-  "reader.core", "offline.text", "study.hadith", "study.answers",
-  "memorize.basic", "learn.plans", "social.reflect", "media.share_image",
-  "family.profiles",
-];
+// Decision of 16 Nov 2026: free is the mushaf and the player with three reciters, one translation and
+// one tafsir at a time; everything else is Plus.
+const FREE: FeatureKey[] = ["reader.core", "offline.text"];
 
 const PLUS: FeatureKey[] = [
-  ...FREE, "reader.all_layouts", "audio.playlists", "audio.sleep_timer",
-  "study.tafsir_multi", "notes.rich", "notes.pdf_export", "memorize.spaced",
-  "memorize.speech", "learn.arabic", "play.games", "media.ai_creations",
-  "ai.ask", "tv.apps",
+  ...FREE, "reader.all_layouts", "audio.playlists", "audio.sleep_timer", "study.hadith", "study.answers",
+  "study.tafsir_multi", "notes.rich", "notes.pdf_export", "memorize.basic", "memorize.spaced",
+  "memorize.speech", "learn.plans", "learn.arabic", "play.games", "social.reflect", "media.share_image", "media.ai_creations",
+  "ai.ask", "family.profiles", "tv.apps",
 ];
 
 const FAMILY: FeatureKey[] = [...PLUS, "family.progress", "ai.model_choice"];
@@ -59,7 +57,7 @@ const MADRASAH: FeatureKey[] = [...FAMILY, "madrasah.classes", "api.access"];
 
 export const TIERS: Record<TierId, Tier> = {
   free: { id: "free", name: "Free", monthlyUsd: 0, maxProfiles: 2, features: FREE },
-  plus: { id: "plus", name: "Plus", monthlyUsd: 4.99, maxProfiles: 2, features: PLUS },
+  plus: { id: "plus", name: "Plus", monthlyUsd: 1.99, maxProfiles: 8, features: PLUS },
   family: { id: "family", name: "Family", monthlyUsd: 9.99, maxProfiles: 8, features: FAMILY },
   madrasah: { id: "madrasah", name: "Madrasah", monthlyUsd: 29.99, maxProfiles: 500, features: MADRASAH },
 };
@@ -70,3 +68,49 @@ export const hasFeature = (tier: TierId, feature: FeatureKey): boolean =>
 /** Lowest tier that unlocks a feature, for upgrade prompts. */
 export const tierFor = (feature: FeatureKey): TierId =>
   (["free", "plus", "family", "madrasah"] as TierId[]).find((t) => hasFeature(t, feature)) ?? "madrasah";
+
+/* ---------- Plus (the single paid bundle in the apps) ---------- */
+export const PLUS_PRICE = { monthlyUsd: 1.99, yearlyUsd: 14.99, lifetimeUsd: 29.99 } as const;
+/** Store product ids (RevenueCat offering "plus"). */
+export const PLUS_PRODUCT_IDS = { monthly: "offline_audio_monthly", yearly: "offline_audio_yearly", lifetime: "plus_lifetime" } as const;
+/** What a locked screen is about, for the paywall headline. */
+export type PlusFeature = "reciters" | "wallpapers" | "story" | "video" | "ask" | "hifz" | "learn" | "play" | "family" | "azan" | "worship" | "names" | "offline" | "tafsirMulti" | "tv";
+/** The three reciters in the free tier: Mishari al-Afasy, Mahmoud Khalil al-Husary (murattal), Abdul Basit (murattal). */
+export const FREE_RECITER_IDS: readonly string[] = ["c7", "c6", "c2"];
+export const FREE_CHAPTER_RECITER_IDS: readonly number[] = [7, 6, 2];
+export const isFreeReciter = (r: { id?: string | null; chapterReciterId?: number | null; recitationId?: number | null; source?: string | null }): boolean => {
+  if (r.source && r.source !== "qf") return false;
+  if (r.id && FREE_RECITER_IDS.includes(r.id)) return true;
+  if (r.chapterReciterId != null && FREE_CHAPTER_RECITER_IDS.includes(r.chapterReciterId)) return true;
+  return r.recitationId != null && r.chapterReciterId == null && FREE_CHAPTER_RECITER_IDS.includes(r.recitationId);
+};
+
+/* ---------- Plans: Free, Plus (monthly / yearly, with limits), Unlimited (lifetime, everything on) ---------- */
+export type PlanId = "free" | "plus" | "unlimited";
+/** RevenueCat entitlement ids: monthly and yearly grant "offline_audio" (Plus); the lifetime product grants "plus_unlimited". */
+export const PLAN_ENTITLEMENTS = { plus: "offline_audio", unlimited: "plus_unlimited" } as const;
+export interface PlanLimits { offlineSurahs: number; askPerDay: number; videoPerMonth: number; videoHd: boolean }
+export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
+  free: { offlineSurahs: 0, askPerDay: 0, videoPerMonth: 0, videoHd: false },
+  plus: { offlineSurahs: 30, askPerDay: 20, videoPerMonth: 15, videoHd: false },
+  unlimited: { offlineSurahs: Infinity, askPerDay: Infinity, videoPerMonth: Infinity, videoHd: true },
+};
+export const planFromEntitlements = (active: readonly string[]): PlanId =>
+  active.includes(PLAN_ENTITLEMENTS.unlimited) ? "unlimited" : active.includes(PLAN_ENTITLEMENTS.plus) ? "plus" : "free";
+
+/** Usage counters kept on the device for the Plus limits (reset by day / by month). */
+export interface UsageRecord { day: string; ask: number; month: string; video: number }
+export const emptyUsage = (now: Date): UsageRecord => ({ day: now.toISOString().slice(0, 10), ask: 0, month: now.toISOString().slice(0, 7), video: 0 });
+export const normalizeUsage = (u: UsageRecord | null | undefined, now: Date): UsageRecord => {
+  const e = emptyUsage(now);
+  if (!u) return e;
+  return { day: u.day === e.day ? u.day : e.day, ask: u.day === e.day ? u.ask : 0, month: u.month === e.month ? u.month : e.month, video: u.month === e.month ? u.video : 0 };
+};
+export const usageAllowed = (plan: PlanId, u: UsageRecord | null | undefined, kind: "ask" | "video", now: Date): boolean => {
+  const n = normalizeUsage(u, now); const l = PLAN_LIMITS[plan];
+  return kind === "ask" ? n.ask < l.askPerDay : n.video < l.videoPerMonth;
+};
+export const bumpUsage = (u: UsageRecord | null | undefined, kind: "ask" | "video", now: Date): UsageRecord => {
+  const n = normalizeUsage(u, now);
+  return kind === "ask" ? { ...n, ask: n.ask + 1 } : { ...n, video: n.video + 1 };
+};

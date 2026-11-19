@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
   };
 
   const authorizeUrl = publicClient.oauth2.v1.authorizeUrl({
-    client_id: config.clientId,
+    client_id: config.userClientId,
     code_challenge: challenge,
     code_challenge_method: "S256",
     nonce,
