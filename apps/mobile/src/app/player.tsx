@@ -71,7 +71,8 @@ export default function PlayerScreen() {
     return () => sub.remove();
   }, []);
 
-  const player = useAudioPlayer(null);
+  // 100 ms status updates keep the word highlight in step with the recitation (default is 500 ms).
+  const player = useAudioPlayer(null, { updateInterval: 100 });
   const status = useAudioPlayerStatus(player);
   const segment = currentSegment(state);
   useProgressTicker(segment?.ayah?.key ?? null, null, state.isPlaying && !!family.profile);

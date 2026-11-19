@@ -9,7 +9,18 @@ export interface PlayerSurahPayload {
   chapterAudio: ChapterAudioInfo | null;
 }
 
+/** Short in-memory cache so switching surah, reciter or translation back and forth does not refetch. */
+const memo = new Map<string, { at: number; p: Promise<unknown> }>();
+const MEMO_MS = 10 * 60 * 1000;
 const get = async <T>(path: string): Promise<T> => {
+  const hit = memo.get(path);
+  if (hit && Date.now() - hit.at < MEMO_MS) return hit.p as Promise<T>;
+  const p = getFresh<T>(path);
+  memo.set(path, { at: Date.now(), p });
+  p.catch(() => memo.delete(path));
+  return p;
+};
+const getFresh = async <T>(path: string): Promise<T> => {
   const res = await fetch(path, { headers: { accept: "application/json" } });
   if (!res.ok) {
     const err = new Error(`Request failed (${res.status})`) as Error & { status?: number };

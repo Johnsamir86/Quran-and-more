@@ -34,12 +34,13 @@ export default function HomePage() {
   return (
     <main className={styles.root} dir={dir}>
       <section className={styles.hero}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className={styles.mark} src="/icon-512.png" alt="" width={96} height={96} />
         <p className={styles.kicker}>{h.kicker} · {locale === "ar" ? "Quran and More" : "القرآن الكريم"}</p>
         <h1 className={styles.title} lang="ar">{m.common.appNameArabic}</h1>
         <p className={styles.sub}>{h.sub}</p>
         <div className={styles.cta}>
           <Link className={styles.primary} href="/player">▶ {h.startListening}</Link>
-          <Link className={styles.secondary} href="/player?voice=1">🎙 {m.player.voice}</Link>
           <Link className={styles.secondary} href="/mushaf">📖 {h.openMushaf}</Link>
           <LanguageSelect className={styles.secondary} />
         </div>
@@ -47,7 +48,7 @@ export default function HomePage() {
       <section className={styles.grid}>
         {TILES.map((t) => (
           <Link key={t.href} href={t.href} className={styles.tile}>
-            <span className={styles.icon} aria-hidden>{t.icon}</span>
+            <span className={styles.iconPlate} aria-hidden><span className={styles.icon}>{t.icon}</span></span>
             <span className={styles.tileTitle}>{h.tiles[t.key].title}</span>
             <span className={styles.tileSub}>{h.tiles[t.key].sub}</span>
           </Link>

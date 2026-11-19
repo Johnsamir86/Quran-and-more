@@ -337,7 +337,6 @@ function StoryScreen() {
             <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingBottom: 8 }}>
               <Image source={require("../../../assets/images/icon.png")} style={{ width: 28, height: 28, borderRadius: 7 }} />
               <Text style={{ color: ink, fontWeight: "700" }}>{m.common.appName}</Text>
-              <Text style={{ color: ink, opacity: 0.8, fontSize: 12 }}>quran-and-more.netlify.app</Text>
             </View>
           ) : (
             <View style={{ gap: 6 }}>

@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 
 import { asrForCountry, formatCountdown, formatPrayerTime, methodForCountry, prayerSchedule, resolveCalc, type AzanSettings } from "@qam/core";
 
@@ -32,7 +32,6 @@ export default function HomeScreen() {
 
   const tiles: { href: string; icon: IconName; label: string }[] = [
     { href: "/player", icon: "play-circle-outline", label: m.nav.player },
-    { href: "/player?voice=1", icon: "mic-outline", label: m.player.voice },
     { href: "/mushaf", icon: "book-outline", label: m.nav.mushaf },
     { href: "/adhkar", icon: "sparkles-outline", label: m.nav.adhkar },
     { href: "/qibla", icon: "compass-outline", label: m.nav.qibla },
@@ -50,10 +49,13 @@ export default function HomeScreen() {
 
   return (
     <Screen>
-      <View style={{ gap: 2 }}>
-        <Kicker>{greeting}</Kicker>
-        <H1>{profile ? `${profile.avatar ?? ""} ${profile.displayName}`.trim() : m.common.appName}</H1>
-      </View>
+      <Row style={{ alignItems: "center", gap: 14 }}>
+        <Image source={require("../../../assets/images/icon.png")} style={{ width: 56, height: 56, borderRadius: 16, borderWidth: 2, borderColor: c.accent2 }} />
+        <View style={{ gap: 2, flex: 1 }}>
+          <Text style={{ color: c.accent2, fontSize: 11, letterSpacing: 1.5, textTransform: "uppercase", fontWeight: "700" }}>{greeting}</Text>
+          <H1>{profile ? `${profile.avatar ?? ""} ${profile.displayName}`.trim() : m.common.appName}</H1>
+        </View>
+      </Row>
 
       {/* Ask card: questions answered only from ayat and tafsir. The ayah of the day lives in its own tab. */}
       <Link href={{ pathname: "/ask" } as never} asChild>

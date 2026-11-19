@@ -116,6 +116,7 @@ export const en = {
     ayah: "ayah", loading: "Loading…",
   },
   ask: {
+    speak: "Ask by voice", listening: "Listening…", speakHint: "Tap the microphone and ask your question in any language",
     title: "Ask", placeholder: "Ask about the meaning of an ayah or a topic in the Quran…", ask: "Ask", sources: "Sources",
     retrieval: "Related ayat and tafsir (no language model)", model: "Model answer with verbatim citations", tafsir: "Tafsir", study: "Study", report: "Report",
     reported: "Thanks, the report is recorded", pending: "pending scholarly review",

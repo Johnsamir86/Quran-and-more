@@ -116,10 +116,13 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
   // 1. audio: fetch every ayah file and read its MP3 frames. They are muxed into the MP4 untouched, so the
   // voice never depends on the browser's audio encoder (iOS Safari produced silent AAC tracks).
   const blobs: Blob[] = [];
-  for (let i = 0; i < input.pages.length; i++) {
-    const res = await fetch(input.pages[i].audioUrl, { signal }); if (!res.ok) throw new Error(`audio ${res.status}`);
-    blobs.push(await res.blob()); onProgress?.((i + 1) / input.pages.length, "audio");
-  }
+  // All ayah files at once (they are small); progress counts arrivals.
+  let arrived = 0;
+  const fetched = await Promise.all(input.pages.map(async (p) => {
+    const res = await fetch(p.audioUrl, { signal }); if (!res.ok) throw new Error(`audio ${res.status}`);
+    const b = await res.blob(); arrived += 1; onProgress?.(arrived / input.pages.length, "audio"); return b;
+  }));
+  blobs.push(...fetched);
   interface Parsed { packets: EncodedPacket[]; durationMs: number; config: AudioDecoderConfig | null; sampleRate: number; channels: number }
   const parsed: Parsed[] = [];
   for (const b of blobs) {
@@ -249,7 +252,6 @@ export const renderStoryVideo = async (input: VideoInput): Promise<VideoResult> 
     ctx.save(); ctx.translate(mx, my); ctx.scale(ms, ms); ctx.lineWidth = 44; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.strokeStyle = ink;
     for (const d of MARK_PATHS) ctx.stroke(new Path2D(d)); ctx.fillStyle = accent; ctx.beginPath(); ctx.arc(792, 528, 26, 0, Math.PI * 2); ctx.fill(); ctx.restore();
     ctx.textAlign = "left"; ctx.fillStyle = ink; ctx.font = `700 ${Math.round(32 * S)}px "Plus Jakarta Sans", system-ui, sans-serif`; ctx.fillText(input.brand, mx + 92 * S, my + 40 * S);
-    ctx.fillStyle = muted; ctx.font = `400 ${Math.round(24 * S)}px "Plus Jakarta Sans", system-ui, sans-serif`; ctx.fillText("quran-and-more.netlify.app", mx + 92 * S, my + 74 * S);
   };
 
   if (bgVideo) {

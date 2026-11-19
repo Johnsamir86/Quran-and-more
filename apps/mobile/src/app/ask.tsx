@@ -1,8 +1,9 @@
 import { Link, Stack } from "expo-router";
-import { useEffect, useState } from "react";
-import { Pressable, TextInput, View } from "react-native";
+import { ExpoSpeechRecognitionModule, useSpeechRecognitionEvent } from "expo-speech-recognition";
+import { useState } from "react";
+import { Pressable, Text, TextInput, View } from "react-native";
 
-import { ask, fetchAyahOfDay, type AskResult, type AyahOfDay } from "@/lib/study-api";
+import { ask, type AskResult } from "@/lib/study-api";
 import { useI18n } from "@/lib/i18n";
 import { Paywall, PlusGate, useUsage } from "@/lib/plus";
 import { Arabic, Body, Button, Card, Chip, ErrorBox, H1, H2, Kicker, Loading, Muted, Pill, Row, Screen, StudyNav, usePalette, SourcesBadge } from "@/lib/ui";
@@ -16,11 +17,23 @@ function AskScreen() {
   const [history, setHistory] = useState<AskResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [today, setToday] = useState<AyahOfDay | null>(null);
-  useEffect(() => { fetchAyahOfDay(locale).then(setToday).catch(() => undefined); }, [locale]);
 
   const usage = useUsage();
   const [limitHit, setLimitHit] = useState(false);
+  // Voice: dictate the question in the interface language; the recognised text is sent as typed.
+  const [listening, setListening] = useState(false);
+  useSpeechRecognitionEvent("start", () => setListening(true));
+  useSpeechRecognitionEvent("end", () => setListening(false));
+  useSpeechRecognitionEvent("error", () => { setListening(false); setError(m.player.voiceUnsupported); });
+  useSpeechRecognitionEvent("result", (e) => { if (!e.isFinal) return; const text = e.results[0]?.transcript ?? ""; if (text.trim().length >= 3) { setQ(text); void send(text); } });
+  const speak = async () => {
+    if (listening) { ExpoSpeechRecognitionModule.stop(); return; }
+    try {
+      const perm = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
+      if (!perm.granted) { setError(m.player.voiceUnsupported); return; }
+      ExpoSpeechRecognitionModule.start({ lang: locale === "ar" ? "ar-SA" : locale, interimResults: false, maxAlternatives: 1, continuous: false });
+    } catch { setError(m.player.voiceUnsupported); }
+  };
   const send = async (text = q) => {
     const question = text.trim(); if (question.length < 3) return;
     if (!usage.allowed("ask")) { setLimitHit(true); return; }
@@ -33,19 +46,16 @@ function AskScreen() {
       <Stack.Screen options={{ title: T.title }} />
       {limitHit ? <><ErrorBox message={m.plus.limitReached} /><Paywall feature="ask" inline /></> : null}
       <StudyNav current="ask" />
-      {today ? (
-        <Link href={{ pathname: "/study/[verseKey]", params: { verseKey: today.verseKey } } as never} asChild>
-          <Pressable><Card><Kicker>{T.today} · {today.verseKey}</Kicker><Arabic size={24}>{today.text}</Arabic>{today.translation ? <Muted>{today.translation.replace(/<[^>]+>/g, "")}</Muted> : null}</Card></Pressable>
-        </Link>
-      ) : null}
       <Card>
         <Row style={{ justifyContent: "space-between" }}><Kicker>Quran.ai / Tazkiya-style · {T.pending}</Kicker><SourcesBadge compact /></Row>
         <H1>{T.title}</H1>
         <TextInput value={q} onChangeText={setQ} placeholder={T.hint} placeholderTextColor={c.muted} multiline onSubmitEditing={() => send()} style={{ borderWidth: 1, borderColor: c.line, borderRadius: 14, padding: 12, color: c.ink, backgroundColor: c.card, fontSize: 16, minHeight: 60 }} />
         <Row style={{ justifyContent: "space-between" }}>
-          <Row>{T.examples.map((e) => <Chip key={e} label={e} onPress={() => send(e)} />)}</Row>
+          <Pressable accessibilityRole="button" accessibilityLabel={T.speak} onPress={speak} style={{ width: 48, height: 48, borderRadius: 24, alignItems: "center", justifyContent: "center", backgroundColor: listening ? c.bad : c.accentSoft, borderWidth: 1, borderColor: listening ? c.bad : c.accent }}><Text style={{ fontSize: 20 }}>{listening ? "⏹" : "🎙"}</Text></Pressable>
+          <Muted style={{ flex: 1, marginHorizontal: 10 }}>{listening ? T.listening : T.speakHint}</Muted>
           <Button label={T.send} onPress={() => send()} disabled={loading || q.trim().length < 3} />
         </Row>
+        <Row>{T.examples.map((e) => <Chip key={e} label={e} onPress={() => send(e)} />)}</Row>
       </Card>
       {loading ? <Loading /> : null}
       {error ? <ErrorBox message={error} /> : null}

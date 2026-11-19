@@ -3,7 +3,7 @@
  * shared by web (CSS variables) and mobile (palette object). Every pair that
  * carries text is checked for WCAG AA contrast in theme.test.ts.
  */
-export type ThemeId = "serene" | "classic" | "night" | "warm";
+export type ThemeId = "mushaf" | "serene" | "classic" | "night" | "warm";
 
 export interface ThemeTokens {
   /** page background */
@@ -48,6 +48,15 @@ export interface Theme {
 }
 
 export const THEMES: Record<ThemeId, Theme> = {
+  mushaf: {
+    id: "mushaf",
+    name: { en: "Mushaf", ar: "مصحف" },
+    tagline: { en: "Quran green, beige paper, black ink and wood", ar: "أخضر قرآني، ورق بيج، حبر أسود وخشب" },
+    arabicFont: "naskh",
+    radius: { sm: 10, md: 16, lg: 22, pill: 999 },
+    light: { bg: "#f4ecdc", card: "#fcf7ec", surface: "#ede3cf", ink: "#141a16", muted: "#5c5a4e", line: "rgba(20,26,22,0.14)", accent: "#0d6b3f", onAccent: "#ffffff", accentSoft: "rgba(13,107,63,0.12)", accent2: "#8a5a2b", ok: "#0d6b3f", warn: "#a86a12", bad: "#b3261e", plate: "rgba(252,247,236,0.78)", nav: "rgba(252,247,236,0.95)" },
+    dark: { bg: "#121a15", card: "#1a241e", surface: "#22302a", ink: "#efe6d3", muted: "#b4ab97", line: "rgba(239,230,211,0.14)", accent: "#3fae7a", onAccent: "#06211a", accentSoft: "rgba(63,174,122,0.18)", accent2: "#c8955a", ok: "#3fae7a", warn: "#e0a84a", bad: "#f28b82", plate: "rgba(10,16,12,0.55)", nav: "rgba(18,26,21,0.94)" },
+  },
   serene: {
     id: "serene",
     name: { en: "Serene", ar: "سكينة" },
@@ -87,7 +96,7 @@ export const THEMES: Record<ThemeId, Theme> = {
 };
 
 export const THEME_IDS = Object.keys(THEMES) as ThemeId[];
-export const DEFAULT_THEME: ThemeId = "serene";
+export const DEFAULT_THEME: ThemeId = "mushaf";
 export const THEME_STORAGE_KEY = "qam.theme.v1";
 export type ColorScheme = "light" | "dark";
 export type SchemePreference = ColorScheme | "system";

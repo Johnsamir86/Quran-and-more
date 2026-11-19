@@ -8,7 +8,7 @@
     "scheme": "quranandmore",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon",
+      "icon": "./assets/images/icon.png",
       "bundleIdentifier": "foundation.quranandmore.app",
       "deploymentTarget": "17.0",
       "supportsTablet": true,
@@ -71,7 +71,7 @@
           "yo"
         ]
       },
-      "buildNumber": "13",
+      "buildNumber": "14",
       "requireFullScreen": false,
       "config": {
         "usesNonExemptEncryption": false
@@ -80,14 +80,14 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#14805f",
+        "backgroundColor": "#f4ecdc",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
       "package": "foundation.quranandmore.app",
-      "versionCode": 13
+      "versionCode": 14
     },
     "web": {
       "output": "single",
@@ -107,11 +107,11 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#14805f",
+          "backgroundColor": "#f4ecdc",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 160,
           "dark": {
-            "backgroundColor": "#0d1512"
+            "backgroundColor": "#121a15"
           }
         }
       ],

@@ -143,7 +143,7 @@ export const renderStoryImage = async (input: RenderInput): Promise<Blob> => {
   ctx.save(); ctx.translate(mx, my); ctx.scale(ms, ms); ctx.lineWidth = 44; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.strokeStyle = ink;
   for (const d of MARK_PATHS) ctx.stroke(new Path2D(d)); ctx.fillStyle = "#d8ad5c"; ctx.beginPath(); ctx.arc(792, 528, 26, 0, Math.PI * 2); ctx.fill(); ctx.restore();
   ctx.textAlign = "left"; ctx.fillStyle = ink; ctx.font = `700 34px "Plus Jakarta Sans", system-ui, sans-serif`; ctx.fillText(input.brand, mx + 100, my + 44);
-  ctx.fillStyle = muted; ctx.font = `400 26px "Plus Jakarta Sans", system-ui, sans-serif`; ctx.fillText("quran-and-more.netlify.app", mx + 100, my + 80);
+  ctx.fillStyle = muted; ctx.font = `500 26px "Plus Jakarta Sans", system-ui, sans-serif`; ctx.direction = "rtl"; ctx.textAlign = "left"; ctx.fillText(input.brandArabic, mx + 100, my + 80); ctx.direction = "ltr";
   return new Promise((resolve) => canvas.toBlob((b) => resolve(b!), "image/png"));
 };
 

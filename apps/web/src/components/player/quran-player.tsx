@@ -313,6 +313,15 @@ export default function QuranPlayer({ initialSurah, initialAyah, profileGender =
     return () => window.clearInterval(id);
   }, [state.sleepUntil]);
 
+  /* timeupdate fires only ~4 times a second; drive the word highlight from animation frames while playing. */
+  useEffect(() => {
+    if (!state.isPlaying) return;
+    let raf = 0;
+    const tick = () => { onTimeUpdate(); raf = window.requestAnimationFrame(tick); };
+    raf = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(raf);
+  }, [state.isPlaying, onTimeUpdate]);
+
   /* ---------- Media Session (lock screen, headset buttons, TV remotes, CarPlay / Android Auto Now Playing) ---------- */
   const [carText, setCarText] = useState(true);
   const { plus } = usePlus();

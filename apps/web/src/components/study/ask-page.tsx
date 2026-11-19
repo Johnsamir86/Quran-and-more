@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import SourcesBadge from "@/components/sources-badge";
 import { useI18n } from "@/lib/i18n";
@@ -23,6 +23,20 @@ export default function AskPage() {
   const [reported, setReported] = useState<Set<string>>(new Set());
   const usage = useUsage();
   const [limitHit, setLimitHit] = useState(false);
+  // Voice: Web Speech API in the interface language; the recognised text is asked as typed.
+  const [listening, setListening] = useState(false);
+  const recognitionRef = useRef<{ stop: () => void } | null>(null);
+  const speak = () => {
+    if (listening) { recognitionRef.current?.stop(); return; }
+    type SR = { lang: string; continuous: boolean; interimResults: boolean; maxAlternatives: number; onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null; onend: (() => void) | null; onerror: (() => void) | null; start: () => void; stop: () => void };
+    const Ctor = ((window as unknown as { SpeechRecognition?: new () => SR }).SpeechRecognition ?? (window as unknown as { webkitSpeechRecognition?: new () => SR }).webkitSpeechRecognition);
+    if (!Ctor) { setQ(m.player.voiceUnsupported); return; }
+    const r = new Ctor(); recognitionRef.current = r;
+    r.lang = locale === "ar" ? "ar-SA" : locale; r.continuous = false; r.interimResults = false; r.maxAlternatives = 1;
+    r.onend = () => setListening(false); r.onerror = () => setListening(false);
+    r.onresult = (e) => { const text = e.results[0]?.[0]?.transcript ?? ""; if (text.trim().length >= 3) { setQ(text); void ask(text); } };
+    try { r.start(); setListening(true); } catch { setListening(false); }
+  };
 
   const ask = async (question: string) => {
     if (question.trim().length < 3) return;
@@ -67,7 +81,8 @@ export default function AskPage() {
         ))}
       </section>
       <form className={styles.card} onSubmit={(e) => { e.preventDefault(); void ask(q); }}>
-        <div className={styles.row}><input className={styles.input} value={q} onChange={(e) => setQ(e.target.value)} placeholder={t.placeholder} /><button className={styles.btn} disabled={loading}>{loading ? "…" : t.ask}</button></div>
+        <div className={styles.row}><button type="button" className={styles.btnGhost} onClick={speak} aria-pressed={listening} title={t.speak} style={listening ? { borderColor: "var(--bad)", color: "var(--bad)" } : undefined}>{listening ? `⏹ ${t.listening}` : "🎙"}</button><input className={styles.input} value={q} onChange={(e) => setQ(e.target.value)} placeholder={listening ? t.listening : t.placeholder} /><button className={styles.btn} disabled={loading}>{loading ? "…" : t.ask}</button></div>
+        <p className={styles.muted}>{t.speakHint}</p>
       </form>
     </StudyShell>
   );

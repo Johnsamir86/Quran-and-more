@@ -113,6 +113,7 @@ export const ar: PartialMessages = {
     ayah: "آية", loading: "جارٍ التحميل…",
   },
   ask: {
+    speak: "اسأل بصوتك", listening: "جارٍ الاستماع…", speakHint: "اضغط على الميكروفون واسأل بأي لغة",
     title: "اسأل", placeholder: "اسأل عن معنى آية أو موضوع في القرآن…", ask: "اسأل", sources: "المصادر",
     retrieval: "آيات وتفاسير ذات صلة (بدون نموذج لغوي)", model: "إجابة النموذج مع الاستشهاد الحرفي", tafsir: "تفسير", study: "دراسة", report: "إبلاغ",
     reported: "شكرًا، تم تسجيل البلاغ", pending: "بانتظار مراجعة علمية",
