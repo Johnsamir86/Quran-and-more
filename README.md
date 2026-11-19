@@ -1,5 +1,5 @@
 # Android test builds
 
-Latest: quran-and-more-android.apk (versionCode 13, arm64: standalone story with an icon action bar, ayah ranges that play through, moving backgrounds by default, azan plays on the Azan screen).
+Latest: quran-and-more-android.apk (versionCode 14, arm64: new icon, Mushaf theme, Ask by voice, smoother word sync, plans).
 
 Direct download: https://github.com/Johnsamir86/Quran-and-more/raw/apk-builds/quran-and-more-android.apk
